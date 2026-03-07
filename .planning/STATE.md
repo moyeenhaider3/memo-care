@@ -3,36 +3,36 @@
 ## Project Reference
 
 **Core value:** Linked Reminder Chains that fire based on user confirmation, not just clock time.
-**Current focus:** GSD initialization pipeline — research complete, ready for requirements + roadmap.
+**Current focus:** Init pipeline complete. Roadmap Phase 01 ready for planning.
 
 ## Current Position
 
-- **Stage:** GSD Initialization (pre-roadmap)
-- **Phase:** 6 of ~10 — Research ✅ COMPLETE
-- **Progress:** [███████░░░] ~65%
+- **Stage:** Roadmap execution
+- **Phase:** 01 of 09 — Project Foundation
+- **Plan:** Not yet planned
+- **Progress:** [░░░░░░░░░░] 0%
 
 ## Completed Artifacts
 
-| Phase | Artifact | Status |
-|-------|----------|--------|
-| 1 | Git repo + Flutter scaffold | ✅ |
-| 2 | Brownfield mapping (skipped — fresh scaffold) | ✅ |
-| 3 | Questioning (answers captured) | ✅ |
-| 4 | `.planning/PROJECT.md` | ✅ Committed |
-| 5 | `.planning/config.json` | ✅ Committed |
-| 6 | `.planning/research/STACK.md` | ✅ Committed |
-| 6 | `.planning/research/FEATURES.md` | ✅ Committed |
-| 6 | `.planning/research/ARCHITECTURE.md` | ✅ Committed |
-| 6 | `.planning/research/PITFALLS.md` | ✅ Committed |
-| 6 | `.planning/research/SUMMARY.md` | ✅ Committed |
+| Phase | Artifact                                      | Status       |
+| ----- | --------------------------------------------- | ------------ |
+| init  | Git repo + Flutter scaffold                   | ✅           |
+| init  | `.planning/PROJECT.md`                        | ✅ Committed |
+| init  | `.planning/config.json`                       | ✅ Committed |
+| init  | `.planning/research/STACK.md`                 | ✅ Committed |
+| init  | `.planning/research/FEATURES.md`              | ✅ Committed |
+| init  | `.planning/research/ARCHITECTURE.md`          | ✅ Committed |
+| init  | `.planning/research/PITFALLS.md`              | ✅ Committed |
+| init  | `.planning/research/SUMMARY.md`               | ✅ Committed |
+| init  | `.planning/REQUIREMENTS.md`                   | ✅ Committed |
+| init  | `.planning/ROADMAP.md`                        | ✅ Committed |
 
 ## Next Steps
 
-| Phase | Action | Command |
-|-------|--------|---------|
-| 7 | Define requirements (scope categories from research) | `/gsd-requirements` |
-| 8 | Create roadmap (spawn gsd-roadmapper) | `/gsd-roadmap` |
-| 10 | Done banner | — |
+| Action | Command |
+| ------ | ------- |
+| Plan Phase 01: Project Foundation | `/gsd-plan-phase 1` |
+| Execute Phase 01 | `/gsd-execute-phase 1` |
 
 ## Recent Decisions
 
