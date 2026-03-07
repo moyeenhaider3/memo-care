@@ -55,6 +55,7 @@ dependencies:
 dev_dependencies:
   build_runner: any
   drift_dev: any
+  fake_async: any
   flutter_test:
     sdk: flutter
   freezed: any
