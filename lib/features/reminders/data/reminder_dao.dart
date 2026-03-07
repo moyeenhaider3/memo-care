@@ -31,6 +31,12 @@ class ReminderDao extends DatabaseAccessor<AppDatabase>
         .watchSingleOrNull();
   }
 
+  /// Get a single reminder by ID (one-shot).
+  Future<ReminderRow?> getReminderById(int id) {
+    return (select(reminders)..where((r) => r.id.equals(id)))
+        .getSingleOrNull();
+  }
+
   /// Insert a new reminder.
   Future<int> insertReminder(RemindersCompanion companion) {
     return into(reminders).insert(companion);
