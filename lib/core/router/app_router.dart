@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:memo_care/core/presentation/app_shell.dart';
+import 'package:memo_care/features/daily_schedule/presentation/chain_context_screen.dart';
 import 'package:memo_care/features/daily_schedule/presentation/home_screen.dart';
 import 'package:memo_care/features/history/presentation/history_screen.dart';
 import 'package:memo_care/features/onboarding/application/onboarding_notifier.dart';
@@ -96,6 +97,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             ],
           ),
         ],
+      ),
+
+      // --- Chain context detail (no bottom nav) ---
+      GoRoute(
+        path: '/reminder/:id/chain',
+        name: 'chainContext',
+        builder: (context, state) {
+          final id = int.parse(
+            state.pathParameters['id']!,
+          );
+          return ChainContextScreen(
+            reminderId: id,
+          );
+        },
       ),
 
       // --- Onboarding flow ---
