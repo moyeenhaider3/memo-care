@@ -3,6 +3,10 @@ import 'dart:io';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:memo_care/core/database/type_converters.dart';
+import 'package:memo_care/features/anchors/data/anchor_dao.dart';
+import 'package:memo_care/features/chain_engine/data/chain_dao.dart';
+import 'package:memo_care/features/confirmation/data/confirmation_dao.dart';
+import 'package:memo_care/features/reminders/data/reminder_dao.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
@@ -13,6 +17,7 @@ part 'app_database.g.dart';
 // ---------------------------------------------------------------------------
 
 /// Chains group related reminders into a DAG structure.
+@DataClassName('ReminderChainRow')
 class ReminderChains extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
@@ -21,6 +26,7 @@ class ReminderChains extends Table {
 }
 
 /// Individual medication reminders belonging to a chain.
+@DataClassName('ReminderRow')
 class Reminders extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get chainId => integer().references(ReminderChains, #id)();
@@ -34,6 +40,7 @@ class Reminders extends Table {
 }
 
 /// DAG edges connecting source → target reminders within a chain.
+@DataClassName('ChainEdgeRow')
 class ChainEdges extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get chainId => integer().references(ReminderChains, #id)();
@@ -51,6 +58,7 @@ class ChainEdges extends Table {
 }
 
 /// Logs each confirmation action (done / snoozed / skipped).
+@DataClassName('ConfirmationRow')
 class Confirmations extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get reminderId => integer().references(Reminders, #id)();
@@ -61,6 +69,7 @@ class Confirmations extends Table {
 }
 
 /// Meal anchor times used to resolve fuzzy scheduling ("after lunch").
+@DataClassName('MealAnchorRow')
 class MealAnchors extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get mealType => text()();
@@ -73,13 +82,21 @@ class MealAnchors extends Table {
 // Database class
 // ---------------------------------------------------------------------------
 
-@DriftDatabase(tables: [
-  ReminderChains,
-  Reminders,
-  ChainEdges,
-  Confirmations,
-  MealAnchors,
-])
+@DriftDatabase(
+  tables: [
+    ReminderChains,
+    Reminders,
+    ChainEdges,
+    Confirmations,
+    MealAnchors,
+  ],
+  daos: [
+    ChainDao,
+    ReminderDao,
+    ConfirmationDao,
+    AnchorDao,
+  ],
+)
 class AppDatabase extends _$AppDatabase {
   /// Creates a new [AppDatabase] with the default file-based connection.
   AppDatabase() : super(_openConnection());

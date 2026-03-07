@@ -4,7 +4,7 @@ part of 'app_database.dart';
 
 // ignore_for_file: type=lint
 class $ReminderChainsTable extends ReminderChains
-    with TableInfo<$ReminderChainsTable, ReminderChain> {
+    with TableInfo<$ReminderChainsTable, ReminderChainRow> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -64,7 +64,7 @@ class $ReminderChainsTable extends ReminderChains
   static const String $name = 'reminder_chains';
   @override
   VerificationContext validateIntegrity(
-    Insertable<ReminderChain> instance, {
+    Insertable<ReminderChainRow> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -92,9 +92,9 @@ class $ReminderChainsTable extends ReminderChains
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  ReminderChain map(Map<String, dynamic> data, {String? tablePrefix}) {
+  ReminderChainRow map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return ReminderChain(
+    return ReminderChainRow(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id'],
@@ -125,12 +125,13 @@ class $ReminderChainsTable extends ReminderChains
       const DateTimeConverter();
 }
 
-class ReminderChain extends DataClass implements Insertable<ReminderChain> {
+class ReminderChainRow extends DataClass
+    implements Insertable<ReminderChainRow> {
   final int id;
   final String name;
   final bool isActive;
   final DateTime createdAt;
-  const ReminderChain({
+  const ReminderChainRow({
     required this.id,
     required this.name,
     required this.isActive,
@@ -159,12 +160,12 @@ class ReminderChain extends DataClass implements Insertable<ReminderChain> {
     );
   }
 
-  factory ReminderChain.fromJson(
+  factory ReminderChainRow.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return ReminderChain(
+    return ReminderChainRow(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       isActive: serializer.fromJson<bool>(json['isActive']),
@@ -182,19 +183,19 @@ class ReminderChain extends DataClass implements Insertable<ReminderChain> {
     };
   }
 
-  ReminderChain copyWith({
+  ReminderChainRow copyWith({
     int? id,
     String? name,
     bool? isActive,
     DateTime? createdAt,
-  }) => ReminderChain(
+  }) => ReminderChainRow(
     id: id ?? this.id,
     name: name ?? this.name,
     isActive: isActive ?? this.isActive,
     createdAt: createdAt ?? this.createdAt,
   );
-  ReminderChain copyWithCompanion(ReminderChainsCompanion data) {
-    return ReminderChain(
+  ReminderChainRow copyWithCompanion(ReminderChainsCompanion data) {
+    return ReminderChainRow(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
       isActive: data.isActive.present ? data.isActive.value : this.isActive,
@@ -204,7 +205,7 @@ class ReminderChain extends DataClass implements Insertable<ReminderChain> {
 
   @override
   String toString() {
-    return (StringBuffer('ReminderChain(')
+    return (StringBuffer('ReminderChainRow(')
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('isActive: $isActive, ')
@@ -218,14 +219,14 @@ class ReminderChain extends DataClass implements Insertable<ReminderChain> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is ReminderChain &&
+      (other is ReminderChainRow &&
           other.id == this.id &&
           other.name == this.name &&
           other.isActive == this.isActive &&
           other.createdAt == this.createdAt);
 }
 
-class ReminderChainsCompanion extends UpdateCompanion<ReminderChain> {
+class ReminderChainsCompanion extends UpdateCompanion<ReminderChainRow> {
   final Value<int> id;
   final Value<String> name;
   final Value<bool> isActive;
@@ -243,7 +244,7 @@ class ReminderChainsCompanion extends UpdateCompanion<ReminderChain> {
     required DateTime createdAt,
   }) : name = Value(name),
        createdAt = Value(createdAt);
-  static Insertable<ReminderChain> custom({
+  static Insertable<ReminderChainRow> custom({
     Expression<int>? id,
     Expression<String>? name,
     Expression<bool>? isActive,
@@ -304,7 +305,7 @@ class ReminderChainsCompanion extends UpdateCompanion<ReminderChain> {
 }
 
 class $RemindersTable extends Reminders
-    with TableInfo<$RemindersTable, Reminder> {
+    with TableInfo<$RemindersTable, ReminderRow> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -420,7 +421,7 @@ class $RemindersTable extends Reminders
   static const String $name = 'reminders';
   @override
   VerificationContext validateIntegrity(
-    Insertable<Reminder> instance, {
+    Insertable<ReminderRow> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -482,9 +483,9 @@ class $RemindersTable extends Reminders
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Reminder map(Map<String, dynamic> data, {String? tablePrefix}) {
+  ReminderRow map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Reminder(
+    return ReminderRow(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id'],
@@ -533,7 +534,7 @@ class $RemindersTable extends Reminders
       NullAwareTypeConverter.wrap($converterscheduledAt);
 }
 
-class Reminder extends DataClass implements Insertable<Reminder> {
+class ReminderRow extends DataClass implements Insertable<ReminderRow> {
   final int id;
   final int chainId;
   final String medicineName;
@@ -542,7 +543,7 @@ class Reminder extends DataClass implements Insertable<Reminder> {
   final DateTime? scheduledAt;
   final bool isActive;
   final int? gapHours;
-  const Reminder({
+  const ReminderRow({
     required this.id,
     required this.chainId,
     required this.medicineName,
@@ -593,12 +594,12 @@ class Reminder extends DataClass implements Insertable<Reminder> {
     );
   }
 
-  factory Reminder.fromJson(
+  factory ReminderRow.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Reminder(
+    return ReminderRow(
       id: serializer.fromJson<int>(json['id']),
       chainId: serializer.fromJson<int>(json['chainId']),
       medicineName: serializer.fromJson<String>(json['medicineName']),
@@ -624,7 +625,7 @@ class Reminder extends DataClass implements Insertable<Reminder> {
     };
   }
 
-  Reminder copyWith({
+  ReminderRow copyWith({
     int? id,
     int? chainId,
     String? medicineName,
@@ -633,7 +634,7 @@ class Reminder extends DataClass implements Insertable<Reminder> {
     Value<DateTime?> scheduledAt = const Value.absent(),
     bool? isActive,
     Value<int?> gapHours = const Value.absent(),
-  }) => Reminder(
+  }) => ReminderRow(
     id: id ?? this.id,
     chainId: chainId ?? this.chainId,
     medicineName: medicineName ?? this.medicineName,
@@ -643,8 +644,8 @@ class Reminder extends DataClass implements Insertable<Reminder> {
     isActive: isActive ?? this.isActive,
     gapHours: gapHours.present ? gapHours.value : this.gapHours,
   );
-  Reminder copyWithCompanion(RemindersCompanion data) {
-    return Reminder(
+  ReminderRow copyWithCompanion(RemindersCompanion data) {
+    return ReminderRow(
       id: data.id.present ? data.id.value : this.id,
       chainId: data.chainId.present ? data.chainId.value : this.chainId,
       medicineName: data.medicineName.present
@@ -664,7 +665,7 @@ class Reminder extends DataClass implements Insertable<Reminder> {
 
   @override
   String toString() {
-    return (StringBuffer('Reminder(')
+    return (StringBuffer('ReminderRow(')
           ..write('id: $id, ')
           ..write('chainId: $chainId, ')
           ..write('medicineName: $medicineName, ')
@@ -691,7 +692,7 @@ class Reminder extends DataClass implements Insertable<Reminder> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Reminder &&
+      (other is ReminderRow &&
           other.id == this.id &&
           other.chainId == this.chainId &&
           other.medicineName == this.medicineName &&
@@ -702,7 +703,7 @@ class Reminder extends DataClass implements Insertable<Reminder> {
           other.gapHours == this.gapHours);
 }
 
-class RemindersCompanion extends UpdateCompanion<Reminder> {
+class RemindersCompanion extends UpdateCompanion<ReminderRow> {
   final Value<int> id;
   final Value<int> chainId;
   final Value<String> medicineName;
@@ -733,7 +734,7 @@ class RemindersCompanion extends UpdateCompanion<Reminder> {
   }) : chainId = Value(chainId),
        medicineName = Value(medicineName),
        medicineType = Value(medicineType);
-  static Insertable<Reminder> custom({
+  static Insertable<ReminderRow> custom({
     Expression<int>? id,
     Expression<int>? chainId,
     Expression<String>? medicineName,
@@ -826,7 +827,7 @@ class RemindersCompanion extends UpdateCompanion<Reminder> {
 }
 
 class $ChainEdgesTable extends ChainEdges
-    with TableInfo<$ChainEdgesTable, ChainEdge> {
+    with TableInfo<$ChainEdgesTable, ChainEdgeRow> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -895,7 +896,7 @@ class $ChainEdgesTable extends ChainEdges
   static const String $name = 'chain_edges';
   @override
   VerificationContext validateIntegrity(
-    Insertable<ChainEdge> instance, {
+    Insertable<ChainEdgeRow> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -937,9 +938,9 @@ class $ChainEdgesTable extends ChainEdges
     {sourceId, targetId},
   ];
   @override
-  ChainEdge map(Map<String, dynamic> data, {String? tablePrefix}) {
+  ChainEdgeRow map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return ChainEdge(
+    return ChainEdgeRow(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id'],
@@ -965,12 +966,12 @@ class $ChainEdgesTable extends ChainEdges
   }
 }
 
-class ChainEdge extends DataClass implements Insertable<ChainEdge> {
+class ChainEdgeRow extends DataClass implements Insertable<ChainEdgeRow> {
   final int id;
   final int chainId;
   final int sourceId;
   final int targetId;
-  const ChainEdge({
+  const ChainEdgeRow({
     required this.id,
     required this.chainId,
     required this.sourceId,
@@ -995,12 +996,12 @@ class ChainEdge extends DataClass implements Insertable<ChainEdge> {
     );
   }
 
-  factory ChainEdge.fromJson(
+  factory ChainEdgeRow.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return ChainEdge(
+    return ChainEdgeRow(
       id: serializer.fromJson<int>(json['id']),
       chainId: serializer.fromJson<int>(json['chainId']),
       sourceId: serializer.fromJson<int>(json['sourceId']),
@@ -1018,15 +1019,19 @@ class ChainEdge extends DataClass implements Insertable<ChainEdge> {
     };
   }
 
-  ChainEdge copyWith({int? id, int? chainId, int? sourceId, int? targetId}) =>
-      ChainEdge(
-        id: id ?? this.id,
-        chainId: chainId ?? this.chainId,
-        sourceId: sourceId ?? this.sourceId,
-        targetId: targetId ?? this.targetId,
-      );
-  ChainEdge copyWithCompanion(ChainEdgesCompanion data) {
-    return ChainEdge(
+  ChainEdgeRow copyWith({
+    int? id,
+    int? chainId,
+    int? sourceId,
+    int? targetId,
+  }) => ChainEdgeRow(
+    id: id ?? this.id,
+    chainId: chainId ?? this.chainId,
+    sourceId: sourceId ?? this.sourceId,
+    targetId: targetId ?? this.targetId,
+  );
+  ChainEdgeRow copyWithCompanion(ChainEdgesCompanion data) {
+    return ChainEdgeRow(
       id: data.id.present ? data.id.value : this.id,
       chainId: data.chainId.present ? data.chainId.value : this.chainId,
       sourceId: data.sourceId.present ? data.sourceId.value : this.sourceId,
@@ -1036,7 +1041,7 @@ class ChainEdge extends DataClass implements Insertable<ChainEdge> {
 
   @override
   String toString() {
-    return (StringBuffer('ChainEdge(')
+    return (StringBuffer('ChainEdgeRow(')
           ..write('id: $id, ')
           ..write('chainId: $chainId, ')
           ..write('sourceId: $sourceId, ')
@@ -1050,14 +1055,14 @@ class ChainEdge extends DataClass implements Insertable<ChainEdge> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is ChainEdge &&
+      (other is ChainEdgeRow &&
           other.id == this.id &&
           other.chainId == this.chainId &&
           other.sourceId == this.sourceId &&
           other.targetId == this.targetId);
 }
 
-class ChainEdgesCompanion extends UpdateCompanion<ChainEdge> {
+class ChainEdgesCompanion extends UpdateCompanion<ChainEdgeRow> {
   final Value<int> id;
   final Value<int> chainId;
   final Value<int> sourceId;
@@ -1076,7 +1081,7 @@ class ChainEdgesCompanion extends UpdateCompanion<ChainEdge> {
   }) : chainId = Value(chainId),
        sourceId = Value(sourceId),
        targetId = Value(targetId);
-  static Insertable<ChainEdge> custom({
+  static Insertable<ChainEdgeRow> custom({
     Expression<int>? id,
     Expression<int>? chainId,
     Expression<int>? sourceId,
@@ -1135,7 +1140,7 @@ class ChainEdgesCompanion extends UpdateCompanion<ChainEdge> {
 }
 
 class $ConfirmationsTable extends Confirmations
-    with TableInfo<$ConfirmationsTable, Confirmation> {
+    with TableInfo<$ConfirmationsTable, ConfirmationRow> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -1209,7 +1214,7 @@ class $ConfirmationsTable extends Confirmations
   static const String $name = 'confirmations';
   @override
   VerificationContext validateIntegrity(
-    Insertable<Confirmation> instance, {
+    Insertable<ConfirmationRow> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -1239,9 +1244,9 @@ class $ConfirmationsTable extends Confirmations
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Confirmation map(Map<String, dynamic> data, {String? tablePrefix}) {
+  ConfirmationRow map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Confirmation(
+    return ConfirmationRow(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id'],
@@ -1282,13 +1287,13 @@ class $ConfirmationsTable extends Confirmations
       NullAwareTypeConverter.wrap($convertersnoozeUntil);
 }
 
-class Confirmation extends DataClass implements Insertable<Confirmation> {
+class ConfirmationRow extends DataClass implements Insertable<ConfirmationRow> {
   final int id;
   final int reminderId;
   final String state;
   final DateTime confirmedAt;
   final DateTime? snoozeUntil;
-  const Confirmation({
+  const ConfirmationRow({
     required this.id,
     required this.reminderId,
     required this.state,
@@ -1326,12 +1331,12 @@ class Confirmation extends DataClass implements Insertable<Confirmation> {
     );
   }
 
-  factory Confirmation.fromJson(
+  factory ConfirmationRow.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Confirmation(
+    return ConfirmationRow(
       id: serializer.fromJson<int>(json['id']),
       reminderId: serializer.fromJson<int>(json['reminderId']),
       state: serializer.fromJson<String>(json['state']),
@@ -1351,21 +1356,21 @@ class Confirmation extends DataClass implements Insertable<Confirmation> {
     };
   }
 
-  Confirmation copyWith({
+  ConfirmationRow copyWith({
     int? id,
     int? reminderId,
     String? state,
     DateTime? confirmedAt,
     Value<DateTime?> snoozeUntil = const Value.absent(),
-  }) => Confirmation(
+  }) => ConfirmationRow(
     id: id ?? this.id,
     reminderId: reminderId ?? this.reminderId,
     state: state ?? this.state,
     confirmedAt: confirmedAt ?? this.confirmedAt,
     snoozeUntil: snoozeUntil.present ? snoozeUntil.value : this.snoozeUntil,
   );
-  Confirmation copyWithCompanion(ConfirmationsCompanion data) {
-    return Confirmation(
+  ConfirmationRow copyWithCompanion(ConfirmationsCompanion data) {
+    return ConfirmationRow(
       id: data.id.present ? data.id.value : this.id,
       reminderId: data.reminderId.present
           ? data.reminderId.value
@@ -1382,7 +1387,7 @@ class Confirmation extends DataClass implements Insertable<Confirmation> {
 
   @override
   String toString() {
-    return (StringBuffer('Confirmation(')
+    return (StringBuffer('ConfirmationRow(')
           ..write('id: $id, ')
           ..write('reminderId: $reminderId, ')
           ..write('state: $state, ')
@@ -1398,7 +1403,7 @@ class Confirmation extends DataClass implements Insertable<Confirmation> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Confirmation &&
+      (other is ConfirmationRow &&
           other.id == this.id &&
           other.reminderId == this.reminderId &&
           other.state == this.state &&
@@ -1406,7 +1411,7 @@ class Confirmation extends DataClass implements Insertable<Confirmation> {
           other.snoozeUntil == this.snoozeUntil);
 }
 
-class ConfirmationsCompanion extends UpdateCompanion<Confirmation> {
+class ConfirmationsCompanion extends UpdateCompanion<ConfirmationRow> {
   final Value<int> id;
   final Value<int> reminderId;
   final Value<String> state;
@@ -1428,7 +1433,7 @@ class ConfirmationsCompanion extends UpdateCompanion<Confirmation> {
   }) : reminderId = Value(reminderId),
        state = Value(state),
        confirmedAt = Value(confirmedAt);
-  static Insertable<Confirmation> custom({
+  static Insertable<ConfirmationRow> custom({
     Expression<int>? id,
     Expression<int>? reminderId,
     Expression<String>? state,
@@ -1499,7 +1504,7 @@ class ConfirmationsCompanion extends UpdateCompanion<Confirmation> {
 }
 
 class $MealAnchorsTable extends MealAnchors
-    with TableInfo<$MealAnchorsTable, MealAnchor> {
+    with TableInfo<$MealAnchorsTable, MealAnchorRow> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -1562,7 +1567,7 @@ class $MealAnchorsTable extends MealAnchors
   static const String $name = 'meal_anchors';
   @override
   VerificationContext validateIntegrity(
-    Insertable<MealAnchor> instance, {
+    Insertable<MealAnchorRow> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -1595,9 +1600,9 @@ class $MealAnchorsTable extends MealAnchors
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  MealAnchor map(Map<String, dynamic> data, {String? tablePrefix}) {
+  MealAnchorRow map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return MealAnchor(
+    return MealAnchorRow(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}id'],
@@ -1630,12 +1635,12 @@ class $MealAnchorsTable extends MealAnchors
       NullAwareTypeConverter.wrap($converterconfirmedAt);
 }
 
-class MealAnchor extends DataClass implements Insertable<MealAnchor> {
+class MealAnchorRow extends DataClass implements Insertable<MealAnchorRow> {
   final int id;
   final String mealType;
   final int defaultTime;
   final DateTime? confirmedAt;
-  const MealAnchor({
+  const MealAnchorRow({
     required this.id,
     required this.mealType,
     required this.defaultTime,
@@ -1666,12 +1671,12 @@ class MealAnchor extends DataClass implements Insertable<MealAnchor> {
     );
   }
 
-  factory MealAnchor.fromJson(
+  factory MealAnchorRow.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return MealAnchor(
+    return MealAnchorRow(
       id: serializer.fromJson<int>(json['id']),
       mealType: serializer.fromJson<String>(json['mealType']),
       defaultTime: serializer.fromJson<int>(json['defaultTime']),
@@ -1689,19 +1694,19 @@ class MealAnchor extends DataClass implements Insertable<MealAnchor> {
     };
   }
 
-  MealAnchor copyWith({
+  MealAnchorRow copyWith({
     int? id,
     String? mealType,
     int? defaultTime,
     Value<DateTime?> confirmedAt = const Value.absent(),
-  }) => MealAnchor(
+  }) => MealAnchorRow(
     id: id ?? this.id,
     mealType: mealType ?? this.mealType,
     defaultTime: defaultTime ?? this.defaultTime,
     confirmedAt: confirmedAt.present ? confirmedAt.value : this.confirmedAt,
   );
-  MealAnchor copyWithCompanion(MealAnchorsCompanion data) {
-    return MealAnchor(
+  MealAnchorRow copyWithCompanion(MealAnchorsCompanion data) {
+    return MealAnchorRow(
       id: data.id.present ? data.id.value : this.id,
       mealType: data.mealType.present ? data.mealType.value : this.mealType,
       defaultTime: data.defaultTime.present
@@ -1715,7 +1720,7 @@ class MealAnchor extends DataClass implements Insertable<MealAnchor> {
 
   @override
   String toString() {
-    return (StringBuffer('MealAnchor(')
+    return (StringBuffer('MealAnchorRow(')
           ..write('id: $id, ')
           ..write('mealType: $mealType, ')
           ..write('defaultTime: $defaultTime, ')
@@ -1729,14 +1734,14 @@ class MealAnchor extends DataClass implements Insertable<MealAnchor> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is MealAnchor &&
+      (other is MealAnchorRow &&
           other.id == this.id &&
           other.mealType == this.mealType &&
           other.defaultTime == this.defaultTime &&
           other.confirmedAt == this.confirmedAt);
 }
 
-class MealAnchorsCompanion extends UpdateCompanion<MealAnchor> {
+class MealAnchorsCompanion extends UpdateCompanion<MealAnchorRow> {
   final Value<int> id;
   final Value<String> mealType;
   final Value<int> defaultTime;
@@ -1754,7 +1759,7 @@ class MealAnchorsCompanion extends UpdateCompanion<MealAnchor> {
     this.confirmedAt = const Value.absent(),
   }) : mealType = Value(mealType),
        defaultTime = Value(defaultTime);
-  static Insertable<MealAnchor> custom({
+  static Insertable<MealAnchorRow> custom({
     Expression<int>? id,
     Expression<String>? mealType,
     Expression<int>? defaultTime,
@@ -1822,6 +1827,12 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $ChainEdgesTable chainEdges = $ChainEdgesTable(this);
   late final $ConfirmationsTable confirmations = $ConfirmationsTable(this);
   late final $MealAnchorsTable mealAnchors = $MealAnchorsTable(this);
+  late final ChainDao chainDao = ChainDao(this as AppDatabase);
+  late final ReminderDao reminderDao = ReminderDao(this as AppDatabase);
+  late final ConfirmationDao confirmationDao = ConfirmationDao(
+    this as AppDatabase,
+  );
+  late final AnchorDao anchorDao = AnchorDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1851,14 +1862,15 @@ typedef $$ReminderChainsTableUpdateCompanionBuilder =
     });
 
 final class $$ReminderChainsTableReferences
-    extends BaseReferences<_$AppDatabase, $ReminderChainsTable, ReminderChain> {
+    extends
+        BaseReferences<_$AppDatabase, $ReminderChainsTable, ReminderChainRow> {
   $$ReminderChainsTableReferences(
     super.$_db,
     super.$_table,
     super.$_typedResult,
   );
 
-  static MultiTypedResultKey<$RemindersTable, List<Reminder>>
+  static MultiTypedResultKey<$RemindersTable, List<ReminderRow>>
   _remindersRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.reminders,
     aliasName: $_aliasNameGenerator(db.reminderChains.id, db.reminders.chainId),
@@ -1876,7 +1888,7 @@ final class $$ReminderChainsTableReferences
     );
   }
 
-  static MultiTypedResultKey<$ChainEdgesTable, List<ChainEdge>>
+  static MultiTypedResultKey<$ChainEdgesTable, List<ChainEdgeRow>>
   _chainEdgesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.chainEdges,
     aliasName: $_aliasNameGenerator(
@@ -2086,14 +2098,14 @@ class $$ReminderChainsTableTableManager
         RootTableManager<
           _$AppDatabase,
           $ReminderChainsTable,
-          ReminderChain,
+          ReminderChainRow,
           $$ReminderChainsTableFilterComposer,
           $$ReminderChainsTableOrderingComposer,
           $$ReminderChainsTableAnnotationComposer,
           $$ReminderChainsTableCreateCompanionBuilder,
           $$ReminderChainsTableUpdateCompanionBuilder,
-          (ReminderChain, $$ReminderChainsTableReferences),
-          ReminderChain,
+          (ReminderChainRow, $$ReminderChainsTableReferences),
+          ReminderChainRow,
           PrefetchHooks Function({bool remindersRefs, bool chainEdgesRefs})
         > {
   $$ReminderChainsTableTableManager(
@@ -2154,9 +2166,9 @@ class $$ReminderChainsTableTableManager
                     return [
                       if (remindersRefs)
                         await $_getPrefetchedData<
-                          ReminderChain,
+                          ReminderChainRow,
                           $ReminderChainsTable,
-                          Reminder
+                          ReminderRow
                         >(
                           currentTable: table,
                           referencedTable: $$ReminderChainsTableReferences
@@ -2175,9 +2187,9 @@ class $$ReminderChainsTableTableManager
                         ),
                       if (chainEdgesRefs)
                         await $_getPrefetchedData<
-                          ReminderChain,
+                          ReminderChainRow,
                           $ReminderChainsTable,
-                          ChainEdge
+                          ChainEdgeRow
                         >(
                           currentTable: table,
                           referencedTable: $$ReminderChainsTableReferences
@@ -2206,14 +2218,14 @@ typedef $$ReminderChainsTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $ReminderChainsTable,
-      ReminderChain,
+      ReminderChainRow,
       $$ReminderChainsTableFilterComposer,
       $$ReminderChainsTableOrderingComposer,
       $$ReminderChainsTableAnnotationComposer,
       $$ReminderChainsTableCreateCompanionBuilder,
       $$ReminderChainsTableUpdateCompanionBuilder,
-      (ReminderChain, $$ReminderChainsTableReferences),
-      ReminderChain,
+      (ReminderChainRow, $$ReminderChainsTableReferences),
+      ReminderChainRow,
       PrefetchHooks Function({bool remindersRefs, bool chainEdgesRefs})
     >;
 typedef $$RemindersTableCreateCompanionBuilder =
@@ -2240,7 +2252,7 @@ typedef $$RemindersTableUpdateCompanionBuilder =
     });
 
 final class $$RemindersTableReferences
-    extends BaseReferences<_$AppDatabase, $RemindersTable, Reminder> {
+    extends BaseReferences<_$AppDatabase, $RemindersTable, ReminderRow> {
   $$RemindersTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static $ReminderChainsTable _chainIdTable(_$AppDatabase db) =>
@@ -2262,7 +2274,7 @@ final class $$RemindersTableReferences
     );
   }
 
-  static MultiTypedResultKey<$ChainEdgesTable, List<ChainEdge>>
+  static MultiTypedResultKey<$ChainEdgesTable, List<ChainEdgeRow>>
   _sourceEdgesTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.chainEdges,
     aliasName: $_aliasNameGenerator(db.reminders.id, db.chainEdges.sourceId),
@@ -2280,7 +2292,7 @@ final class $$RemindersTableReferences
     );
   }
 
-  static MultiTypedResultKey<$ChainEdgesTable, List<ChainEdge>>
+  static MultiTypedResultKey<$ChainEdgesTable, List<ChainEdgeRow>>
   _targetEdgesTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.chainEdges,
     aliasName: $_aliasNameGenerator(db.reminders.id, db.chainEdges.targetId),
@@ -2298,7 +2310,7 @@ final class $$RemindersTableReferences
     );
   }
 
-  static MultiTypedResultKey<$ConfirmationsTable, List<Confirmation>>
+  static MultiTypedResultKey<$ConfirmationsTable, List<ConfirmationRow>>
   _confirmationsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.confirmations,
     aliasName: $_aliasNameGenerator(
@@ -2673,14 +2685,14 @@ class $$RemindersTableTableManager
         RootTableManager<
           _$AppDatabase,
           $RemindersTable,
-          Reminder,
+          ReminderRow,
           $$RemindersTableFilterComposer,
           $$RemindersTableOrderingComposer,
           $$RemindersTableAnnotationComposer,
           $$RemindersTableCreateCompanionBuilder,
           $$RemindersTableUpdateCompanionBuilder,
-          (Reminder, $$RemindersTableReferences),
-          Reminder,
+          (ReminderRow, $$RemindersTableReferences),
+          ReminderRow,
           PrefetchHooks Function({
             bool chainId,
             bool sourceEdges,
@@ -2797,9 +2809,9 @@ class $$RemindersTableTableManager
                     return [
                       if (sourceEdges)
                         await $_getPrefetchedData<
-                          Reminder,
+                          ReminderRow,
                           $RemindersTable,
-                          ChainEdge
+                          ChainEdgeRow
                         >(
                           currentTable: table,
                           referencedTable: $$RemindersTableReferences
@@ -2818,9 +2830,9 @@ class $$RemindersTableTableManager
                         ),
                       if (targetEdges)
                         await $_getPrefetchedData<
-                          Reminder,
+                          ReminderRow,
                           $RemindersTable,
-                          ChainEdge
+                          ChainEdgeRow
                         >(
                           currentTable: table,
                           referencedTable: $$RemindersTableReferences
@@ -2839,9 +2851,9 @@ class $$RemindersTableTableManager
                         ),
                       if (confirmationsRefs)
                         await $_getPrefetchedData<
-                          Reminder,
+                          ReminderRow,
                           $RemindersTable,
-                          Confirmation
+                          ConfirmationRow
                         >(
                           currentTable: table,
                           referencedTable: $$RemindersTableReferences
@@ -2870,14 +2882,14 @@ typedef $$RemindersTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $RemindersTable,
-      Reminder,
+      ReminderRow,
       $$RemindersTableFilterComposer,
       $$RemindersTableOrderingComposer,
       $$RemindersTableAnnotationComposer,
       $$RemindersTableCreateCompanionBuilder,
       $$RemindersTableUpdateCompanionBuilder,
-      (Reminder, $$RemindersTableReferences),
-      Reminder,
+      (ReminderRow, $$RemindersTableReferences),
+      ReminderRow,
       PrefetchHooks Function({
         bool chainId,
         bool sourceEdges,
@@ -2901,7 +2913,7 @@ typedef $$ChainEdgesTableUpdateCompanionBuilder =
     });
 
 final class $$ChainEdgesTableReferences
-    extends BaseReferences<_$AppDatabase, $ChainEdgesTable, ChainEdge> {
+    extends BaseReferences<_$AppDatabase, $ChainEdgesTable, ChainEdgeRow> {
   $$ChainEdgesTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static $ReminderChainsTable _chainIdTable(_$AppDatabase db) =>
@@ -3217,14 +3229,14 @@ class $$ChainEdgesTableTableManager
         RootTableManager<
           _$AppDatabase,
           $ChainEdgesTable,
-          ChainEdge,
+          ChainEdgeRow,
           $$ChainEdgesTableFilterComposer,
           $$ChainEdgesTableOrderingComposer,
           $$ChainEdgesTableAnnotationComposer,
           $$ChainEdgesTableCreateCompanionBuilder,
           $$ChainEdgesTableUpdateCompanionBuilder,
-          (ChainEdge, $$ChainEdgesTableReferences),
-          ChainEdge,
+          (ChainEdgeRow, $$ChainEdgesTableReferences),
+          ChainEdgeRow,
           PrefetchHooks Function({bool chainId, bool sourceId, bool targetId})
         > {
   $$ChainEdgesTableTableManager(_$AppDatabase db, $ChainEdgesTable table)
@@ -3349,14 +3361,14 @@ typedef $$ChainEdgesTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $ChainEdgesTable,
-      ChainEdge,
+      ChainEdgeRow,
       $$ChainEdgesTableFilterComposer,
       $$ChainEdgesTableOrderingComposer,
       $$ChainEdgesTableAnnotationComposer,
       $$ChainEdgesTableCreateCompanionBuilder,
       $$ChainEdgesTableUpdateCompanionBuilder,
-      (ChainEdge, $$ChainEdgesTableReferences),
-      ChainEdge,
+      (ChainEdgeRow, $$ChainEdgesTableReferences),
+      ChainEdgeRow,
       PrefetchHooks Function({bool chainId, bool sourceId, bool targetId})
     >;
 typedef $$ConfirmationsTableCreateCompanionBuilder =
@@ -3377,7 +3389,8 @@ typedef $$ConfirmationsTableUpdateCompanionBuilder =
     });
 
 final class $$ConfirmationsTableReferences
-    extends BaseReferences<_$AppDatabase, $ConfirmationsTable, Confirmation> {
+    extends
+        BaseReferences<_$AppDatabase, $ConfirmationsTable, ConfirmationRow> {
   $$ConfirmationsTableReferences(
     super.$_db,
     super.$_table,
@@ -3568,14 +3581,14 @@ class $$ConfirmationsTableTableManager
         RootTableManager<
           _$AppDatabase,
           $ConfirmationsTable,
-          Confirmation,
+          ConfirmationRow,
           $$ConfirmationsTableFilterComposer,
           $$ConfirmationsTableOrderingComposer,
           $$ConfirmationsTableAnnotationComposer,
           $$ConfirmationsTableCreateCompanionBuilder,
           $$ConfirmationsTableUpdateCompanionBuilder,
-          (Confirmation, $$ConfirmationsTableReferences),
-          Confirmation,
+          (ConfirmationRow, $$ConfirmationsTableReferences),
+          ConfirmationRow,
           PrefetchHooks Function({bool reminderId})
         > {
   $$ConfirmationsTableTableManager(_$AppDatabase db, $ConfirmationsTable table)
@@ -3674,14 +3687,14 @@ typedef $$ConfirmationsTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $ConfirmationsTable,
-      Confirmation,
+      ConfirmationRow,
       $$ConfirmationsTableFilterComposer,
       $$ConfirmationsTableOrderingComposer,
       $$ConfirmationsTableAnnotationComposer,
       $$ConfirmationsTableCreateCompanionBuilder,
       $$ConfirmationsTableUpdateCompanionBuilder,
-      (Confirmation, $$ConfirmationsTableReferences),
-      Confirmation,
+      (ConfirmationRow, $$ConfirmationsTableReferences),
+      ConfirmationRow,
       PrefetchHooks Function({bool reminderId})
     >;
 typedef $$MealAnchorsTableCreateCompanionBuilder =
@@ -3792,17 +3805,17 @@ class $$MealAnchorsTableTableManager
         RootTableManager<
           _$AppDatabase,
           $MealAnchorsTable,
-          MealAnchor,
+          MealAnchorRow,
           $$MealAnchorsTableFilterComposer,
           $$MealAnchorsTableOrderingComposer,
           $$MealAnchorsTableAnnotationComposer,
           $$MealAnchorsTableCreateCompanionBuilder,
           $$MealAnchorsTableUpdateCompanionBuilder,
           (
-            MealAnchor,
-            BaseReferences<_$AppDatabase, $MealAnchorsTable, MealAnchor>,
+            MealAnchorRow,
+            BaseReferences<_$AppDatabase, $MealAnchorsTable, MealAnchorRow>,
           ),
-          MealAnchor,
+          MealAnchorRow,
           PrefetchHooks Function()
         > {
   $$MealAnchorsTableTableManager(_$AppDatabase db, $MealAnchorsTable table)
@@ -3852,17 +3865,17 @@ typedef $$MealAnchorsTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $MealAnchorsTable,
-      MealAnchor,
+      MealAnchorRow,
       $$MealAnchorsTableFilterComposer,
       $$MealAnchorsTableOrderingComposer,
       $$MealAnchorsTableAnnotationComposer,
       $$MealAnchorsTableCreateCompanionBuilder,
       $$MealAnchorsTableUpdateCompanionBuilder,
       (
-        MealAnchor,
-        BaseReferences<_$AppDatabase, $MealAnchorsTable, MealAnchor>,
+        MealAnchorRow,
+        BaseReferences<_$AppDatabase, $MealAnchorsTable, MealAnchorRow>,
       ),
-      MealAnchor,
+      MealAnchorRow,
       PrefetchHooks Function()
     >;
 
