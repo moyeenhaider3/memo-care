@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-
 import 'package:memo_care/features/daily_schedule/application/daily_schedule_providers.dart';
 import 'package:memo_care/features/reminders/domain/models/reminder.dart';
 
@@ -74,11 +73,9 @@ class _AllDoneCard extends StatelessWidget {
               const SizedBox(height: 12),
               Text(
                 'All done for today! ✓',
-                style:
-                    theme.textTheme.headlineSmall?.copyWith(
+                style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color:
-                      theme.colorScheme.onPrimaryContainer,
+                  color: theme.colorScheme.onPrimaryContainer,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -111,7 +108,8 @@ class _PendingCard extends StatelessWidget {
         : 'Soon';
 
     return Semantics(
-      label: 'Next medication: ${reminder.medicineName}, '
+      label:
+          'Next medication: ${reminder.medicineName}, '
           '${reminder.dosage ?? ""}, at $timeText. '
           'Tap I Took It to confirm, or Skip.',
       child: Card(
@@ -137,11 +135,9 @@ class _PendingCard extends StatelessWidget {
               // Medicine name (24pt bold)
               Text(
                 '💊 ${reminder.medicineName}',
-                style:
-                    theme.textTheme.headlineSmall?.copyWith(
+                style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color:
-                      theme.colorScheme.onPrimaryContainer,
+                  color: theme.colorScheme.onPrimaryContainer,
                 ),
               ),
               const SizedBox(height: 4),
@@ -149,14 +145,13 @@ class _PendingCard extends StatelessWidget {
               // Dosage + time
               Text(
                 [
-                  if (reminder.dosage != null)
-                    reminder.dosage!,
+                  if (reminder.dosage != null) reminder.dosage!,
                   'at $timeText',
                 ].join(' · '),
                 style: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme
-                      .colorScheme.onPrimaryContainer
-                      .withValues(alpha: 0.8),
+                  color: theme.colorScheme.onPrimaryContainer.withValues(
+                    alpha: 0.8,
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -170,8 +165,7 @@ class _PendingCard extends StatelessWidget {
                       height: 56,
                       child: FilledButton.icon(
                         onPressed: onDone,
-                        icon:
-                            const Icon(Icons.check, size: 24),
+                        icon: const Icon(Icons.check, size: 24),
                         label: const Text(
                           'I Took It',
                           style: TextStyle(
@@ -180,12 +174,10 @@ class _PendingCard extends StatelessWidget {
                           ),
                         ),
                         style: FilledButton.styleFrom(
-                          backgroundColor:
-                              Colors.green.shade700,
+                          backgroundColor: Colors.green.shade700,
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                       ),
@@ -199,8 +191,7 @@ class _PendingCard extends StatelessWidget {
                       height: 56,
                       child: OutlinedButton.icon(
                         onPressed: onSkip,
-                        icon:
-                            const Icon(Icons.close, size: 24),
+                        icon: const Icon(Icons.close, size: 24),
                         label: const Text(
                           'Skip',
                           style: TextStyle(
@@ -209,15 +200,13 @@ class _PendingCard extends StatelessWidget {
                           ),
                         ),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor:
-                              Colors.red.shade700,
+                          foregroundColor: Colors.red.shade700,
                           side: BorderSide(
                             color: Colors.red.shade700,
                             width: 2,
                           ),
                           shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                       ),

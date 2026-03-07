@@ -81,7 +81,7 @@ void main() {
           state: ConfirmationState.done,
         );
 
-        expect(result, isA<ActivateDownstream>());
+        expect(result.outcome, isA<ActivateDownstream>());
         verify(
           () => mockConfirmationRepo.createConfirmation(
             reminderId: 1,
@@ -107,8 +107,8 @@ void main() {
           state: ConfirmationState.done,
         );
 
-        expect(result, isA<ActivateDownstream>());
-        final outcome = result as ActivateDownstream;
+        expect(result.outcome, isA<ActivateDownstream>());
+        final outcome = result.outcome as ActivateDownstream;
         expect(outcome.reminders, isEmpty);
       },
     );
@@ -135,8 +135,8 @@ void main() {
           state: ConfirmationState.skipped,
         );
 
-        expect(result, isA<SuspendDownstream>());
-        final outcome = result as SuspendDownstream;
+        expect(result.outcome, isA<SuspendDownstream>());
+        final outcome = result.outcome as SuspendDownstream;
         expect(outcome.reminders.length, 2);
       },
     );
@@ -166,7 +166,7 @@ void main() {
           snoozeUntil: snoozeTime,
         );
 
-        expect(result, isA<RescheduleSnooze>());
+        expect(result.outcome, isA<RescheduleSnooze>());
       },
     );
 
@@ -193,8 +193,8 @@ void main() {
           state: ConfirmationState.snoozed,
         );
 
-        expect(result, isA<AutoSkipped>());
-        final outcome = result as AutoSkipped;
+        expect(result.outcome, isA<AutoSkipped>());
+        final outcome = result.outcome as AutoSkipped;
         expect(
           outcome.reason,
           contains('3 snooze attempts'),
@@ -229,8 +229,8 @@ void main() {
           state: ConfirmationState.done,
         );
 
-        expect(result, isA<ConfirmationFailed>());
-        final outcome = result as ConfirmationFailed;
+        expect(result.outcome, isA<ConfirmationFailed>());
+        final outcome = result.outcome as ConfirmationFailed;
         expect(outcome.error, isA<NodeNotFound>());
       },
     );

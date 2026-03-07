@@ -70,6 +70,25 @@ final class ConfirmationFailed extends ConfirmationOutcome {
   final ChainError error;
 }
 
+/// Pairs a [ConfirmationOutcome] with the database ID of the
+/// confirmation record that was created.
+///
+/// Used by the undo flow to delete the record and reverse
+/// side effects.
+class ConfirmationResult {
+  /// Creates a [ConfirmationResult].
+  const ConfirmationResult({
+    required this.confirmationId,
+    required this.outcome,
+  });
+
+  /// Auto-generated database ID of the confirmation record.
+  final int confirmationId;
+
+  /// The outcome describing what side effects to apply.
+  final ConfirmationOutcome outcome;
+}
+
 /// Orchestrates the full confirmation flow:
 /// snooze limit check → record → chain evaluation → outcome.
 ///
@@ -106,8 +125,8 @@ class ConfirmationService {
   ///    - If exhausted: auto-transition to SKIPPED
   /// 2. Record confirmation in database
   /// 3. Evaluate chain engine for downstream effects
-  /// 4. Return [ConfirmationOutcome]
-  Future<ConfirmationOutcome> confirm({
+  /// 4. Return [ConfirmationResult] wrapping outcome + ID
+  Future<ConfirmationResult> confirm({
     required int reminderId,
     required int chainId,
     required ConfirmationState state,
@@ -135,7 +154,7 @@ class ConfirmationService {
 
     // Step 2: Record confirmation.
     final now = DateTime.now().toUtc();
-    await confirmationRepository.createConfirmation(
+    final confirmationId = await confirmationRepository.createConfirmation(
       reminderId: reminderId,
       state: effectiveState,
       confirmedAt: now,
@@ -155,8 +174,8 @@ class ConfirmationService {
       state: effectiveState,
     );
 
-    // Step 4: Return outcome.
-    return evalResult.fold(
+    // Step 4: Return outcome with confirmation ID.
+    final outcome = evalResult.fold(
       (error) => ConfirmationFailed(error: error),
       (affectedReminders) {
         if (autoSkipReason != null) {
@@ -179,6 +198,11 @@ class ConfirmationService {
           ),
         };
       },
+    );
+
+    return ConfirmationResult(
+      confirmationId: confirmationId,
+      outcome: outcome,
     );
   }
 }

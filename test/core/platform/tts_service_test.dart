@@ -3,6 +3,8 @@ import 'package:memo_care/core/platform/tts_service.dart';
 import 'package:memo_care/features/reminders/domain/models/medicine_type.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('buildReminderTtsText', () {
     test('includes medicine name, dosage, and context', () {
       final text = buildReminderTtsText(

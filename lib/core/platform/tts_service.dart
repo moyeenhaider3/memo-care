@@ -94,10 +94,7 @@ String buildReminderTtsText({
   required String? dosage,
   required String contextPhrase,
 }) {
-  final doseSegment =
-      (dosage != null && dosage.isNotEmpty)
-          ? ', $dosage'
-          : '';
+  final doseSegment = (dosage != null && dosage.isNotEmpty) ? ', $dosage' : '';
   return 'Time to take $medicineName$doseSegment'
       ', $contextPhrase';
 }

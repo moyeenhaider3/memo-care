@@ -42,4 +42,11 @@ class ConfirmationDao extends DatabaseAccessor<AppDatabase>
     final result = await query.getSingle();
     return result.read(countExp) ?? 0;
   }
+
+  /// Delete a single confirmation by [id].
+  ///
+  /// Returns the number of deleted rows (0 or 1).
+  Future<int> deleteConfirmation(int id) {
+    return (delete(confirmations)..where((c) => c.id.equals(id))).go();
+  }
 }

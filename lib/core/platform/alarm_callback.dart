@@ -96,8 +96,10 @@ Future<void> alarmFiredCallback(int reminderId) async {
     } on Exception catch (e) {
       // TTS failure is non-fatal — notification already
       // displayed.
-      debugPrint('TTS speak failed in alarm callback: '
-          '$e');
+      debugPrint(
+        'TTS speak failed in alarm callback: '
+        '$e',
+      );
     }
   } finally {
     await db.close();

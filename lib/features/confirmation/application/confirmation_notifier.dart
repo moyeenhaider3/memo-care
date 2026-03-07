@@ -11,6 +11,7 @@ import 'package:memo_care/features/chain_engine/application/chain_notifier.dart'
 import 'package:memo_care/features/confirmation/application/providers.dart';
 import 'package:memo_care/features/confirmation/domain/confirmation_service.dart';
 import 'package:memo_care/features/confirmation/domain/models/confirmation_state.dart';
+import 'package:memo_care/features/confirmation/domain/models/undoable_confirmation.dart';
 import 'package:memo_care/features/reminders/application/providers.dart';
 import 'package:memo_care/features/reminders/data/reminder_repository.dart';
 import 'package:memo_care/features/reminders/domain/models/reminder.dart';
@@ -32,12 +33,17 @@ class ConfirmationNotifier extends AsyncNotifier<void> {
 
   /// Confirms a reminder with the given [confirmState].
   ///
+  /// Returns an [UndoableConfirmation] if the action succeeded
+  /// (null on failure), enabling the caller to show an undo bar.
+  ///
+  /// [medicineName] is used for the undo bar display text.
   /// [snoozeUntil] is required when [confirmState] is
   /// [ConfirmationState.snoozed].
-  Future<void> confirm({
+  Future<UndoableConfirmation?> confirm({
     required int reminderId,
     required int chainId,
     required ConfirmationState confirmState,
+    required String medicineName,
     DateTime? snoozeUntil,
   }) async {
     state = const AsyncLoading<void>();
@@ -47,12 +53,14 @@ class ConfirmationNotifier extends AsyncNotifier<void> {
       final scheduler = ref.read(alarmSchedulerProvider);
       final reminderRepo = ref.read(reminderRepositoryProvider);
 
-      final outcome = await service.confirm(
+      final result = await service.confirm(
         reminderId: reminderId,
         chainId: chainId,
         state: confirmState,
         snoozeUntil: snoozeUntil,
       );
+
+      final outcome = result.outcome;
 
       switch (outcome) {
         case ActivateDownstream(:final reminders):
@@ -84,14 +92,24 @@ class ConfirmationNotifier extends AsyncNotifier<void> {
 
         case ConfirmationFailed(:final error):
           state = AsyncError<void>(error, StackTrace.current);
-          return;
+          return null;
       }
 
       // Refresh chain state for watchers.
       ref.invalidate(chainNotifierProvider(chainId));
       state = const AsyncData<void>(null);
+
+      return UndoableConfirmation(
+        confirmationId: result.confirmationId,
+        reminderId: reminderId,
+        chainId: chainId,
+        medicineName: medicineName,
+        confirmState: confirmState,
+        outcome: outcome,
+      );
     } on Exception catch (e, st) {
       state = AsyncError<void>(e, st);
+      return null;
     }
   }
 

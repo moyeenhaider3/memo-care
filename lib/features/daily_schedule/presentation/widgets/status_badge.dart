@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:memo_care/features/confirmation/domain/models/confirmation_state.dart';
 
 /// Status indicator chip for a reminder (VIEW-01).

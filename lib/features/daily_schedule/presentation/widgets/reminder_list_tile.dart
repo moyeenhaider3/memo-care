@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-
 import 'package:memo_care/features/confirmation/domain/models/confirmation_state.dart';
 import 'package:memo_care/features/daily_schedule/presentation/widgets/status_badge.dart';
 import 'package:memo_care/features/reminders/domain/models/reminder.dart';
@@ -37,7 +36,8 @@ class ReminderListTile extends StatelessWidget {
     final isMissed = _isMissed;
 
     return Semantics(
-      label: '${reminder.medicineName}, '
+      label:
+          '${reminder.medicineName}, '
           '${reminder.dosage ?? "no dosage"}, '
           'scheduled at $timeText, '
           'status: $_statusLabel',
@@ -88,10 +88,8 @@ class ReminderListTile extends StatelessWidget {
                       if (reminder.dosage != null)
                         Text(
                           reminder.dosage!,
-                          style:
-                              theme.textTheme.bodyMedium?.copyWith(
-                            color:
-                                theme.colorScheme.onSurfaceVariant,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
                     ],

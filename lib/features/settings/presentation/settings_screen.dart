@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:memo_care/features/settings/application/settings_providers.dart';
 import 'package:memo_care/features/settings/domain/models/app_settings.dart';
 
@@ -26,8 +25,7 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settingsAsync =
-        ref.watch(appSettingsProvider);
+    final settingsAsync = ref.watch(appSettingsProvider);
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -50,8 +48,7 @@ class SettingsScreen extends ConsumerWidget {
             style: theme.textTheme.bodyLarge,
           ),
         ),
-        data: (settings) =>
-            _SettingsBody(settings: settings),
+        data: (settings) => _SettingsBody(settings: settings),
       ),
     );
   }
@@ -63,13 +60,11 @@ class _SettingsBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final repo =
-        ref.read(settingsRepositoryProvider);
+    final repo = ref.read(settingsRepositoryProvider);
     final theme = Theme.of(context);
 
     return ListView(
-      padding:
-          const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.symmetric(vertical: 16),
       children: [
         // ─── NOTIFICATION PREFERENCES ───
         const _SectionHeader(
@@ -90,8 +85,7 @@ class _SettingsBody extends ConsumerWidget {
         ),
         _SettingsSwitch(
           title: 'Sound',
-          subtitle:
-              'Play alarm sound for reminders',
+          subtitle: 'Play alarm sound for reminders',
           value: settings.soundEnabled,
           onChanged: (v) => unawaited(
             repo.setSoundEnabled(enabled: v),
@@ -101,8 +95,7 @@ class _SettingsBody extends ConsumerWidget {
         ),
         _SettingsSwitch(
           title: 'Vibration',
-          subtitle:
-              'Vibrate on reminder notifications',
+          subtitle: 'Vibrate on reminder notifications',
           value: settings.vibrationEnabled,
           onChanged: (v) => unawaited(
             repo.setVibrationEnabled(enabled: v),
@@ -122,10 +115,8 @@ class _SettingsBody extends ConsumerWidget {
 
         _SettingsSlider(
           title: 'Snooze Duration',
-          subtitle:
-              '${settings.snoozeDurationMinutes} minutes',
-          value:
-              settings.snoozeDurationMinutes.toDouble(),
+          subtitle: '${settings.snoozeDurationMinutes} minutes',
+          value: settings.snoozeDurationMinutes.toDouble(),
           min: 1,
           max: 15,
           divisions: 14,
@@ -141,10 +132,8 @@ class _SettingsBody extends ConsumerWidget {
 
         _SettingsSlider(
           title: 'Silent → Audible Timeout',
-          subtitle:
-              '${settings.silentTimeoutMinutes} minutes',
-          value:
-              settings.silentTimeoutMinutes.toDouble(),
+          subtitle: '${settings.silentTimeoutMinutes} minutes',
+          value: settings.silentTimeoutMinutes.toDouble(),
           min: 1,
           max: 10,
           divisions: 9,
@@ -162,10 +151,8 @@ class _SettingsBody extends ConsumerWidget {
 
         _SettingsSlider(
           title: 'Audible → Full-Screen Timeout',
-          subtitle:
-              '${settings.audibleTimeoutMinutes} minutes',
-          value:
-              settings.audibleTimeoutMinutes.toDouble(),
+          subtitle: '${settings.audibleTimeoutMinutes} minutes',
+          value: settings.audibleTimeoutMinutes.toDouble(),
           min: 1,
           max: 10,
           divisions: 9,
@@ -188,8 +175,7 @@ class _SettingsBody extends ConsumerWidget {
           child: Text(
             'MemoCare v1.0',
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant
-                  .withValues(alpha: 0.6),
+              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
             ),
           ),
         ),
@@ -211,8 +197,7 @@ class _SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Padding(
-      padding:
-          const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Semantics(
         header: true,
         child: Text(
@@ -260,8 +245,7 @@ class _SettingsSwitch extends StatelessWidget {
         subtitle: Text(subtitle),
         value: value,
         onChanged: onChanged,
-        contentPadding:
-            const EdgeInsets.symmetric(
+        contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 4,
         ),
@@ -301,24 +285,20 @@ class _SettingsSlider extends StatelessWidget {
         vertical: 8,
       ),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 title,
-                style: theme.textTheme.bodyLarge
-                    ?.copyWith(
+                style: theme.textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
               ),
               Text(
                 subtitle,
-                style: theme.textTheme.bodyLarge
-                    ?.copyWith(
+                style: theme.textTheme.bodyLarge?.copyWith(
                   color: theme.colorScheme.primary,
                   fontWeight: FontWeight.w700,
                 ),
@@ -331,8 +311,7 @@ class _SettingsSlider extends StatelessWidget {
             slider: true,
             child: SliderTheme(
               data: SliderTheme.of(context).copyWith(
-                thumbShape:
-                    const RoundSliderThumbShape(
+                thumbShape: const RoundSliderThumbShape(
                   enabledThumbRadius: 12,
                 ),
                 trackHeight: 6,

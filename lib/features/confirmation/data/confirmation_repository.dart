@@ -52,6 +52,14 @@ class ConfirmationRepository {
     return _dao.countSnoozes(reminderId);
   }
 
+  /// Delete a confirmation by [id].
+  ///
+  /// Used by the undo flow to revert a confirmation action.
+  /// Returns the number of deleted rows (0 or 1).
+  Future<int> deleteConfirmation(int id) {
+    return _dao.deleteConfirmation(id);
+  }
+
   // --------------- Mapping ---------------
 
   Confirmation _fromRow(ConfirmationRow row) => Confirmation(

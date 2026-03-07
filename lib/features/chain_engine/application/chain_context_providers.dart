@@ -16,8 +16,7 @@ import 'package:memo_care/features/reminders/domain/models/medicine_type.dart';
 /// `FutureProvider.family` because chain structure changes
 /// infrequently — only on chain mutation.
 // ignore: specify_nonobvious_property_types
-final chainContextProvider =
-    FutureProvider.family<ChainContext, int>((
+final chainContextProvider = FutureProvider.family<ChainContext, int>((
   ref,
   reminderId,
 ) async {
@@ -25,22 +24,19 @@ final chainContextProvider =
   final chainRepo = ref.watch(chainRepositoryProvider);
 
   // 1. Load current reminder row for chainId.
-  final row =
-      await reminderDao.getReminderById(reminderId);
+  final row = await reminderDao.getReminderById(reminderId);
   if (row == null) {
     throw Exception('Reminder $reminderId not found');
   }
   final chainId = row.chainId;
 
   // 2. Load chain name (stream → first event).
-  final chain =
-      await chainRepo.watchChainById(chainId).first;
+  final chain = await chainRepo.watchChainById(chainId).first;
   final chainName = chain?.name ?? 'Unknown Chain';
 
   // 3. Fetch all edges & reminders for this chain.
   final edges = await chainRepo.getEdges(chainId);
-  final allReminders =
-      await chainRepo.getReminders(chainId);
+  final allReminders = await chainRepo.getReminders(chainId);
 
   // Build a quick lookup map keyed by reminder ID.
   final reminderMap = <int, Reminder>{
@@ -48,13 +44,13 @@ final chainContextProvider =
   };
 
   // The current reminder as a domain model.
-  final current = reminderMap[reminderId] ??
+  final current =
+      reminderMap[reminderId] ??
       Reminder(
         id: row.id,
         chainId: row.chainId,
         medicineName: row.medicineName,
-        medicineType:
-            MedicineType.fromDbString(row.medicineType),
+        medicineType: MedicineType.fromDbString(row.medicineType),
         dosage: row.dosage,
         scheduledAt: row.scheduledAt,
         isActive: row.isActive,

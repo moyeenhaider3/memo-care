@@ -28,8 +28,7 @@ class ChainContextScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final contextAsync =
-        ref.watch(chainContextProvider(reminderId));
+    final contextAsync = ref.watch(chainContextProvider(reminderId));
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -135,8 +134,7 @@ class _ChainContextBody extends StatelessWidget {
             ),
 
           // ── Connector ──
-          if (chainCtx.upstreamReminders.isNotEmpty)
-            const _Connector(),
+          if (chainCtx.upstreamReminders.isNotEmpty) const _Connector(),
 
           // ── CURRENT ──
           _sectionHeader(
@@ -152,8 +150,7 @@ class _ChainContextBody extends StatelessWidget {
           ),
 
           // ── Connector ──
-          if (chainCtx.downstreamReminders.isNotEmpty)
-            const _Connector(),
+          if (chainCtx.downstreamReminders.isNotEmpty) const _Connector(),
 
           // ── DOWNSTREAM ──
           _sectionHeader(theme, 'TRIGGERS NEXT'),
@@ -180,9 +177,9 @@ class _ChainContextBody extends StatelessWidget {
             child: Text(
               'Part of ${chainCtx.chainName}',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme
-                    .colorScheme.onSurfaceVariant
-                    .withValues(alpha: 0.6),
+                color: theme.colorScheme.onSurfaceVariant.withValues(
+                  alpha: 0.6,
+                ),
               ),
             ),
           ),
@@ -249,8 +246,7 @@ class _ChainNode extends StatelessWidget {
     final theme = Theme.of(context);
     final timeFormat = DateFormat.jm();
     final timeText = reminder.scheduledAt != null
-        ? timeFormat
-            .format(reminder.scheduledAt!.toLocal())
+        ? timeFormat.format(reminder.scheduledAt!.toLocal())
         : '--:--';
 
     final semanticsLabel =
@@ -266,20 +262,18 @@ class _ChainNode extends StatelessWidget {
         onTap: isCurrent
             ? null
             : () => unawaited(
-                  context.push(
-                    '/reminder/${reminder.id}/chain',
-                  ),
+                context.push(
+                  '/reminder/${reminder.id}/chain',
                 ),
+              ),
         child: Container(
           margin: const EdgeInsets.only(bottom: 8),
           padding: const EdgeInsets.all(16),
-          constraints:
-              const BoxConstraints(minHeight: 56),
+          constraints: const BoxConstraints(minHeight: 56),
           decoration: BoxDecoration(
             color: isCurrent
                 ? theme.colorScheme.primaryContainer
-                : theme
-                    .colorScheme.surfaceContainerHighest,
+                : theme.colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(12),
             border: isCurrent
                 ? Border.all(
@@ -306,36 +300,30 @@ class _ChainNode extends StatelessWidget {
               // Medicine info
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       reminder.medicineName,
-                      style: theme.textTheme.bodyLarge
-                          ?.copyWith(
+                      style: theme.textTheme.bodyLarge?.copyWith(
                         fontWeight: isCurrent
                             ? FontWeight.bold
                             : FontWeight.w600,
                         color: isCurrent
-                            ? theme.colorScheme
-                                .onPrimaryContainer
+                            ? theme.colorScheme.onPrimaryContainer
                             : null,
                       ),
                     ),
                     Text(
                       [
-                        if (reminder.dosage != null)
-                          reminder.dosage!,
+                        if (reminder.dosage != null) reminder.dosage!,
                         timeText,
                       ].join(' · '),
-                      style: theme.textTheme.bodyMedium
-                          ?.copyWith(
+                      style: theme.textTheme.bodyMedium?.copyWith(
                         color: isCurrent
-                            ? theme.colorScheme
-                                .onPrimaryContainer
-                                .withValues(alpha: 0.8)
-                            : theme.colorScheme
-                                .onSurfaceVariant,
+                            ? theme.colorScheme.onPrimaryContainer.withValues(
+                                alpha: 0.8,
+                              )
+                            : theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -353,8 +341,7 @@ class _ChainNode extends StatelessWidget {
                 const SizedBox(width: 8),
                 Icon(
                   Icons.chevron_right,
-                  color:
-                      theme.colorScheme.onSurfaceVariant,
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
               ],
             ],
@@ -379,14 +366,12 @@ class _Connector extends StatelessWidget {
           Container(
             width: 2,
             height: 24,
-            color: theme.colorScheme.outline
-                .withValues(alpha: 0.4),
+            color: theme.colorScheme.outline.withValues(alpha: 0.4),
           ),
           Icon(
             Icons.arrow_drop_down,
             size: 20,
-            color: theme.colorScheme.outline
-                .withValues(alpha: 0.6),
+            color: theme.colorScheme.outline.withValues(alpha: 0.6),
           ),
         ],
       ),

@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:memo_care/features/history/application/history_notifier.dart';
 import 'package:memo_care/features/history/presentation/widgets/history_card.dart';
 import 'package:memo_care/features/history/presentation/widgets/medication_filter_bar.dart';
@@ -17,12 +16,10 @@ class HistoryScreen extends ConsumerStatefulWidget {
   const HistoryScreen({super.key});
 
   @override
-  ConsumerState<HistoryScreen> createState() =>
-      _HistoryScreenState();
+  ConsumerState<HistoryScreen> createState() => _HistoryScreenState();
 }
 
-class _HistoryScreenState
-    extends ConsumerState<HistoryScreen> {
+class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   final _scrollController = ScrollController();
 
   @override
@@ -41,20 +38,16 @@ class _HistoryScreenState
 
   void _onScroll() {
     if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent -
-            200) {
+        _scrollController.position.maxScrollExtent - 200) {
       unawaited(
-        ref
-            .read(historyNotifierProvider.notifier)
-            .loadNextPage(),
+        ref.read(historyNotifierProvider.notifier).loadNextPage(),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final historyAsync =
-        ref.watch(historyNotifierProvider);
+    final historyAsync = ref.watch(historyNotifierProvider);
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -97,15 +90,13 @@ class _HistoryScreenState
             // Filter bar
             if (state.availableFilters.isNotEmpty)
               MedicationFilterBar(
-                availableFilters:
-                    state.availableFilters,
+                availableFilters: state.availableFilters,
                 activeFilter: state.activeFilter,
                 onFilterChanged: (filter) {
                   unawaited(
                     ref
                         .read(
-                          historyNotifierProvider
-                              .notifier,
+                          historyNotifierProvider.notifier,
                         )
                         .setFilter(filter),
                   );
@@ -117,37 +108,29 @@ class _HistoryScreenState
               child: state.items.isEmpty
                   ? Center(
                       child: Padding(
-                        padding:
-                            const EdgeInsets.all(32),
+                        padding: const EdgeInsets.all(32),
                         child: Column(
-                          mainAxisSize:
-                              MainAxisSize.min,
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
                               Icons.history,
                               size: 64,
-                              color: theme.colorScheme
-                                  .onSurfaceVariant
+                              color: theme.colorScheme.onSurfaceVariant
                                   .withValues(
-                                alpha: 0.4,
-                              ),
+                                    alpha: 0.4,
+                                  ),
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              state.activeFilter !=
-                                      null
+                              state.activeFilter != null
                                   ? 'No history for '
-                                      '"${state.activeFilter}"'
+                                        '"${state.activeFilter}"'
                                   : 'No medication '
-                                      'history yet',
-                              style: theme
-                                  .textTheme.bodyLarge
-                                  ?.copyWith(
-                                color: theme.colorScheme
-                                    .onSurfaceVariant,
+                                        'history yet',
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
                               ),
-                              textAlign:
-                                  TextAlign.center,
+                              textAlign: TextAlign.center,
                             ),
                           ],
                         ),
@@ -156,39 +139,28 @@ class _HistoryScreenState
                   : RefreshIndicator(
                       onRefresh: () => ref
                           .read(
-                            historyNotifierProvider
-                                .notifier,
+                            historyNotifierProvider.notifier,
                           )
                           .refresh(),
                       child: ListView.builder(
-                        controller:
-                            _scrollController,
-                        padding:
-                            const EdgeInsets.only(
+                        controller: _scrollController,
+                        padding: const EdgeInsets.only(
                           top: 8,
                           bottom: 80,
                         ),
                         itemCount:
-                            state.items.length +
-                                (state.isLoadingMore
-                                    ? 1
-                                    : 0),
-                        itemBuilder:
-                            (context, index) {
-                          if (index >=
-                              state.items.length) {
+                            state.items.length + (state.isLoadingMore ? 1 : 0),
+                        itemBuilder: (context, index) {
+                          if (index >= state.items.length) {
                             return const Padding(
-                              padding:
-                                  EdgeInsets.all(24),
+                              padding: EdgeInsets.all(24),
                               child: Center(
-                                child:
-                                    CircularProgressIndicator(),
+                                child: CircularProgressIndicator(),
                               ),
                             );
                           }
                           return HistoryCard(
-                            entry:
-                                state.items[index],
+                            entry: state.items[index],
                           );
                         },
                       ),

@@ -43,10 +43,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: AppRoutes.home,
     redirect: (context, state) {
-      final onboardingState =
-          ref.read(onboardingNotifierProvider);
-      final isOnboarding =
-          state.uri.path.startsWith(AppRoutes.onboarding);
+      final onboardingState = ref.read(onboardingNotifierProvider);
+      final isOnboarding = state.uri.path.startsWith(AppRoutes.onboarding);
       final isComplete = onboardingState.isComplete;
 
       if (isComplete && isOnboarding) {
@@ -71,8 +69,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutes.home,
                 name: 'home',
-                builder: (context, state) =>
-                    const HomeScreen(),
+                builder: (context, state) => const HomeScreen(),
               ),
             ],
           ),
@@ -81,8 +78,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutes.history,
                 name: 'history',
-                builder: (context, state) =>
-                    const HistoryScreen(),
+                builder: (context, state) => const HistoryScreen(),
               ),
             ],
           ),
@@ -91,8 +87,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutes.settings,
                 name: 'settings',
-                builder: (context, state) =>
-                    const SettingsScreen(),
+                builder: (context, state) => const SettingsScreen(),
               ),
             ],
           ),
@@ -115,42 +110,31 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
       // --- Onboarding flow ---
       ShellRoute(
-        builder: (context, state, child) =>
-            OnboardingFlow(child: child),
+        builder: (context, state, child) => OnboardingFlow(child: child),
         routes: [
           GoRoute(
-            path:
-                '${AppRoutes.onboarding}/${AppRoutes.condition}',
-            builder: (context, state) =>
-                const ConditionStep(),
+            path: '${AppRoutes.onboarding}/${AppRoutes.condition}',
+            builder: (context, state) => const ConditionStep(),
           ),
           GoRoute(
-            path:
-                '${AppRoutes.onboarding}/${AppRoutes.template}',
-            builder: (context, state) =>
-                const TemplatePickerScreen(),
+            path: '${AppRoutes.onboarding}/${AppRoutes.template}',
+            builder: (context, state) => const TemplatePickerScreen(),
           ),
           GoRoute(
-            path:
-                '${AppRoutes.onboarding}/${AppRoutes.anchors}',
+            path: '${AppRoutes.onboarding}/${AppRoutes.anchors}',
             builder: (context, state) => const AnchorStep(),
           ),
           GoRoute(
-            path:
-                '${AppRoutes.onboarding}/${AppRoutes.medicines}',
-            builder: (context, state) =>
-                const MedicineStep(),
+            path: '${AppRoutes.onboarding}/${AppRoutes.medicines}',
+            builder: (context, state) => const MedicineStep(),
           ),
           GoRoute(
-            path:
-                '${AppRoutes.onboarding}/${AppRoutes.review}',
+            path: '${AppRoutes.onboarding}/${AppRoutes.review}',
             builder: (context, state) => const ReviewStep(),
           ),
           GoRoute(
-            path:
-                '${AppRoutes.onboarding}/${AppRoutes.permissions}',
-            builder: (context, state) =>
-                const PermissionStep(),
+            path: '${AppRoutes.onboarding}/${AppRoutes.permissions}',
+            builder: (context, state) => const PermissionStep(),
           ),
         ],
       ),

@@ -2,6 +2,7 @@
 // ignore_for_file: specify_nonobvious_property_types
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memo_care/core/providers/alarm_providers.dart';
 import 'package:memo_care/core/providers/database_provider.dart';
 import 'package:memo_care/features/chain_engine/application/providers.dart';
 import 'package:memo_care/features/confirmation/data/confirmation_dao.dart';
@@ -9,6 +10,9 @@ import 'package:memo_care/features/confirmation/data/confirmation_repository.dar
 import 'package:memo_care/features/confirmation/domain/confirmation_service.dart';
 import 'package:memo_care/features/confirmation/domain/models/confirmation.dart';
 import 'package:memo_care/features/confirmation/domain/snooze_limiter.dart';
+import 'package:memo_care/features/confirmation/domain/undo_confirmation_service.dart';
+import 'package:memo_care/features/reminders/application/providers.dart'
+    as reminder_providers;
 
 /// Provides the [ConfirmationDao] from the database singleton.
 final confirmationDaoProvider = Provider<ConfirmationDao>((ref) {
@@ -45,3 +49,17 @@ final latestConfirmationProvider = StreamProvider.autoDispose
     .family<Confirmation?, int>((ref, reminderId) {
       return ref.watch(confirmationRepositoryProvider).watchLatest(reminderId);
     });
+
+/// Provides the [UndoConfirmationService] for reversing
+/// confirmation actions (A11Y-07).
+final undoConfirmationServiceProvider = Provider<UndoConfirmationService>((
+  ref,
+) {
+  return UndoConfirmationService(
+    confirmationRepository: ref.watch(confirmationRepositoryProvider),
+    reminderRepository: ref.watch(
+      reminder_providers.reminderRepositoryProvider,
+    ),
+    alarmScheduler: ref.watch(alarmSchedulerProvider),
+  );
+});

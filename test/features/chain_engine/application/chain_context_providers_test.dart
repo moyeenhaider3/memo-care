@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memo_care/features/chain_engine/domain/models/chain_context.dart';
 import 'package:memo_care/features/reminders/domain/models/medicine_type.dart';
-import 'package:memo_care/features/reminders/domain/models/reminder.dart';
 
 /// Creates a test reminder with minimal required fields.
 Reminder _reminder(int id, {int chainId = 1}) => Reminder(

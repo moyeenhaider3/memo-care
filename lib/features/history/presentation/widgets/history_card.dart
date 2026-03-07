@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
 import 'package:memo_care/features/confirmation/domain/models/confirmation_state.dart';
 import 'package:memo_care/features/history/domain/models/history_entry.dart';
 
@@ -24,17 +23,16 @@ class HistoryCard extends StatelessWidget {
     final dateFormat = DateFormat.yMMMd(); // "Mar 7, 2026"
     final timeFormat = DateFormat.jm(); // "1:30 PM"
 
-    final dateText =
-        dateFormat.format(entry.scheduledAt.toLocal());
-    final timeText =
-        timeFormat.format(entry.scheduledAt.toLocal());
+    final dateText = dateFormat.format(entry.scheduledAt.toLocal());
+    final timeText = timeFormat.format(entry.scheduledAt.toLocal());
     final confirmedText = entry.confirmedAt != null
         ? 'at ${timeFormat.format(entry.confirmedAt!.toLocal())}'
         : '';
     final statusLabel = entry.statusLabel;
 
     return Semantics(
-      label: '${entry.medicineName}, '
+      label:
+          '${entry.medicineName}, '
           '${entry.dosage ?? ""}, '
           '$dateText at $timeText, '
           'status: $statusLabel'
@@ -47,22 +45,18 @@ class HistoryCard extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: ConstrainedBox(
-            constraints:
-                const BoxConstraints(minHeight: 56),
+            constraints: const BoxConstraints(minHeight: 56),
             child: Row(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Medicine info
                 Expanded(
                   child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         entry.medicineName,
-                        style: theme.textTheme.bodyLarge
-                            ?.copyWith(
+                        style: theme.textTheme.bodyLarge?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -70,21 +64,16 @@ class HistoryCard extends StatelessWidget {
                       Text(
                         '$dateText · $timeText'
                         '${entry.dosage != null ? " · ${entry.dosage}" : ""}',
-                        style: theme.textTheme.bodyMedium
-                            ?.copyWith(
-                          color: theme.colorScheme
-                              .onSurfaceVariant,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
-                      if (confirmedText
-                          .isNotEmpty) ...[
+                      if (confirmedText.isNotEmpty) ...[
                         const SizedBox(height: 2),
                         Text(
                           'Confirmed $confirmedText',
-                          style: theme.textTheme.bodySmall
-                              ?.copyWith(
-                            color: theme.colorScheme
-                                .onSurfaceVariant,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -119,21 +108,21 @@ class _StatusChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final (color, icon) = switch (status) {
       ConfirmationState.done => (
-          Colors.green.shade700,
-          Icons.check_circle,
-        ),
+        Colors.green.shade700,
+        Icons.check_circle,
+      ),
       ConfirmationState.skipped => (
-          Colors.grey.shade600,
-          Icons.cancel,
-        ),
+        Colors.grey.shade600,
+        Icons.cancel,
+      ),
       ConfirmationState.snoozed => (
-          Colors.orange.shade700,
-          Icons.snooze,
-        ),
+        Colors.orange.shade700,
+        Icons.snooze,
+      ),
       null => (
-          Colors.red.shade700,
-          Icons.warning_amber,
-        ),
+        Colors.red.shade700,
+        Icons.warning_amber,
+      ),
     };
 
     return Container(

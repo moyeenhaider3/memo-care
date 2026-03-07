@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-
 import 'package:memo_care/features/confirmation/application/confirmation_notifier.dart';
 import 'package:memo_care/features/confirmation/domain/models/confirmation_state.dart';
 import 'package:memo_care/features/daily_schedule/application/daily_schedule_providers.dart';
@@ -29,8 +28,7 @@ class MissedRemindersSheet extends ConsumerStatefulWidget {
       _MissedRemindersSheetState();
 }
 
-class _MissedRemindersSheetState
-    extends ConsumerState<MissedRemindersSheet> {
+class _MissedRemindersSheetState extends ConsumerState<MissedRemindersSheet> {
   final Set<int> _resolvedIds = {};
 
   void _markDone(Reminder reminder) {
@@ -41,6 +39,7 @@ class _MissedRemindersSheetState
             reminderId: reminder.id,
             chainId: reminder.chainId,
             confirmState: ConfirmationState.done,
+            medicineName: reminder.medicineName,
           ),
     );
     setState(() => _resolvedIds.add(reminder.id));
@@ -55,6 +54,7 @@ class _MissedRemindersSheetState
             reminderId: reminder.id,
             chainId: reminder.chainId,
             confirmState: ConfirmationState.skipped,
+            medicineName: reminder.medicineName,
           ),
     );
     setState(() => _resolvedIds.add(reminder.id));
@@ -95,8 +95,7 @@ class _MissedRemindersSheetState
 
     return SafeArea(
       child: Padding(
-        padding:
-            const EdgeInsets.fromLTRB(16, 12, 16, 16),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -108,8 +107,7 @@ class _MissedRemindersSheetState
                 height: 4,
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.outline
-                      .withValues(alpha: 0.4),
+                  color: theme.colorScheme.outline.withValues(alpha: 0.4),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -130,8 +128,7 @@ class _MissedRemindersSheetState
                     child: Text(
                       'You have ${unresolved.length} missed '
                       'reminder${unresolved.length == 1 ? "" : "s"}',
-                      style: theme.textTheme.headlineSmall
-                          ?.copyWith(
+                      style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -148,13 +145,11 @@ class _MissedRemindersSheetState
                 itemCount: unresolved.length,
                 itemBuilder: (context, index) {
                   final reminder = unresolved[index];
-                  final timeText =
-                      reminder.scheduledAt != null
-                          ? timeFormat.format(
-                              reminder.scheduledAt!
-                                  .toLocal(),
-                            )
-                          : '--:--';
+                  final timeText = reminder.scheduledAt != null
+                      ? timeFormat.format(
+                          reminder.scheduledAt!.toLocal(),
+                        )
+                      : '--:--';
 
                   return Semantics(
                     label:
@@ -170,28 +165,19 @@ class _MissedRemindersSheetState
                           // Name + time
                           Expanded(
                             child: Column(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   reminder.medicineName,
-                                  style: theme
-                                      .textTheme.bodyLarge
-                                      ?.copyWith(
-                                    fontWeight:
-                                        FontWeight.w600,
+                                  style: theme.textTheme.bodyLarge?.copyWith(
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                                 Text(
                                   '$timeText'
-                                  '${reminder.dosage != null
-                                      ? " · ${reminder.dosage}"
-                                      : ""}',
-                                  style: theme
-                                      .textTheme.bodyMedium
-                                      ?.copyWith(
-                                    color: theme.colorScheme
-                                        .onSurfaceVariant,
+                                  '${reminder.dosage != null ? " · ${reminder.dosage}" : ""}',
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                               ],
@@ -202,16 +188,11 @@ class _MissedRemindersSheetState
                           SizedBox(
                             height: 44,
                             child: FilledButton(
-                              onPressed: () =>
-                                  _markDone(reminder),
-                              style:
-                                  FilledButton.styleFrom(
-                                backgroundColor:
-                                    Colors.green.shade700,
-                                foregroundColor:
-                                    Colors.white,
-                                padding: const EdgeInsets
-                                    .symmetric(
+                              onPressed: () => _markDone(reminder),
+                              style: FilledButton.styleFrom(
+                                backgroundColor: Colors.green.shade700,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
                                   horizontal: 16,
                                 ),
                               ),
@@ -229,18 +210,13 @@ class _MissedRemindersSheetState
                           SizedBox(
                             height: 44,
                             child: OutlinedButton(
-                              onPressed: () =>
-                                  _markSkip(reminder),
-                              style:
-                                  OutlinedButton.styleFrom(
-                                foregroundColor:
-                                    Colors.red.shade700,
+                              onPressed: () => _markSkip(reminder),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: Colors.red.shade700,
                                 side: BorderSide(
-                                  color:
-                                      Colors.red.shade700,
+                                  color: Colors.red.shade700,
                                 ),
-                                padding: const EdgeInsets
-                                    .symmetric(
+                                padding: const EdgeInsets.symmetric(
                                   horizontal: 16,
                                 ),
                               ),
@@ -268,13 +244,11 @@ class _MissedRemindersSheetState
                   child: SizedBox(
                     height: 56,
                     child: Semantics(
-                      label:
-                          'Mark all missed reminders as done',
+                      label: 'Mark all missed reminders as done',
                       button: true,
                       child: FilledButton.icon(
                         onPressed: unresolved.isNotEmpty
-                            ? () =>
-                                _markAllDone(unresolved)
+                            ? () => _markAllDone(unresolved)
                             : null,
                         icon: const Icon(
                           Icons.check_circle,
@@ -288,12 +262,10 @@ class _MissedRemindersSheetState
                           ),
                         ),
                         style: FilledButton.styleFrom(
-                          backgroundColor:
-                              Colors.green.shade700,
+                          backgroundColor: Colors.green.shade700,
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                       ),
@@ -323,15 +295,13 @@ class _MissedRemindersSheetState
                           ),
                         ),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor:
-                              Colors.red.shade700,
+                          foregroundColor: Colors.red.shade700,
                           side: BorderSide(
                             color: Colors.red.shade700,
                             width: 2,
                           ),
                           shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                       ),

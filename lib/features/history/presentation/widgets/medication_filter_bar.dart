@@ -49,12 +49,9 @@ class MedicationFilterBar extends StatelessWidget {
                   style: TextStyle(fontSize: 16),
                 ),
                 selected: activeFilter == null,
-                onSelected: (_) =>
-                    onFilterChanged(null),
-                selectedColor:
-                    theme.colorScheme.primaryContainer,
-                materialTapTargetSize:
-                    MaterialTapTargetSize.padded,
+                onSelected: (_) => onFilterChanged(null),
+                selectedColor: theme.colorScheme.primaryContainer,
+                materialTapTargetSize: MaterialTapTargetSize.padded,
               ),
             ),
           ),
@@ -75,10 +72,8 @@ class MedicationFilterBar extends StatelessWidget {
                   onSelected: (_) => onFilterChanged(
                     activeFilter == name ? null : name,
                   ),
-                  selectedColor:
-                      theme.colorScheme.primaryContainer,
-                  materialTapTargetSize:
-                      MaterialTapTargetSize.padded,
+                  selectedColor: theme.colorScheme.primaryContainer,
+                  materialTapTargetSize: MaterialTapTargetSize.padded,
                 ),
               ),
             ),
