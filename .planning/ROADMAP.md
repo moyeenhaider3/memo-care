@@ -46,7 +46,7 @@ MemoCare is built along its critical dependency path: data foundation → notifi
 4. Repository layer maps between Drift rows and domain models
 5. All times stored as UTC epoch millis (verified by unit test)
 6. Riverpod providers for database, DAOs, and repositories are wired and testable
-   **Plans**: TBD
+   **Plans**: 4 plans (02-01: Enums + Freezed Models, 02-02: DAOs + Database Update, 02-03: Repositories + Providers, 02-04: Unit Tests)
 
 ### Phase 03: Notification Engine + Alarm Scheduling
 
@@ -62,7 +62,7 @@ MemoCare is built along its critical dependency path: data foundation → notifi
 5. After `adb reboot`, pending alarms are rescheduled automatically
 6. Notification channel health check detects disabled channels and shows in-app banner
 7. Permission request flow works on Android 12, 13, 14, 15
-   **Plans**: TBD
+   **Plans**: 8 plans (03-01: EscalationFSM, 03-02: NotificationService + Channels, 03-03: Permission Flow, 03-04: AlarmScheduler + Actions, 03-05: Channel Health Check, 03-06: OEM Battery Guidance, 03-07: Boot + App-Update Receivers, 03-08: Full-Screen Alarm + Escalation Controller)
 
 ### Phase 04: Chain Engine + Confirmation
 
@@ -77,7 +77,7 @@ MemoCare is built along its critical dependency path: data foundation → notifi
 4. Chain engine runs successfully in background alarm callback isolate
 5. Snooze limit (3x) enforced — 4th snooze auto-transitions to SKIPPED
 6. Chain evaluation completes in < 50ms for chains with ≤ 10 nodes
-   **Plans**: TBD
+   **Plans**: 5 plans (04-01: ChainError + ChainEvalResult Types, 04-02: ChainValidator (TDD), 04-03: ChainEngine (TDD), 04-04: ConfirmationService + SnoozeLimiter, 04-05: ChainNotifier + ConfirmationNotifier)
 
 ### Phase 05: Anchor Resolution + Meal Timing
 
@@ -90,7 +90,7 @@ MemoCare is built along its critical dependency path: data foundation → notifi
 2. Confirming a meal recalculates all dependent reminder times and reschedules alarms
 3. Before-meal, after-meal, empty-stomach, fixed-time, and dose-gap types all compute correct fire times
 4. Changing an anchor time cascades to all dependent reminders in the chain
-   **Plans**: TBD
+   **Plans**: 3 plans (05-01: AnchorConfig + ReminderScheduleUpdate Models, 05-02: AnchorResolver (TDD), 05-03: AnchorNotifier + Integration)
 
 ### Phase 06: Templates + Onboarding
 
@@ -105,7 +105,7 @@ MemoCare is built along its critical dependency path: data foundation → notifi
 4. User can skip template and manually add medicines
 5. All permissions requested during onboarding in a single batch flow
 6. Onboarding text is ≥ 18pt with high-contrast colors
-   **Plans**: TBD
+   **Plans**: 7 plans (06-01: TemplatePack Model + Pack Definitions, 06-02: OnboardingState + OnboardingNotifier, 06-03: TemplateService, 06-04: GoRouter + OnboardingFlow Shell, 06-05: ConditionStep + TemplatePickerScreen, 06-06: AnchorStep + MedicineStep, 06-07: ReviewStep + PermissionStep)
 
 ### Phase 07: Daily View + History + Settings
 
@@ -120,7 +120,7 @@ MemoCare is built along its critical dependency path: data foundation → notifi
 4. Missed reminders surface on app open with bulk DONE/SKIP option
 5. History screen shows paginated medication log with filter by medication name
 6. Settings screen allows configuring snooze duration, escalation timeouts, and notification preferences
-   **Plans**: TBD
+   **Plans**: 5 plans (07-01: GoRouter Shell + Settings Data Layer, 07-02: Daily Schedule + History Providers, 07-03: Home Screen + Hero Card, 07-04: History Screen + Settings Screen, 07-05: Chain Context Detail + Router Wiring)
 
 ### Phase 08: Accessibility + TTS
 
@@ -135,7 +135,7 @@ MemoCare is built along its critical dependency path: data foundation → notifi
 4. TalkBack reads all interactive elements with meaningful labels in correct focus order
 5. TTS speaks "Time to take [medicine], [dose], [context]" on each reminder notification
 6. 10-second undo bar appears after confirming a medication
-   **Plans**: TBD
+   **Plans**: 4 plans (08-01: TTSService + Alarm Integration, 08-02: UndoBar + Revert Service, 08-03: Font Scale + Touch Targets + Contrast Audit, 08-04: Semantics Labels + TalkBack Focus Order)
 
 ### Phase 09: Integration Testing + OEM Validation
 
@@ -149,18 +149,18 @@ MemoCare is built along its critical dependency path: data foundation → notifi
 3. Boot-completed rescheduling works on all test devices
 4. App launches, schedules, and fires reminders with zero network connectivity
 5. Permission flows work correctly on Android 12, 13, 14, and 15
-   **Plans**: TBD
+**Plans**: 5 plans (09-01: Patrol Infrastructure, 09-02: Core Flow Tests, 09-03: Notification/Permission Tests, 09-04: Offline/Boot/History Tests, 09-05: OEM Manual Testing Checklist)
 
 ## Progress
 
-| Phase                                    | Plans Complete | Status      | Completed |
-| ---------------------------------------- | -------------- | ----------- | --------- |
-| 01. Project Foundation                   | 0/3            | Planned     | -         |
-| 02. Data Layer + Models                  | 0/TBD          | Not started | -         |
-| 03. Notification Engine + Alarms         | 0/TBD          | Not started | -         |
-| 04. Chain Engine + Confirmation          | 0/TBD          | Not started | -         |
-| 05. Anchor Resolution + Meal Timing      | 0/TBD          | Not started | -         |
-| 06. Templates + Onboarding               | 0/TBD          | Not started | -         |
-| 07. Daily View + History + Settings      | 0/TBD          | Not started | -         |
-| 08. Accessibility + TTS                  | 0/TBD          | Not started | -         |
-| 09. Integration Testing + OEM Validation | 0/TBD          | Not started | -         |
+| Phase                                    | Plans Complete | Status  | Completed |
+| ---------------------------------------- | -------------- | ------- | --------- |
+| 01. Project Foundation                   | 0/3            | Planned | -         |
+| 02. Data Layer + Models                  | 0/4            | Planned | -         |
+| 03. Notification Engine + Alarms         | 0/8            | Planned | -         |
+| 04. Chain Engine + Confirmation          | 0/5            | Planned | -         |
+| 05. Anchor Resolution + Meal Timing      | 0/3            | Planned | -         |
+| 06. Templates + Onboarding              | 0/7            | Planned | -         |
+| 07. Daily View + History + Settings      | 0/5            | Planned | -         |
+| 08. Accessibility + TTS                  | 0/4            | Planned | -         |
+| 09. Integration Testing + OEM Validation | 0/5            | Planned | -         |
