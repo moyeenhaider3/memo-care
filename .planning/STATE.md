@@ -7,10 +7,10 @@
 
 ## Current Position
 
-- **Stage:** Roadmap execution — all phases planned
-- **Phase:** 01 of 09 — Project Foundation (ready to execute)
-- **Plan:** All 44 plans created across 9 phases
-- **Progress:** [░░░░░░░░░░] 0% (planning complete, execution not started)
+- **Stage:** Phase execution
+- **Phase:** 02 of 09 — Data Layer + Models (next)
+- **Plan:** Phase 01 complete (3/3 plans executed, verified)
+- **Progress:** [█░░░░░░░░░] 11% (Phase 01 done, 8 phases remaining)
 
 ## Plan Summary
 
@@ -41,6 +41,7 @@
 | init  | `.planning/REQUIREMENTS.md`          | ✅ Committed |
 | init  | `.planning/ROADMAP.md`               | ✅ Committed |
 | plan  | Phase 01 plans (3 plans)             | ✅ Committed |
+| exec  | Phase 01 execution (3 plans)         | ✅ Verified  |
 | plan  | Phase 02 plans (4 plans)             | ✅ Created   |
 | plan  | Phase 03 plans (8 plans)             | ✅ Created   |
 | plan  | Phase 04 plans (5 plans)             | ✅ Created   |
@@ -59,16 +60,11 @@
 
 ## Recent Decisions
 
+- Dropped riverpod_generator, riverpod_annotation, riverpod_lint, custom_lint (analyzer ^9/^10 conflict with drift_dev)
+- All Riverpod providers written manually (Provider/NotifierProvider/AsyncNotifierProvider)
+- very_good_analysis pinned to 10.1.0 (10.2.0 needs Dart 3.11.0, SDK is 3.10.0)
+- Drift resolved to 2.31.0, sqlite3 to 2.9.4 (transitive only)
 - NLP deferred to v1.x (VERY HIGH risk, chain engine is core value)
-- Drift (SQLite) over Hive/Isar (both dead, SDK <3.0.0)
-- Feature-first + layered hybrid folder structure
-- Chain engine as pure Dart domain logic (no Flutter dependency)
-- Lazy chain resolution (schedule immediate next step only)
-- 3 separate notification channels (silent, urgent, critical)
-- UTC epoch millis for all time storage
-- @DataClassName('XxxRow') on Drift tables to avoid collision with Freezed models
-- TDD approach for ChainValidator, ChainEngine, and AnchorResolver
-- Phase 09-05 requires physical OEM device testing (checkpoint:human-verify)
 
 ## Pending Todos
 
