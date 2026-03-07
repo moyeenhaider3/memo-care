@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:memo_care/core/presentation/app_shell.dart';
 import 'package:memo_care/features/daily_schedule/presentation/home_screen.dart';
+import 'package:memo_care/features/history/presentation/history_screen.dart';
 import 'package:memo_care/features/onboarding/application/onboarding_notifier.dart';
 import 'package:memo_care/features/onboarding/presentation/anchor_step.dart';
 import 'package:memo_care/features/onboarding/presentation/condition_step.dart';
@@ -10,6 +10,7 @@ import 'package:memo_care/features/onboarding/presentation/medicine_step.dart';
 import 'package:memo_care/features/onboarding/presentation/onboarding_flow.dart';
 import 'package:memo_care/features/onboarding/presentation/permission_step.dart';
 import 'package:memo_care/features/onboarding/presentation/review_step.dart';
+import 'package:memo_care/features/settings/presentation/settings_screen.dart';
 import 'package:memo_care/features/templates/presentation/template_picker_screen.dart';
 
 /// Route path constants used across the app.
@@ -79,14 +80,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutes.history,
                 name: 'history',
-                builder: (context, state) => const Scaffold(
-                  body: Center(
-                    child: Text(
-                      'History Screen',
-                      style: TextStyle(fontSize: 24),
-                    ),
-                  ),
-                ),
+                builder: (context, state) =>
+                    const HistoryScreen(),
               ),
             ],
           ),
@@ -95,14 +90,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutes.settings,
                 name: 'settings',
-                builder: (context, state) => const Scaffold(
-                  body: Center(
-                    child: Text(
-                      'Settings Screen',
-                      style: TextStyle(fontSize: 24),
-                    ),
-                  ),
-                ),
+                builder: (context, state) =>
+                    const SettingsScreen(),
               ),
             ],
           ),
