@@ -47,6 +47,11 @@ class ConfirmationRepository {
     );
   }
 
+  /// Count how many times [reminderId] has been snoozed.
+  Future<int> countSnoozes(int reminderId) {
+    return _dao.countSnoozes(reminderId);
+  }
+
   // --------------- Mapping ---------------
 
   Confirmation _fromRow(ConfirmationRow row) => Confirmation(

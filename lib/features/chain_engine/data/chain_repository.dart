@@ -3,6 +3,8 @@ import 'package:memo_care/core/database/app_database.dart';
 import 'package:memo_care/features/chain_engine/data/chain_dao.dart';
 import 'package:memo_care/features/chain_engine/domain/models/chain_edge.dart';
 import 'package:memo_care/features/chain_engine/domain/models/reminder_chain.dart';
+import 'package:memo_care/features/reminders/domain/models/medicine_type.dart';
+import 'package:memo_care/features/reminders/domain/models/reminder.dart';
 
 /// Repository bridging [ChainDao] → [ReminderChain] and [ChainEdge]
 /// domain models.
@@ -88,6 +90,20 @@ class ChainRepository {
   /// Delete a single edge.
   Future<int> deleteEdge(int id) => _dao.deleteEdge(id);
 
+  // --------------- One-shot queries ---------------
+
+  /// Get all reminders for a chain (one-shot).
+  Future<List<Reminder>> getReminders(int chainId) async {
+    final rows = await _dao.getRemindersForChain(chainId);
+    return rows.map(_reminderFromRow).toList();
+  }
+
+  /// Get all edges for a chain (one-shot).
+  Future<List<ChainEdge>> getEdges(int chainId) async {
+    final rows = await _dao.getEdgesForChain(chainId);
+    return rows.map(_edgeFromRow).toList();
+  }
+
   // --------------- Mapping ---------------
 
   ReminderChain _chainFromRow(ReminderChainRow row) => ReminderChain(
@@ -102,5 +118,16 @@ class ChainRepository {
     chainId: row.chainId,
     sourceId: row.sourceId,
     targetId: row.targetId,
+  );
+
+  Reminder _reminderFromRow(ReminderRow row) => Reminder(
+    id: row.id,
+    chainId: row.chainId,
+    medicineName: row.medicineName,
+    medicineType: MedicineType.fromDbString(row.medicineType),
+    dosage: row.dosage,
+    scheduledAt: row.scheduledAt,
+    isActive: row.isActive,
+    gapHours: row.gapHours,
   );
 }

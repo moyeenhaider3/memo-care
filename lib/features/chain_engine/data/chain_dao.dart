@@ -4,7 +4,7 @@ import 'package:memo_care/core/database/app_database.dart';
 part 'chain_dao.g.dart';
 
 /// Data access object for reminder chains and their DAG edges.
-@DriftAccessor(tables: [ReminderChains, ChainEdges])
+@DriftAccessor(tables: [ReminderChains, ChainEdges, Reminders])
 class ChainDao extends DatabaseAccessor<AppDatabase> with _$ChainDaoMixin {
   ChainDao(super.attachedDatabase);
 
@@ -55,5 +55,15 @@ class ChainDao extends DatabaseAccessor<AppDatabase> with _$ChainDaoMixin {
   /// Delete all edges for a chain.
   Future<int> deleteEdgesForChain(int chainId) {
     return (delete(chainEdges)..where((e) => e.chainId.equals(chainId))).go();
+  }
+
+  /// Get all edges for a chain (one-shot).
+  Future<List<ChainEdgeRow>> getEdgesForChain(int chainId) {
+    return (select(chainEdges)..where((e) => e.chainId.equals(chainId))).get();
+  }
+
+  /// Get all reminders for a chain (one-shot).
+  Future<List<ReminderRow>> getRemindersForChain(int chainId) {
+    return (select(reminders)..where((r) => r.chainId.equals(chainId))).get();
   }
 }

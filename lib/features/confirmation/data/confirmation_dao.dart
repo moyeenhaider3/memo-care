@@ -31,4 +31,15 @@ class ConfirmationDao extends DatabaseAccessor<AppDatabase>
   Future<int> insertConfirmation(ConfirmationsCompanion companion) {
     return into(confirmations).insert(companion);
   }
+
+  /// Count SNOOZED confirmations for a specific reminder.
+  Future<int> countSnoozes(int reminderId) async {
+    final countExp = confirmations.id.count();
+    final query = selectOnly(confirmations)
+      ..addColumns([countExp])
+      ..where(confirmations.reminderId.equals(reminderId))
+      ..where(confirmations.state.equals('snoozed'));
+    final result = await query.getSingle();
+    return result.read(countExp) ?? 0;
+  }
 }
