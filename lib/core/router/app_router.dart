@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:memo_care/core/presentation/app_shell.dart';
 import 'package:memo_care/features/onboarding/application/onboarding_notifier.dart';
 import 'package:memo_care/features/onboarding/presentation/anchor_step.dart';
 import 'package:memo_care/features/onboarding/presentation/condition_step.dart';
@@ -23,8 +24,10 @@ abstract final class AppRoutes {
   static const review = 'review';
   static const permissions = 'permissions';
 
-  /// Home screen path.
+  /// Post-onboarding tab paths.
   static const home = '/home';
+  static const history = '/history';
+  static const settings = '/settings';
 }
 
 /// Provides the [GoRouter] instance for the entire app.
@@ -35,9 +38,10 @@ abstract final class AppRoutes {
 ///    `/onboarding/condition`.
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
-    initialLocation: '${AppRoutes.onboarding}/${AppRoutes.condition}',
+    initialLocation: AppRoutes.home,
     redirect: (context, state) {
-      final onboardingState = ref.read(onboardingNotifierProvider);
+      final onboardingState =
+          ref.read(onboardingNotifierProvider);
       final isOnboarding =
           state.uri.path.startsWith(AppRoutes.onboarding);
       final isComplete = onboardingState.isComplete;
@@ -53,6 +57,64 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
+      // --- Main app tabs (post-onboarding) ---
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return AppShell(navigationShell: navigationShell);
+        },
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.home,
+                name: 'home',
+                builder: (context, state) => const Scaffold(
+                  body: Center(
+                    child: Text(
+                      'Home Screen',
+                      style: TextStyle(fontSize: 24),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.history,
+                name: 'history',
+                builder: (context, state) => const Scaffold(
+                  body: Center(
+                    child: Text(
+                      'History Screen',
+                      style: TextStyle(fontSize: 24),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.settings,
+                name: 'settings',
+                builder: (context, state) => const Scaffold(
+                  body: Center(
+                    child: Text(
+                      'Settings Screen',
+                      style: TextStyle(fontSize: 24),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+
+      // --- Onboarding flow ---
       ShellRoute(
         builder: (context, state, child) =>
             OnboardingFlow(child: child),
@@ -60,7 +122,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path:
                 '${AppRoutes.onboarding}/${AppRoutes.condition}',
-            builder: (context, state) => const ConditionStep(),
+            builder: (context, state) =>
+                const ConditionStep(),
           ),
           GoRoute(
             path:
@@ -76,26 +139,21 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path:
                 '${AppRoutes.onboarding}/${AppRoutes.medicines}',
-            builder: (context, state) => const MedicineStep(),
+            builder: (context, state) =>
+                const MedicineStep(),
           ),
           GoRoute(
-            path: '${AppRoutes.onboarding}/${AppRoutes.review}',
+            path:
+                '${AppRoutes.onboarding}/${AppRoutes.review}',
             builder: (context, state) => const ReviewStep(),
           ),
           GoRoute(
             path:
                 '${AppRoutes.onboarding}/${AppRoutes.permissions}',
-            builder: (context, state) => const PermissionStep(),
+            builder: (context, state) =>
+                const PermissionStep(),
           ),
         ],
-      ),
-      GoRoute(
-        path: AppRoutes.home,
-        builder: (context, state) => const Scaffold(
-          body: Center(
-            child: Text('Home — built in Phase 07'),
-          ),
-        ),
       ),
     ],
   );
