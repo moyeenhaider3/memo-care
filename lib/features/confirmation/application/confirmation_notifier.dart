@@ -45,8 +45,7 @@ class ConfirmationNotifier extends AsyncNotifier<void> {
     try {
       final service = ref.read(confirmationServiceProvider);
       final scheduler = ref.read(alarmSchedulerProvider);
-      final reminderRepo =
-          ref.read(reminderRepositoryProvider);
+      final reminderRepo = ref.read(reminderRepositoryProvider);
 
       final outcome = await service.confirm(
         reminderId: reminderId,
@@ -148,7 +147,7 @@ class ConfirmationNotifier extends AsyncNotifier<void> {
 /// Provider for [ConfirmationNotifier].
 ///
 /// Auto-disposes when no longer watched.
-final confirmationNotifierProvider = AsyncNotifierProvider
-    .autoDispose<ConfirmationNotifier, void>(
+final confirmationNotifierProvider =
+    AsyncNotifierProvider.autoDispose<ConfirmationNotifier, void>(
       ConfirmationNotifier.new,
     );

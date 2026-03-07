@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memo_care/features/anchors/domain/anchor_resolver.dart';
 import 'package:memo_care/features/anchors/domain/models/anchor_config.dart';
 import 'package:memo_care/features/anchors/domain/models/meal_anchor.dart';
-import 'package:memo_care/features/anchors/domain/models/reminder_schedule_update.dart';
 import 'package:memo_care/features/reminders/domain/models/medicine_type.dart';
 import 'package:memo_care/features/reminders/domain/models/reminder.dart';
 
@@ -12,13 +11,12 @@ MealAnchor _anchor({
   String mealType = 'lunch',
   int defaultTimeMinutes = 720,
   DateTime? confirmedAt,
-}) =>
-    MealAnchor(
-      id: id,
-      mealType: mealType,
-      defaultTimeMinutes: defaultTimeMinutes,
-      confirmedAt: confirmedAt,
-    );
+}) => MealAnchor(
+  id: id,
+  mealType: mealType,
+  defaultTimeMinutes: defaultTimeMinutes,
+  confirmedAt: confirmedAt,
+);
 
 /// Helper to create a test [Reminder] with required fields.
 Reminder _reminder(
@@ -26,14 +24,13 @@ Reminder _reminder(
   MedicineType medicineType = MedicineType.afterMeal,
   int? gapHours,
   int chainId = 1,
-}) =>
-    Reminder(
-      id: id,
-      chainId: chainId,
-      medicineName: 'Med $id',
-      medicineType: medicineType,
-      gapHours: gapHours,
-    );
+}) => Reminder(
+  id: id,
+  chainId: chainId,
+  medicineName: 'Med $id',
+  medicineType: medicineType,
+  gapHours: gapHours,
+);
 
 void main() {
   late AnchorResolver resolver;
@@ -48,7 +45,7 @@ void main() {
       final result = resolver.resolve(
         anchor: _anchor(confirmedAt: lunchTime),
         confirmedAt: lunchTime,
-        dependents: [_reminder(1, medicineType: MedicineType.afterMeal)],
+        dependents: [_reminder(1)],
       );
 
       expect(result, hasLength(1));
@@ -60,13 +57,13 @@ void main() {
     });
 
     test('afterMeal uses custom offset from config', () {
-      final customResolver = const AnchorResolver(
+      const customResolver = AnchorResolver(
         config: AnchorConfig(afterMealOffset: Duration(minutes: 45)),
       );
       final result = customResolver.resolve(
         anchor: _anchor(confirmedAt: lunchTime),
         confirmedAt: lunchTime,
-        dependents: [_reminder(1, medicineType: MedicineType.afterMeal)],
+        dependents: [_reminder(1)],
       );
 
       expect(
@@ -93,7 +90,7 @@ void main() {
     });
 
     test('beforeMeal uses custom offset from config', () {
-      final customResolver = const AnchorResolver(
+      const customResolver = AnchorResolver(
         config: AnchorConfig(beforeMealOffset: Duration(minutes: -15)),
       );
       final result = customResolver.resolve(
@@ -146,7 +143,7 @@ void main() {
     );
 
     test('doseGap with custom defaultGapHours from config', () {
-      final customResolver = const AnchorResolver(
+      const customResolver = AnchorResolver(
         config: AnchorConfig(defaultGapHours: 8),
       );
       final result = customResolver.resolve(
@@ -170,8 +167,7 @@ void main() {
       '(pre-condition passes)',
       () {
         // Anchor confirmed 3 hours ago — exceeds 2-hour fast window.
-        final longAgoConfirm =
-            lunchTime.subtract(const Duration(hours: 3));
+        final longAgoConfirm = lunchTime.subtract(const Duration(hours: 3));
         final result = resolver.resolve(
           anchor: _anchor(confirmedAt: longAgoConfirm),
           confirmedAt: lunchTime,
@@ -191,8 +187,7 @@ void main() {
       '(pre-condition fails)',
       () {
         // Anchor confirmed 1 hour ago — within 2-hour fast window.
-        final recentConfirm =
-            lunchTime.subtract(const Duration(hours: 1));
+        final recentConfirm = lunchTime.subtract(const Duration(hours: 1));
         final result = resolver.resolve(
           anchor: _anchor(confirmedAt: recentConfirm),
           confirmedAt: lunchTime,
@@ -223,12 +218,11 @@ void main() {
     );
 
     test('emptyStomach respects custom emptyStomachFastHours', () {
-      final customResolver = const AnchorResolver(
+      const customResolver = AnchorResolver(
         config: AnchorConfig(emptyStomachFastHours: 4),
       );
       // Anchor confirmed 3 hours ago — within 4-hour custom window.
-      final threeHoursAgo =
-          lunchTime.subtract(const Duration(hours: 3));
+      final threeHoursAgo = lunchTime.subtract(const Duration(hours: 3));
       final result = customResolver.resolve(
         anchor: _anchor(confirmedAt: threeHoursAgo),
         confirmedAt: lunchTime,
@@ -266,7 +260,7 @@ void main() {
         confirmedAt: lunchTime,
         dependents: [
           _reminder(1, medicineType: MedicineType.beforeMeal),
-          _reminder(2, medicineType: MedicineType.afterMeal),
+          _reminder(2),
           _reminder(3, medicineType: MedicineType.doseGap, gapHours: 2),
           _reminder(4, medicineType: MedicineType.emptyStomach),
           _reminder(5, medicineType: MedicineType.fixedTime),
@@ -316,7 +310,7 @@ void main() {
         anchor: _anchor(),
         confirmedAt: utcTime,
         dependents: [
-          _reminder(1, medicineType: MedicineType.afterMeal),
+          _reminder(1),
         ],
       );
 

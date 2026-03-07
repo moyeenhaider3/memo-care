@@ -141,12 +141,10 @@ class FullScreenAlarmScreen extends StatelessWidget {
                     ),
                   ),
                   style: FilledButton.styleFrom(
-                    backgroundColor:
-                        const Color(0xFF2ECC71),
+                    backgroundColor: const Color(0xFF2ECC71),
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                   ),
                 ),
@@ -174,15 +172,13 @@ class FullScreenAlarmScreen extends StatelessWidget {
                     ),
                   ),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor:
-                        const Color(0xFFE74C3C),
+                    foregroundColor: const Color(0xFFE74C3C),
                     side: const BorderSide(
                       color: Color(0xFFE74C3C),
                       width: 3,
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                   ),
                 ),

@@ -6,10 +6,7 @@ import 'package:memo_care/features/chain_engine/domain/models/chain_error.dart';
 /// Each tuple is (sourceId, targetId).
 List<({int sourceId, int targetId})> _edges(
   List<(int, int)> pairs,
-) =>
-    pairs
-        .map((p) => (sourceId: p.$1, targetId: p.$2))
-        .toList();
+) => pairs.map((p) => (sourceId: p.$1, targetId: p.$2)).toList();
 
 void main() {
   late ChainValidator validator;

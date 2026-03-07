@@ -22,8 +22,7 @@ const List<TemplatePack> kTemplatePacks = [
 const kDiabeticPack = TemplatePack(
   id: 'diabetic_pack',
   name: 'Diabetic Pack',
-  description:
-      'Insulin + Metformin linked to breakfast, lunch, and dinner',
+  description: 'Insulin + Metformin linked to breakfast, lunch, and dinner',
   condition: 'diabetes',
   medicines: [
     // Breakfast pair
@@ -123,8 +122,7 @@ const kBloodPressurePack = TemplatePack(
 const kSchoolMorningPack = TemplatePack(
   id: 'school_morning_pack',
   name: 'School Morning Pack',
-  description:
-      'Wake-up → breakfast → medicine → leave for school',
+  description: 'Wake-up → breakfast → medicine → leave for school',
   condition: 'school_morning',
   medicines: [
     TemplateMedicine(

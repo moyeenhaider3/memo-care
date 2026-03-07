@@ -1,5 +1,4 @@
 import 'package:fpdart/fpdart.dart';
-
 import 'package:memo_care/features/chain_engine/domain/models/chain_edge.dart';
 import 'package:memo_care/features/chain_engine/domain/models/chain_error.dart';
 import 'package:memo_care/features/chain_engine/domain/models/chain_eval_result.dart';
@@ -49,18 +48,18 @@ class ChainEngine {
 
     return switch (state) {
       ConfirmationState.done => _activateDownstream(
-          reminderMap: reminderMap,
-          edges: edges,
-          sourceId: confirmedId,
-        ),
+        reminderMap: reminderMap,
+        edges: edges,
+        sourceId: confirmedId,
+      ),
       ConfirmationState.snoozed => right(
-          [reminderMap[confirmedId]!],
-        ),
+        [reminderMap[confirmedId]!],
+      ),
       ConfirmationState.skipped => _suspendDownstream(
-          reminderMap: reminderMap,
-          edges: edges,
-          sourceId: confirmedId,
-        ),
+        reminderMap: reminderMap,
+        edges: edges,
+        sourceId: confirmedId,
+      ),
     };
   }
 
@@ -102,17 +101,14 @@ class ChainEngine {
     // Build adjacency list for efficient traversal.
     final adjacency = <int, List<int>>{};
     for (final edge in edges) {
-      adjacency
-          .putIfAbsent(edge.sourceId, () => [])
-          .add(edge.targetId);
+      adjacency.putIfAbsent(edge.sourceId, () => []).add(edge.targetId);
     }
 
     final suspended = <Reminder>[];
     final visited = <int>{};
 
     void walk(int current) {
-      for (final targetId
-          in adjacency[current] ?? const <int>[]) {
+      for (final targetId in adjacency[current] ?? const <int>[]) {
         if (visited.add(targetId)) {
           final target = reminderMap[targetId];
           if (target != null) {

@@ -1,7 +1,6 @@
 import 'dart:collection';
 
 import 'package:fpdart/fpdart.dart';
-
 import 'package:memo_care/features/chain_engine/domain/models/chain_error.dart';
 
 /// Validates chain DAG structure: detects cycles and enforces
@@ -53,13 +52,11 @@ class ChainValidator {
 
     for (final edge in edges) {
       adjacency[edge.sourceId]?.add(edge.targetId);
-      inDegree[edge.targetId] =
-          (inDegree[edge.targetId] ?? 0) + 1;
+      inDegree[edge.targetId] = (inDegree[edge.targetId] ?? 0) + 1;
 
       // Self-loops: node can never reach in-degree 0.
       if (edge.sourceId == edge.targetId) {
-        inDegree[edge.sourceId] =
-            (inDegree[edge.sourceId] ?? 0) + 1;
+        inDegree[edge.sourceId] = (inDegree[edge.sourceId] ?? 0) + 1;
       }
     }
 
@@ -74,8 +71,7 @@ class ChainValidator {
       final node = queue.removeFirst();
       sorted.add(node);
 
-      for (final neighbor
-          in adjacency[node] ?? const <int>[]) {
+      for (final neighbor in adjacency[node] ?? const <int>[]) {
         inDegree[neighbor] = inDegree[neighbor]! - 1;
         if (inDegree[neighbor] == 0) {
           queue.add(neighbor);
@@ -106,8 +102,7 @@ class ChainValidator {
 
     var maxFoundDepth = 1;
     for (final node in sorted) {
-      for (final neighbor
-          in adjacency[node] ?? const <int>[]) {
+      for (final neighbor in adjacency[node] ?? const <int>[]) {
         final newDepth = depth[node]! + 1;
         if (newDepth > (depth[neighbor] ?? 1)) {
           depth[neighbor] = newDepth;

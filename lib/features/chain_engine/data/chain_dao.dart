@@ -10,15 +10,16 @@ class ChainDao extends DatabaseAccessor<AppDatabase> with _$ChainDaoMixin {
 
   /// Watch all chains ordered by creation date (newest first).
   Stream<List<ReminderChainRow>> watchAllChains() {
-    return (select(reminderChains)
-          ..orderBy([(c) => OrderingTerm.desc(c.createdAt)]))
-        .watch();
+    return (select(
+      reminderChains,
+    )..orderBy([(c) => OrderingTerm.desc(c.createdAt)])).watch();
   }
 
   /// Watch a single chain by ID.
   Stream<ReminderChainRow?> watchChainById(int id) {
-    return (select(reminderChains)..where((c) => c.id.equals(id)))
-        .watchSingleOrNull();
+    return (select(
+      reminderChains,
+    )..where((c) => c.id.equals(id))).watchSingleOrNull();
   }
 
   /// Insert a new chain. Returns the auto-generated ID.
@@ -38,8 +39,9 @@ class ChainDao extends DatabaseAccessor<AppDatabase> with _$ChainDaoMixin {
 
   /// Watch all edges for a specific chain.
   Stream<List<ChainEdgeRow>> watchEdgesForChain(int chainId) {
-    return (select(chainEdges)..where((e) => e.chainId.equals(chainId)))
-        .watch();
+    return (select(
+      chainEdges,
+    )..where((e) => e.chainId.equals(chainId))).watch();
   }
 
   /// Insert a new edge.

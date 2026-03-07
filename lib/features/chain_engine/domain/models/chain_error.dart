@@ -23,8 +23,7 @@ final class CycleDetected extends ChainError {
   const CycleDetected();
 
   @override
-  String get message =>
-      'Chain contains a cycle — edges form a loop';
+  String get message => 'Chain contains a cycle — edges form a loop';
 }
 
 /// The chain exceeds the maximum allowed depth of
@@ -46,8 +45,7 @@ final class MaxDepthExceeded extends ChainError {
   final int maxDepth;
 
   @override
-  String get message =>
-      'Chain depth $depth exceeds maximum $maxDepth';
+  String get message => 'Chain depth $depth exceeds maximum $maxDepth';
 }
 
 /// A referenced node ID was not found in the chain's
@@ -63,6 +61,5 @@ final class NodeNotFound extends ChainError {
   final int nodeId;
 
   @override
-  String get message =>
-      'Reminder node $nodeId not found in chain';
+  String get message => 'Reminder node $nodeId not found in chain';
 }

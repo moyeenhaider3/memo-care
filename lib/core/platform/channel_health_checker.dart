@@ -13,10 +13,10 @@ class ChannelHealthStatus {
 
   /// All channels healthy — no banner needed.
   const ChannelHealthStatus.allHealthy()
-      : notificationsEnabled = true,
-        silentChannelEnabled = true,
-        urgentChannelEnabled = true,
-        criticalChannelEnabled = true;
+    : notificationsEnabled = true,
+      silentChannelEnabled = true,
+      urgentChannelEnabled = true,
+      criticalChannelEnabled = true;
 
   /// Whether notifications are globally enabled for the app.
   final bool notificationsEnabled;
@@ -39,15 +39,12 @@ class ChannelHealthStatus {
 
   /// Human-readable list of issues for the banner.
   List<String> get issues => [
-        if (!notificationsEnabled)
-          'Notifications are turned off for this app',
-        if (!silentChannelEnabled)
-          'Medication Reminders channel is disabled',
-        if (!urgentChannelEnabled)
-          'Urgent Medication Alerts channel is disabled',
-        if (!criticalChannelEnabled)
-          'Critical Medication Alarms channel is disabled',
-      ];
+    if (!notificationsEnabled) 'Notifications are turned off for this app',
+    if (!silentChannelEnabled) 'Medication Reminders channel is disabled',
+    if (!urgentChannelEnabled) 'Urgent Medication Alerts channel is disabled',
+    if (!criticalChannelEnabled)
+      'Critical Medication Alarms channel is disabled',
+  ];
 }
 
 /// Checks the health of all notification channels.
@@ -66,8 +63,10 @@ class ChannelHealthChecker {
   ///
   /// Returns a [ChannelHealthStatus] with the state of each channel.
   Future<ChannelHealthStatus> check() async {
-    final android = _plugin.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>();
+    final android = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
 
     if (android == null) {
       // Not on Android — assume healthy.
@@ -75,8 +74,7 @@ class ChannelHealthChecker {
     }
 
     // Check global notification enable.
-    final globalEnabled =
-        await android.areNotificationsEnabled() ?? true;
+    final globalEnabled = await android.areNotificationsEnabled() ?? true;
 
     if (!globalEnabled) {
       return const ChannelHealthStatus(
@@ -88,8 +86,7 @@ class ChannelHealthChecker {
     }
 
     // Check individual channels.
-    final channels =
-        await android.getNotificationChannels() ?? [];
+    final channels = await android.getNotificationChannels() ?? [];
     final channelMap = {
       for (final ch in channels) ch.id: ch,
     };
@@ -102,12 +99,9 @@ class ChannelHealthChecker {
 
     return ChannelHealthStatus(
       notificationsEnabled: globalEnabled,
-      silentChannelEnabled:
-          isChannelEnabled(NotificationChannels.silentId),
-      urgentChannelEnabled:
-          isChannelEnabled(NotificationChannels.urgentId),
-      criticalChannelEnabled:
-          isChannelEnabled(NotificationChannels.criticalId),
+      silentChannelEnabled: isChannelEnabled(NotificationChannels.silentId),
+      urgentChannelEnabled: isChannelEnabled(NotificationChannels.urgentId),
+      criticalChannelEnabled: isChannelEnabled(NotificationChannels.criticalId),
     );
   }
 }

@@ -8,11 +8,11 @@ import 'package:memo_care/features/reminders/domain/models/reminder.dart';
 
 /// Creates a test reminder with minimal required fields.
 Reminder _reminder(int id, {int chainId = 1}) => Reminder(
-      id: id,
-      chainId: chainId,
-      medicineName: 'Med $id',
-      medicineType: MedicineType.fixedTime,
-    );
+  id: id,
+  chainId: chainId,
+  medicineName: 'Med $id',
+  medicineType: MedicineType.fixedTime,
+);
 
 /// Creates a test edge.
 ChainEdge _edge(
@@ -20,13 +20,12 @@ ChainEdge _edge(
   int target, {
   int id = 0,
   int chainId = 1,
-}) =>
-    ChainEdge(
-      id: id,
-      chainId: chainId,
-      sourceId: source,
-      targetId: target,
-    );
+}) => ChainEdge(
+  id: id,
+  chainId: chainId,
+  sourceId: source,
+  targetId: target,
+);
 
 void main() {
   late ChainEngine engine;
@@ -331,8 +330,7 @@ void main() {
   group('ChainEngine — performance', () {
     test('evaluates 10-node chain in under 50ms', () {
       // Linear chain: 1→2→...→10
-      final reminders =
-          List.generate(10, (i) => _reminder(i + 1));
+      final reminders = List.generate(10, (i) => _reminder(i + 1));
       final edgeList = [
         for (var i = 1; i < 10; i++) _edge(i, i + 1, id: i),
       ];

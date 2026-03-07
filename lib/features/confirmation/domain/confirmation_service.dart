@@ -119,8 +119,7 @@ class ConfirmationService {
     var snoozeRemaining = 0;
 
     if (state == ConfirmationState.snoozed) {
-      final snoozeCount =
-          await confirmationRepository.countSnoozes(reminderId);
+      final snoozeCount = await confirmationRepository.countSnoozes(reminderId);
       final decision = snoozeLimiter.evaluate(snoozeCount);
 
       switch (decision) {
@@ -146,8 +145,7 @@ class ConfirmationService {
     );
 
     // Step 3: Evaluate chain engine.
-    final reminders =
-        await chainRepository.getReminders(chainId);
+    final reminders = await chainRepository.getReminders(chainId);
     final edges = await chainRepository.getEdges(chainId);
 
     final evalResult = chainEngine.evaluate(
@@ -170,15 +168,15 @@ class ConfirmationService {
 
         return switch (effectiveState) {
           ConfirmationState.done => ActivateDownstream(
-              reminders: affectedReminders,
-            ),
+            reminders: affectedReminders,
+          ),
           ConfirmationState.skipped => SuspendDownstream(
-              reminders: affectedReminders,
-            ),
+            reminders: affectedReminders,
+          ),
           ConfirmationState.snoozed => RescheduleSnooze(
-              reminder: affectedReminders.first,
-              remainingSnoozes: snoozeRemaining,
-            ),
+            reminder: affectedReminders.first,
+            remainingSnoozes: snoozeRemaining,
+          ),
         };
       },
     );

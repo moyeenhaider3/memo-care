@@ -19,10 +19,8 @@ final audioServiceProvider = Provider<AudioService>((ref) {
 ///
 /// This is a kept-alive singleton — only one escalation can
 /// be active at a time.
-final escalationControllerProvider =
-    Provider<EscalationController>((ref) {
-  final notifService =
-      ref.watch(notificationServiceProvider);
+final escalationControllerProvider = Provider<EscalationController>((ref) {
+  final notifService = ref.watch(notificationServiceProvider);
   final audio = ref.watch(audioServiceProvider);
   final controller = EscalationController(
     notificationService: notifService,

@@ -17,12 +17,11 @@ final confirmationDaoProvider = Provider<ConfirmationDao>((ref) {
 
 /// Provides the [ConfirmationRepository] wrapping the
 /// [ConfirmationDao].
-final confirmationRepositoryProvider =
-    Provider<ConfirmationRepository>((ref) {
-      return ConfirmationRepository(
-        ref.watch(confirmationDaoProvider),
-      );
-    });
+final confirmationRepositoryProvider = Provider<ConfirmationRepository>((ref) {
+  return ConfirmationRepository(
+    ref.watch(confirmationDaoProvider),
+  );
+});
 
 /// Snooze limiter provider — stateless, const-constructible.
 final snoozeLimiterProvider = Provider<SnoozeLimiter>((ref) {
@@ -31,22 +30,18 @@ final snoozeLimiterProvider = Provider<SnoozeLimiter>((ref) {
 
 /// Confirmation service provider — orchestrates the full
 /// confirmation flow (snooze check → record → chain eval).
-final confirmationServiceProvider =
-    Provider<ConfirmationService>((ref) {
-      return ConfirmationService(
-        chainEngine: ref.watch(chainEngineProvider),
-        snoozeLimiter: ref.watch(snoozeLimiterProvider),
-        confirmationRepository:
-            ref.watch(confirmationRepositoryProvider),
-        chainRepository: ref.watch(chainRepositoryProvider),
-      );
-    });
+final confirmationServiceProvider = Provider<ConfirmationService>((ref) {
+  return ConfirmationService(
+    chainEngine: ref.watch(chainEngineProvider),
+    snoozeLimiter: ref.watch(snoozeLimiterProvider),
+    confirmationRepository: ref.watch(confirmationRepositoryProvider),
+    chainRepository: ref.watch(chainRepositoryProvider),
+  );
+});
 
 /// Reactive stream of the latest confirmation for a specific
 /// reminder.
 final latestConfirmationProvider = StreamProvider.autoDispose
     .family<Confirmation?, int>((ref, reminderId) {
-      return ref
-          .watch(confirmationRepositoryProvider)
-          .watchLatest(reminderId);
+      return ref.watch(confirmationRepositoryProvider).watchLatest(reminderId);
     });

@@ -38,7 +38,8 @@ class ReminderScheduleUpdate {
   int get hashCode => Object.hash(reminderId, scheduledAt);
 
   @override
-  String toString() => 'ReminderScheduleUpdate('
+  String toString() =>
+      'ReminderScheduleUpdate('
       'reminderId: $reminderId, '
       'scheduledAt: $scheduledAt)';
 }

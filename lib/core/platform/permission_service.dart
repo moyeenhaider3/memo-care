@@ -25,18 +25,15 @@ class PermissionCheckResult {
 
   /// True if all critical permissions are granted.
   bool get allGranted =>
-      notifications &&
-      exactAlarms &&
-      fullScreenIntent &&
-      batteryOptimization;
+      notifications && exactAlarms && fullScreenIntent && batteryOptimization;
 
   /// List of permission names that are NOT granted.
   List<String> get missingPermissions => [
-        if (!notifications) 'notifications',
-        if (!exactAlarms) 'exactAlarms',
-        if (!fullScreenIntent) 'fullScreenIntent',
-        if (!batteryOptimization) 'batteryOptimization',
-      ];
+    if (!notifications) 'notifications',
+    if (!exactAlarms) 'exactAlarms',
+    if (!fullScreenIntent) 'fullScreenIntent',
+    if (!batteryOptimization) 'batteryOptimization',
+  ];
 }
 
 /// Abstracts Android 12–15 permission complexity into a clean API.

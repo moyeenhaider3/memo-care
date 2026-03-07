@@ -51,8 +51,7 @@ Future<void> alarmFiredCallback(int reminderId) async {
 
   try {
     // Load reminder from DB.
-    final reminder =
-        await db.reminderDao.getReminderById(reminderId);
+    final reminder = await db.reminderDao.getReminderById(reminderId);
     if (reminder == null) return;
 
     // Initialize notification service in this isolate.

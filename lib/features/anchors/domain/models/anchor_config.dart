@@ -58,20 +58,20 @@ class AnchorConfig {
       other is AnchorConfig &&
           beforeMealOffset == other.beforeMealOffset &&
           afterMealOffset == other.afterMealOffset &&
-          emptyStomachFastHours ==
-              other.emptyStomachFastHours &&
+          emptyStomachFastHours == other.emptyStomachFastHours &&
           defaultGapHours == other.defaultGapHours;
 
   @override
   int get hashCode => Object.hash(
-        beforeMealOffset,
-        afterMealOffset,
-        emptyStomachFastHours,
-        defaultGapHours,
-      );
+    beforeMealOffset,
+    afterMealOffset,
+    emptyStomachFastHours,
+    defaultGapHours,
+  );
 
   @override
-  String toString() => 'AnchorConfig('
+  String toString() =>
+      'AnchorConfig('
       'beforeMealOffset: $beforeMealOffset, '
       'afterMealOffset: $afterMealOffset, '
       'emptyStomachFastHours: $emptyStomachFastHours, '

@@ -7,8 +7,7 @@ import 'package:memo_care/core/providers/notification_providers.dart';
 /// Uses a manual [Provider] (not @Riverpod code-gen) because
 /// riverpod_generator was dropped due to analyzer version
 /// conflicts with drift_dev.
-final channelHealthCheckerProvider =
-    Provider<ChannelHealthChecker>((ref) {
+final channelHealthCheckerProvider = Provider<ChannelHealthChecker>((ref) {
   final notifService = ref.watch(notificationServiceProvider);
   return ChannelHealthChecker(plugin: notifService.plugin);
 });
@@ -23,8 +22,9 @@ final channelHealthCheckerProvider =
 ///   ref.invalidate(channelHealthStatusProvider);
 /// }
 /// ```
-final channelHealthStatusProvider =
-    FutureProvider<ChannelHealthStatus>((ref) async {
+final channelHealthStatusProvider = FutureProvider<ChannelHealthStatus>((
+  ref,
+) async {
   final checker = ref.watch(channelHealthCheckerProvider);
   return checker.check();
 });

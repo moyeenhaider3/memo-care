@@ -6,6 +6,7 @@ part of 'reminder_dao.dart';
 mixin _$ReminderDaoMixin on DatabaseAccessor<AppDatabase> {
   $ReminderChainsTable get reminderChains => attachedDatabase.reminderChains;
   $RemindersTable get reminders => attachedDatabase.reminders;
+  $ConfirmationsTable get confirmations => attachedDatabase.confirmations;
   ReminderDaoManager get managers => ReminderDaoManager(this);
 }
 
@@ -19,4 +20,6 @@ class ReminderDaoManager {
       );
   $$RemindersTableTableManager get reminders =>
       $$RemindersTableTableManager(_db.attachedDatabase, _db.reminders);
+  $$ConfirmationsTableTableManager get confirmations =>
+      $$ConfirmationsTableTableManager(_db.attachedDatabase, _db.confirmations);
 }

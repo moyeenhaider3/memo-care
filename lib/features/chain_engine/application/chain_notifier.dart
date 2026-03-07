@@ -46,8 +46,7 @@ class ChainNotifier extends AsyncNotifier<ChainState> {
   @override
   FutureOr<ChainState> build() async {
     final repo = ref.watch(chainRepositoryProvider);
-    final chain =
-        await repo.watchChainById(chainId).first;
+    final chain = await repo.watchChainById(chainId).first;
 
     if (chain == null) {
       throw StateError('Chain $chainId not found');
@@ -78,14 +77,11 @@ class ChainNotifier extends AsyncNotifier<ChainState> {
     // Tentatively add the edge and validate the new graph.
     final newEdges = [
       ...currentState.edges.map(
-        (e) =>
-            (sourceId: e.sourceId, targetId: e.targetId),
+        (e) => (sourceId: e.sourceId, targetId: e.targetId),
       ),
       (sourceId: sourceId, targetId: targetId),
     ];
-    final nodeIds = currentState.reminders
-        .map((r) => r.id)
-        .toList();
+    final nodeIds = currentState.reminders.map((r) => r.id).toList();
 
     final validation = validator.validate(
       nodeIds: nodeIds,
@@ -117,8 +113,7 @@ class ChainNotifier extends AsyncNotifier<ChainState> {
 /// Provider for [ChainNotifier], keyed by chain ID.
 ///
 /// Auto-disposes when no longer watched.
-final chainNotifierProvider = AsyncNotifierProvider
-    .autoDispose
+final chainNotifierProvider = AsyncNotifierProvider.autoDispose
     .family<ChainNotifier, ChainState, int>(
       ChainNotifier.new,
     );

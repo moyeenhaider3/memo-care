@@ -20,10 +20,7 @@ import 'package:memo_care/features/reminders/domain/models/reminder.dart';
 class AnchorNotifier extends AsyncNotifier<List<MealAnchor>> {
   @override
   Future<List<MealAnchor>> build() async {
-    final anchors = await ref
-        .watch(anchorRepositoryProvider)
-        .watchAll()
-        .first;
+    final anchors = await ref.watch(anchorRepositoryProvider).watchAll().first;
     return anchors;
   }
 
@@ -56,8 +53,7 @@ class AnchorNotifier extends AsyncNotifier<List<MealAnchor>> {
       final anchors = await anchorRepo.watchAll().first;
       final anchor = anchors.firstWhere(
         (a) => a.mealType == mealType,
-        orElse: () =>
-            throw ArgumentError('Unknown meal type: $mealType'),
+        orElse: () => throw ArgumentError('Unknown meal type: $mealType'),
       );
       final updatedAnchor = anchor.copyWith(
         confirmedAt: confirmedAt,
@@ -65,10 +61,8 @@ class AnchorNotifier extends AsyncNotifier<List<MealAnchor>> {
       await anchorRepo.updateAnchor(updatedAnchor);
 
       // 2. Query active reminders, filter to meal-dependent.
-      final allReminders =
-          await reminderRepo.watchActive().first;
-      final dependents =
-          allReminders.where(_isMealDependent).toList();
+      final allReminders = await reminderRepo.watchActive().first;
+      final dependents = allReminders.where(_isMealDependent).toList();
 
       if (dependents.isNotEmpty) {
         // 3. Resolve new fire times.
@@ -80,8 +74,9 @@ class AnchorNotifier extends AsyncNotifier<List<MealAnchor>> {
 
         // 4 & 5. Update Drift + reschedule alarms.
         for (final update in updates) {
-          final reminder = dependents
-              .firstWhere((r) => r.id == update.reminderId);
+          final reminder = dependents.firstWhere(
+            (r) => r.id == update.reminderId,
+          );
           final updated = reminder.copyWith(
             scheduledAt: update.scheduledAt,
           );
@@ -122,8 +117,7 @@ class AnchorNotifier extends AsyncNotifier<List<MealAnchor>> {
       final anchors = await anchorRepo.watchAll().first;
       final anchor = anchors.firstWhere(
         (a) => a.mealType == mealType,
-        orElse: () =>
-            throw ArgumentError('Unknown meal type: $mealType'),
+        orElse: () => throw ArgumentError('Unknown meal type: $mealType'),
       );
       final updatedAnchor = anchor.copyWith(
         defaultTimeMinutes: minutesFromMidnight,
@@ -141,10 +135,8 @@ class AnchorNotifier extends AsyncNotifier<List<MealAnchor>> {
       );
 
       // 3. Cascade recalculation to dependents.
-      final allReminders =
-          await reminderRepo.watchActive().first;
-      final dependents =
-          allReminders.where(_isMealDependent).toList();
+      final allReminders = await reminderRepo.watchActive().first;
+      final dependents = allReminders.where(_isMealDependent).toList();
 
       if (dependents.isNotEmpty) {
         final updates = resolver.resolve(
@@ -154,8 +146,9 @@ class AnchorNotifier extends AsyncNotifier<List<MealAnchor>> {
         );
 
         for (final update in updates) {
-          final reminder = dependents
-              .firstWhere((r) => r.id == update.reminderId);
+          final reminder = dependents.firstWhere(
+            (r) => r.id == update.reminderId,
+          );
           final updated = reminder.copyWith(
             scheduledAt: update.scheduledAt,
           );
@@ -174,12 +167,11 @@ class AnchorNotifier extends AsyncNotifier<List<MealAnchor>> {
 
   /// Whether a reminder depends on meal anchors for its
   /// scheduled time.
-  static bool _isMealDependent(Reminder r) =>
-      switch (r.medicineType) {
-        MedicineType.beforeMeal => true,
-        MedicineType.afterMeal => true,
-        MedicineType.emptyStomach => true,
-        MedicineType.doseGap => true,
-        MedicineType.fixedTime => false,
-      };
+  static bool _isMealDependent(Reminder r) => switch (r.medicineType) {
+    MedicineType.beforeMeal => true,
+    MedicineType.afterMeal => true,
+    MedicineType.emptyStomach => true,
+    MedicineType.doseGap => true,
+    MedicineType.fixedTime => false,
+  };
 }

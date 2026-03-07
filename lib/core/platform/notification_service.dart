@@ -3,9 +3,10 @@ import 'package:memo_care/core/constants/notification_channels.dart';
 import 'package:memo_care/features/escalation/domain/escalation_level.dart';
 
 /// Callback type for notification action responses.
-typedef NotificationResponseCallback = void Function(
-  NotificationResponse response,
-);
+typedef NotificationResponseCallback =
+    void Function(
+      NotificationResponse response,
+    );
 
 /// Wraps [FlutterLocalNotificationsPlugin] with 3 Android notification channels
 /// matching [EscalationLevel] tiers.
@@ -49,8 +50,7 @@ class NotificationService {
     await _plugin.initialize(
       settings: initSettings,
       onDidReceiveNotificationResponse: onResponse,
-      onDidReceiveBackgroundNotificationResponse:
-          onBackgroundResponse,
+      onDidReceiveBackgroundNotificationResponse: onBackgroundResponse,
     );
 
     // Create all 3 channels.
@@ -84,8 +84,7 @@ class NotificationService {
 
     final details = _buildNotificationDetails(
       level: level,
-      fullScreenIntent:
-          fullScreenIntent && level == EscalationLevel.fullscreen,
+      fullScreenIntent: fullScreenIntent && level == EscalationLevel.fullscreen,
       actions: actions,
     );
 
@@ -110,8 +109,10 @@ class NotificationService {
 
   /// Checks if notifications are enabled globally.
   Future<bool> areNotificationsEnabled() async {
-    final android = _plugin.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>();
+    final android = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
     if (android == null) return false;
     return await android.areNotificationsEnabled() ?? false;
   }
@@ -119,8 +120,10 @@ class NotificationService {
   // ── Private helpers ─────────────────────────────────────────────
 
   Future<void> _createChannels() async {
-    final android = _plugin.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>();
+    final android = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
     if (android == null) return;
 
     // Silent channel
@@ -169,44 +172,44 @@ class NotificationService {
   }) {
     return switch (level) {
       EscalationLevel.silent => AndroidNotificationDetails(
-          NotificationChannels.silentId,
-          NotificationChannels.silentName,
-          channelDescription: NotificationChannels.silentDescription,
-          importance: Importance.low,
-          priority: Priority.low,
-          playSound: false,
-          enableVibration: false,
-          ongoing: true,
-          autoCancel: false,
-          actions: actions,
-        ),
+        NotificationChannels.silentId,
+        NotificationChannels.silentName,
+        channelDescription: NotificationChannels.silentDescription,
+        importance: Importance.low,
+        priority: Priority.low,
+        playSound: false,
+        enableVibration: false,
+        ongoing: true,
+        autoCancel: false,
+        actions: actions,
+      ),
       EscalationLevel.audible => AndroidNotificationDetails(
-          NotificationChannels.urgentId,
-          NotificationChannels.urgentName,
-          channelDescription: NotificationChannels.urgentDescription,
-          importance: Importance.high,
-          priority: Priority.high,
-          sound: const RawResourceAndroidNotificationSound(
-            NotificationChannels.customSoundFile,
-          ),
-          ongoing: true,
-          autoCancel: false,
-          actions: actions,
+        NotificationChannels.urgentId,
+        NotificationChannels.urgentName,
+        channelDescription: NotificationChannels.urgentDescription,
+        importance: Importance.high,
+        priority: Priority.high,
+        sound: const RawResourceAndroidNotificationSound(
+          NotificationChannels.customSoundFile,
         ),
+        ongoing: true,
+        autoCancel: false,
+        actions: actions,
+      ),
       EscalationLevel.fullscreen => AndroidNotificationDetails(
-          NotificationChannels.criticalId,
-          NotificationChannels.criticalName,
-          channelDescription: NotificationChannels.criticalDescription,
-          importance: Importance.max,
-          priority: Priority.max,
-          sound: const RawResourceAndroidNotificationSound(
-            NotificationChannels.customSoundFile,
-          ),
-          ongoing: true,
-          autoCancel: false,
-          fullScreenIntent: fullScreenIntent,
-          actions: actions,
+        NotificationChannels.criticalId,
+        NotificationChannels.criticalName,
+        channelDescription: NotificationChannels.criticalDescription,
+        importance: Importance.max,
+        priority: Priority.max,
+        sound: const RawResourceAndroidNotificationSound(
+          NotificationChannels.customSoundFile,
         ),
+        ongoing: true,
+        autoCancel: false,
+        fullScreenIntent: fullScreenIntent,
+        actions: actions,
+      ),
     };
   }
 }

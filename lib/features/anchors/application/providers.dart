@@ -34,5 +34,5 @@ final anchorResolverProvider = Provider<AnchorResolver>((ref) {
 /// Provides the [AnchorNotifier] managing all meal anchors.
 final anchorNotifierProvider =
     AsyncNotifierProvider.autoDispose<AnchorNotifier, List<MealAnchor>>(
-  AnchorNotifier.new,
-);
+      AnchorNotifier.new,
+    );

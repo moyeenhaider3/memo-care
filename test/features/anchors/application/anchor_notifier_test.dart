@@ -62,15 +62,18 @@ void main() {
     mockReminderRepo = _MockReminderRepository();
     mockAlarmScheduler = _MockAlarmScheduler();
 
-    when(() => mockAnchorRepo.watchAll())
-        .thenAnswer((_) => Stream.value([lunchAnchor]));
-    when(() => mockAnchorRepo.updateAnchor(any()))
-        .thenAnswer((_) async => true);
+    when(
+      () => mockAnchorRepo.watchAll(),
+    ).thenAnswer((_) => Stream.value([lunchAnchor]));
+    when(
+      () => mockAnchorRepo.updateAnchor(any()),
+    ).thenAnswer((_) async => true);
     when(() => mockReminderRepo.watchActive()).thenAnswer(
       (_) => Stream.value([afterMealReminder, fixedTimeReminder]),
     );
-    when(() => mockReminderRepo.updateReminder(any()))
-        .thenAnswer((_) async => true);
+    when(
+      () => mockReminderRepo.updateReminder(any()),
+    ).thenAnswer((_) async => true);
     when(
       () => mockAlarmScheduler.schedule(
         reminderId: any(named: 'reminderId'),
@@ -84,12 +87,11 @@ void main() {
     return ProviderContainer(
       overrides: [
         anchorRepositoryProvider.overrideWithValue(mockAnchorRepo),
-        reminder_providers.reminderRepositoryProvider
-            .overrideWithValue(mockReminderRepo),
-        anchorResolverProvider
-            .overrideWithValue(const AnchorResolver()),
-        alarmSchedulerProvider
-            .overrideWithValue(mockAlarmScheduler),
+        reminder_providers.reminderRepositoryProvider.overrideWithValue(
+          mockReminderRepo,
+        ),
+        anchorResolverProvider.overrideWithValue(const AnchorResolver()),
+        alarmSchedulerProvider.overrideWithValue(mockAlarmScheduler),
       ],
     );
   }
@@ -99,16 +101,17 @@ void main() {
       final container = createContainer();
       addTearDown(container.dispose);
 
-      final notifier =
-          container.read(anchorNotifierProvider.notifier);
+      final notifier = container.read(anchorNotifierProvider.notifier);
       await notifier.confirmMeal(
         mealType: 'lunch',
         confirmedAt: lunchTime,
       );
 
-      final captured = verify(
-        () => mockAnchorRepo.updateAnchor(captureAny()),
-      ).captured.single as MealAnchor;
+      final captured =
+          verify(
+                () => mockAnchorRepo.updateAnchor(captureAny()),
+              ).captured.single
+              as MealAnchor;
 
       expect(captured.confirmedAt, lunchTime);
       expect(captured.mealType, 'lunch');
@@ -120,16 +123,17 @@ void main() {
         final container = createContainer();
         addTearDown(container.dispose);
 
-        final notifier =
-            container.read(anchorNotifierProvider.notifier);
+        final notifier = container.read(anchorNotifierProvider.notifier);
         await notifier.confirmMeal(
           mealType: 'lunch',
           confirmedAt: lunchTime,
         );
 
-        final captured = verify(
-          () => mockReminderRepo.updateReminder(captureAny()),
-        ).captured.single as Reminder;
+        final captured =
+            verify(
+                  () => mockReminderRepo.updateReminder(captureAny()),
+                ).captured.single
+                as Reminder;
 
         expect(captured.id, 10);
         expect(
@@ -143,8 +147,7 @@ void main() {
       final container = createContainer();
       addTearDown(container.dispose);
 
-      final notifier =
-          container.read(anchorNotifierProvider.notifier);
+      final notifier = container.read(anchorNotifierProvider.notifier);
       await notifier.confirmMeal(
         mealType: 'lunch',
         confirmedAt: lunchTime,
@@ -160,14 +163,14 @@ void main() {
     });
 
     test('does not update fixedTime reminders', () async {
-      when(() => mockReminderRepo.watchActive())
-          .thenAnswer((_) => Stream.value([fixedTimeReminder]));
+      when(
+        () => mockReminderRepo.watchActive(),
+      ).thenAnswer((_) => Stream.value([fixedTimeReminder]));
 
       final container = createContainer();
       addTearDown(container.dispose);
 
-      final notifier =
-          container.read(anchorNotifierProvider.notifier);
+      final notifier = container.read(anchorNotifierProvider.notifier);
       await notifier.confirmMeal(
         mealType: 'lunch',
         confirmedAt: lunchTime,
@@ -189,21 +192,20 @@ void main() {
       'handles empty active reminders list (no-op after '
       'anchor update)',
       () async {
-        when(() => mockReminderRepo.watchActive())
-            .thenAnswer((_) => Stream.value([]));
+        when(
+          () => mockReminderRepo.watchActive(),
+        ).thenAnswer((_) => Stream.value([]));
 
         final container = createContainer();
         addTearDown(container.dispose);
 
-        final notifier =
-            container.read(anchorNotifierProvider.notifier);
+        final notifier = container.read(anchorNotifierProvider.notifier);
         await notifier.confirmMeal(
           mealType: 'lunch',
           confirmedAt: lunchTime,
         );
 
-        verify(() => mockAnchorRepo.updateAnchor(any()))
-            .called(1);
+        verify(() => mockAnchorRepo.updateAnchor(any())).called(1);
         verifyNever(
           () => mockReminderRepo.updateReminder(any()),
         );
@@ -214,15 +216,13 @@ void main() {
       final container = createContainer();
       addTearDown(container.dispose);
 
-      final notifier =
-          container.read(anchorNotifierProvider.notifier);
+      final notifier = container.read(anchorNotifierProvider.notifier);
       await notifier.confirmMeal(
         mealType: 'brunch',
         confirmedAt: lunchTime,
       );
 
-      final notifierState =
-          container.read(anchorNotifierProvider);
+      final notifierState = container.read(anchorNotifierProvider);
       expect(notifierState.hasError, isTrue);
     });
   });
@@ -232,16 +232,17 @@ void main() {
       final container = createContainer();
       addTearDown(container.dispose);
 
-      final notifier =
-          container.read(anchorNotifierProvider.notifier);
+      final notifier = container.read(anchorNotifierProvider.notifier);
       await notifier.updateDefaultTime(
         mealType: 'lunch',
         minutesFromMidnight: 780,
       );
 
-      final captured = verify(
-        () => mockAnchorRepo.updateAnchor(captureAny()),
-      ).captured.single as MealAnchor;
+      final captured =
+          verify(
+                () => mockAnchorRepo.updateAnchor(captureAny()),
+              ).captured.single
+              as MealAnchor;
 
       expect(captured.defaultTimeMinutes, 780);
     });
@@ -252,15 +253,13 @@ void main() {
         final container = createContainer();
         addTearDown(container.dispose);
 
-        final notifier =
-            container.read(anchorNotifierProvider.notifier);
+        final notifier = container.read(anchorNotifierProvider.notifier);
         await notifier.updateDefaultTime(
           mealType: 'lunch',
           minutesFromMidnight: 780,
         );
 
-        verify(() => mockReminderRepo.updateReminder(any()))
-            .called(1);
+        verify(() => mockReminderRepo.updateReminder(any())).called(1);
         verify(
           () => mockAlarmScheduler.schedule(
             reminderId: any(named: 'reminderId'),

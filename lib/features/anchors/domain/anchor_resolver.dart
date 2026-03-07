@@ -72,26 +72,26 @@ class AnchorResolver {
   }) {
     return switch (reminder.medicineType) {
       MedicineType.beforeMeal => ReminderScheduleUpdate(
-          reminderId: reminder.id,
-          scheduledAt: confirmedAt.add(config.beforeMealOffset),
-        ),
+        reminderId: reminder.id,
+        scheduledAt: confirmedAt.add(config.beforeMealOffset),
+      ),
       MedicineType.afterMeal => ReminderScheduleUpdate(
-          reminderId: reminder.id,
-          scheduledAt: confirmedAt.add(config.afterMealOffset),
-        ),
+        reminderId: reminder.id,
+        scheduledAt: confirmedAt.add(config.afterMealOffset),
+      ),
       MedicineType.doseGap => ReminderScheduleUpdate(
-          reminderId: reminder.id,
-          scheduledAt: confirmedAt.add(
-            Duration(
-              hours: reminder.gapHours ?? config.defaultGapHours,
-            ),
+        reminderId: reminder.id,
+        scheduledAt: confirmedAt.add(
+          Duration(
+            hours: reminder.gapHours ?? config.defaultGapHours,
           ),
         ),
+      ),
       MedicineType.emptyStomach => _resolveEmptyStomach(
-          reminder: reminder,
-          anchor: anchor,
-          confirmedAt: confirmedAt,
-        ),
+        reminder: reminder,
+        anchor: anchor,
+        confirmedAt: confirmedAt,
+      ),
       MedicineType.fixedTime => null,
     };
   }
@@ -112,8 +112,7 @@ class AnchorResolver {
     final lastMealTime = anchor.confirmedAt;
 
     if (lastMealTime != null) {
-      final hoursSinceMeal =
-          confirmedAt.difference(lastMealTime).inHours.abs();
+      final hoursSinceMeal = confirmedAt.difference(lastMealTime).inHours.abs();
       if (hoursSinceMeal < config.emptyStomachFastHours) {
         return null;
       }

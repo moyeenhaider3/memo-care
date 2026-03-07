@@ -51,13 +51,11 @@ class SnoozeLimiter {
   SnoozeDecision evaluate(int currentSnoozeCount) {
     if (currentSnoozeCount >= maxSnoozes) {
       return SnoozeExhausted(
-        reason:
-            'Auto-skipped after $maxSnoozes snooze attempts',
+        reason: 'Auto-skipped after $maxSnoozes snooze attempts',
       );
     }
     return SnoozeAllowed(
-      remainingSnoozes:
-          maxSnoozes - currentSnoozeCount - 1,
+      remainingSnoozes: maxSnoozes - currentSnoozeCount - 1,
     );
   }
 }

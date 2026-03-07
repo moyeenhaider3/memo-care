@@ -76,6 +76,61 @@ class ReminderRepository {
   /// Delete a reminder by ID.
   Future<int> deleteReminder(int id) => _dao.deleteReminder(id);
 
+  /// Watches today's reminders mapped to domain models (VIEW-01).
+  Stream<List<Reminder>> watchToday() {
+    final now = DateTime.now();
+    final todayStart =
+        DateTime.utc(now.year, now.month, now.day);
+    final todayEnd =
+        todayStart.add(const Duration(days: 1));
+    return _dao
+        .watchTodayReminders(
+          todayStartUtcMs:
+              todayStart.millisecondsSinceEpoch,
+          todayEndUtcMs: todayEnd.millisecondsSinceEpoch,
+        )
+        .map((rows) => rows.map(_fromRow).toList());
+  }
+
+  /// Watches missed reminders — past scheduled, still
+  /// pending (VIEW-04).
+  Stream<List<Reminder>> watchMissed() {
+    return _dao
+        .watchMissedReminders(
+          nowUtcMs:
+              DateTime.now().toUtc().millisecondsSinceEpoch,
+        )
+        .map((rows) => rows.map(_fromRow).toList());
+  }
+
+  /// Fetches a page of history entries (HIST-01, HIST-02).
+  Future<List<HistoryQueryRow>> getHistoryPage({
+    required int limit,
+    required int offset,
+    String? medicineNameFilter,
+  }) {
+    return _dao.getHistoryPage(
+      limit: limit,
+      offset: offset,
+      medicineNameFilter: medicineNameFilter,
+    );
+  }
+
+  /// Returns total count for pagination.
+  Future<int> getHistoryCount({
+    String? medicineNameFilter,
+  }) {
+    return _dao.getHistoryTotalCount(
+      medicineNameFilter: medicineNameFilter,
+    );
+  }
+
+  /// Returns distinct medicine names for filter dropdown
+  /// (HIST-03).
+  Future<List<String>> getDistinctMedicineNames() {
+    return _dao.getDistinctMedicineNames();
+  }
+
   // --------------- Mapping ---------------
 
   Reminder _fromRow(ReminderRow row) => Reminder(

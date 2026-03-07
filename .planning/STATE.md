@@ -48,10 +48,10 @@
 
 ## Next Steps
 
-| Action                                  | Command                |
-| --------------------------------------- | ---------------------- |
-| Start Phase 04 Plan 04-01              | Error types            |
-| Then Plans 04-02 through 04-05          | Sequential execution   |
+| Action                         | Command              |
+| ------------------------------ | -------------------- |
+| Start Phase 04 Plan 04-01      | Error types          |
+| Then Plans 04-02 through 04-05 | Sequential execution |
 
 ## Recent Decisions
 

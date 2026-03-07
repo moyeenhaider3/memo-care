@@ -5,11 +5,13 @@
 ## What was built
 
 ### `lib/core/platform/audio_service.dart`
+
 - `AudioService` — wraps `just_audio` for alarm sound looping
 - `startLoop()` — sets LoopMode.one, loads asset, plays
 - `stop()` / `dispose()` — cleanup
 
 ### `lib/features/escalation/application/escalation_controller.dart`
+
 - `EscalationController` — orchestrates full escalation pipeline
 - Coordinates: EscalationFSM + NotificationService + AudioService + WakelockPlus + VolumeController
 - SILENT → show notification
@@ -19,20 +21,24 @@
 - `dispose()` — full cleanup
 
 ### `lib/features/escalation/presentation/fullscreen_alarm_screen.dart`
+
 - `FullScreenAlarmScreen` — dark background, immersive mode
 - Medicine name at 36pt, 80dp DONE (green) and SKIP (red) buttons
 - No SNOOZE at fullscreen tier (prevents infinite loops)
 - Restores system UI on button press
 
 ### `lib/features/escalation/providers/escalation_providers.dart`
+
 - `audioServiceProvider` — manual Provider<AudioService>
 - `escalationControllerProvider` — manual Provider<EscalationController>
 - Both with `ref.onDispose` cleanup
 
 ### `test/features/escalation/application/escalation_controller_test.dart`
+
 - 2 tests for initial state verification
 
 ## Escalation Pipeline Flow
+
 ```
 alarmFiredCallback(reminderId)
   → EscalationController.startEscalation()
@@ -49,5 +55,6 @@ alarmFiredCallback(reminderId)
 ```
 
 ## Test Results
+
 - 67 tests passing (65 previous + 2 new)
 - `dart analyze` — zero issues

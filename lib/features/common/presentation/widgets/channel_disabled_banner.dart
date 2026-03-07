@@ -18,8 +18,7 @@ class ChannelDisabledBanner extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final healthAsync =
-        ref.watch(channelHealthStatusProvider);
+    final healthAsync = ref.watch(channelHealthStatusProvider);
 
     return healthAsync.when(
       data: (status) {

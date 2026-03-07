@@ -109,5 +109,5 @@ class OnboardingNotifier extends Notifier<OnboardingState> {
 /// persists across step navigations.
 final onboardingNotifierProvider =
     NotifierProvider<OnboardingNotifier, OnboardingState>(
-  OnboardingNotifier.new,
-);
+      OnboardingNotifier.new,
+    );

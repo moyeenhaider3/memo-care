@@ -75,17 +75,18 @@ class TemplateMedicine {
 
   @override
   int get hashCode => Object.hash(
-        name,
-        medicineType,
-        defaultDosage,
-        chainPosition,
-        anchorMeal,
-        gapHours,
-        defaultTimeMinutes,
-      );
+    name,
+    medicineType,
+    defaultDosage,
+    chainPosition,
+    anchorMeal,
+    gapHours,
+    defaultTimeMinutes,
+  );
 
   @override
-  String toString() => 'TemplateMedicine('
+  String toString() =>
+      'TemplateMedicine('
       'name: $name, '
       'type: $medicineType, '
       'position: $chainPosition)';
@@ -122,8 +123,7 @@ class TemplateEdge {
   int get hashCode => Object.hash(sourceIndex, targetIndex);
 
   @override
-  String toString() =>
-      'TemplateEdge($sourceIndex → $targetIndex)';
+  String toString() => 'TemplateEdge($sourceIndex → $targetIndex)';
 }
 
 /// A pre-defined medication chain template.
@@ -167,7 +167,8 @@ class TemplatePack {
   final List<TemplateEdge> edges;
 
   @override
-  String toString() => 'TemplatePack('
+  String toString() =>
+      'TemplatePack('
       'id: $id, '
       'name: $name, '
       'medicines: ${medicines.length}, '

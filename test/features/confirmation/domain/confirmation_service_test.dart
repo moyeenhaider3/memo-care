@@ -15,24 +15,22 @@ import 'package:mocktail/mocktail.dart';
 class MockConfirmationRepository extends Mock
     implements ConfirmationRepository {}
 
-class MockChainRepository extends Mock
-    implements ChainRepository {}
+class MockChainRepository extends Mock implements ChainRepository {}
 
 // Test helpers
 Reminder _reminder(int id, {int chainId = 1}) => Reminder(
-      id: id,
-      chainId: chainId,
-      medicineName: 'Med $id',
-      medicineType: MedicineType.fixedTime,
-    );
+  id: id,
+  chainId: chainId,
+  medicineName: 'Med $id',
+  medicineType: MedicineType.fixedTime,
+);
 
-ChainEdge _edge(int source, int target, {int chainId = 1}) =>
-    ChainEdge(
-      id: 0,
-      chainId: chainId,
-      sourceId: source,
-      targetId: target,
-    );
+ChainEdge _edge(int source, int target, {int chainId = 1}) => ChainEdge(
+  id: 0,
+  chainId: chainId,
+  sourceId: source,
+  targetId: target,
+);
 
 void main() {
   late ConfirmationService service;
@@ -98,10 +96,10 @@ void main() {
     test(
       'DONE on leaf returns ActivateDownstream with empty',
       () async {
-        when(() => mockChainRepo.getReminders(1))
-            .thenAnswer((_) async => [_reminder(1)]);
-        when(() => mockChainRepo.getEdges(1))
-            .thenAnswer((_) async => []);
+        when(
+          () => mockChainRepo.getReminders(1),
+        ).thenAnswer((_) async => [_reminder(1)]);
+        when(() => mockChainRepo.getEdges(1)).thenAnswer((_) async => []);
 
         final result = await service.confirm(
           reminderId: 1,
@@ -220,10 +218,10 @@ void main() {
     test(
       'returns ConfirmationFailed when node not found',
       () async {
-        when(() => mockChainRepo.getReminders(1))
-            .thenAnswer((_) async => [_reminder(1)]);
-        when(() => mockChainRepo.getEdges(1))
-            .thenAnswer((_) async => []);
+        when(
+          () => mockChainRepo.getReminders(1),
+        ).thenAnswer((_) async => [_reminder(1)]);
+        when(() => mockChainRepo.getEdges(1)).thenAnswer((_) async => []);
 
         final result = await service.confirm(
           reminderId: 99,
