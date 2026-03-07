@@ -29,7 +29,7 @@ MemoCare is built along its critical dependency path: data foundation → notifi
   4. `flutter analyze` passes with zero warnings (very_good_analysis + riverpod_lint)
   5. Drift database opens and creates empty tables on app launch
   6. Android manifest has all required permissions declared
-**Plans**: TBD
+**Plans**: 3 plans (01-01: Dependencies + Lint, 01-02: Folder Structure + Android Config, 01-03: Drift DB + Code-Gen + Bootstrap)
 
 ### Phase 02: Data Layer + Models
 **Goal**: Create the complete data model for chains, reminders, confirmations, and anchors — the foundation every feature depends on.
@@ -137,7 +137,7 @@ MemoCare is built along its critical dependency path: data foundation → notifi
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 01. Project Foundation | 0/TBD | Not started | - |
+| 01. Project Foundation | 0/3 | Planned | - |
 | 02. Data Layer + Models | 0/TBD | Not started | - |
 | 03. Notification Engine + Alarms | 0/TBD | Not started | - |
 | 04. Chain Engine + Confirmation | 0/TBD | Not started | - |
