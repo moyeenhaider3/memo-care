@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:memo_care/core/presentation/app_shell.dart';
+import 'package:memo_care/features/daily_schedule/presentation/home_screen.dart';
 import 'package:memo_care/features/onboarding/application/onboarding_notifier.dart';
 import 'package:memo_care/features/onboarding/presentation/anchor_step.dart';
 import 'package:memo_care/features/onboarding/presentation/condition_step.dart';
@@ -68,14 +69,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutes.home,
                 name: 'home',
-                builder: (context, state) => const Scaffold(
-                  body: Center(
-                    child: Text(
-                      'Home Screen',
-                      style: TextStyle(fontSize: 24),
-                    ),
-                  ),
-                ),
+                builder: (context, state) =>
+                    const HomeScreen(),
               ),
             ],
           ),
