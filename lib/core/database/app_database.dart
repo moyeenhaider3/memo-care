@@ -53,8 +53,8 @@ class ChainEdges extends Table {
 
   @override
   List<Set<Column<Object>>> get uniqueKeys => [
-        {sourceId, targetId},
-      ];
+    {sourceId, targetId},
+  ];
 }
 
 /// Logs each confirmation action (done / snoozed / skipped).
@@ -111,17 +111,17 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        onCreate: (m) async {
-          await m.createAll();
-        },
-        onUpgrade: (m, from, to) async {
-          // Future migrations go here.
-          // Example:
-          // if (from < 2) {
-          //   await m.addColumn(reminders, reminders.newColumn);
-          // }
-        },
-      );
+    onCreate: (m) async {
+      await m.createAll();
+    },
+    onUpgrade: (m, from, to) async {
+      // Future migrations go here.
+      // Example:
+      // if (from < 2) {
+      //   await m.addColumn(reminders, reminders.newColumn);
+      // }
+    },
+  );
 }
 
 LazyDatabase _openConnection() {

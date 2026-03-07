@@ -46,10 +46,12 @@ void main() {
       );
 
       // Read the RAW INTEGER value from SQLite
-      final result = await db.customSelect(
-        'SELECT created_at FROM reminder_chains WHERE id = ?',
-        variables: [Variable(id)],
-      ).getSingle();
+      final result = await db
+          .customSelect(
+            'SELECT created_at FROM reminder_chains WHERE id = ?',
+            variables: [Variable(id)],
+          )
+          .getSingle();
 
       final storedValue = result.data['created_at'] as int;
 
@@ -67,9 +69,9 @@ void main() {
         ),
       );
 
-      final rows = await (db.select(db.reminderChains)
-            ..where((c) => c.id.equals(id)))
-          .get();
+      final rows = await (db.select(
+        db.reminderChains,
+      )..where((c) => c.id.equals(id))).get();
 
       expect(rows.single.createdAt, equals(original));
       expect(rows.single.createdAt.isUtc, isTrue);
@@ -91,10 +93,12 @@ void main() {
         ),
       );
 
-      final result = await db.customSelect(
-        'SELECT scheduled_at FROM reminders WHERE chain_id = ?',
-        variables: [Variable(chainId)],
-      ).getSingle();
+      final result = await db
+          .customSelect(
+            'SELECT scheduled_at FROM reminders WHERE chain_id = ?',
+            variables: [Variable(chainId)],
+          )
+          .getSingle();
 
       expect(result.data['scheduled_at'], isNull);
     });
@@ -221,8 +225,9 @@ void main() {
         ),
       );
 
-      final latest =
-          await confirmationDao.watchLatestConfirmation(reminderId).first;
+      final latest = await confirmationDao
+          .watchLatestConfirmation(reminderId)
+          .first;
       expect(latest, isNotNull);
       expect(latest!.state, 'done');
     });
@@ -243,8 +248,9 @@ void main() {
         ),
       );
 
-      final latest =
-          await confirmationDao.watchLatestConfirmation(reminderId).first;
+      final latest = await confirmationDao
+          .watchLatestConfirmation(reminderId)
+          .first;
       expect(latest!.state, 'done');
     });
   });
@@ -288,8 +294,9 @@ void main() {
         ),
       );
 
-      final breakfast =
-          await anchorDao.watchAnchorByMealType('breakfast').first;
+      final breakfast = await anchorDao
+          .watchAnchorByMealType('breakfast')
+          .first;
       expect(breakfast, isNotNull);
       expect(breakfast!.mealType, 'breakfast');
       expect(breakfast.defaultTime, 480);

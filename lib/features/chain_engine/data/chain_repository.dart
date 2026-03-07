@@ -15,13 +15,15 @@ class ChainRepository {
   /// Watch all chains as domain models, newest first.
   Stream<List<ReminderChain>> watchAllChains() {
     return _dao.watchAllChains().map(
-          (rows) => rows.map(_chainFromRow).toList(),
-        );
+      (rows) => rows.map(_chainFromRow).toList(),
+    );
   }
 
   /// Watch a single chain by ID.
   Stream<ReminderChain?> watchChainById(int id) {
-    return _dao.watchChainById(id).map(
+    return _dao
+        .watchChainById(id)
+        .map(
           (row) => row == null ? null : _chainFromRow(row),
         );
   }
@@ -61,7 +63,9 @@ class ChainRepository {
 
   /// Watch all edges for a chain as domain models.
   Stream<List<ChainEdge>> watchEdgesForChain(int chainId) {
-    return _dao.watchEdgesForChain(chainId).map(
+    return _dao
+        .watchEdgesForChain(chainId)
+        .map(
           (rows) => rows.map(_edgeFromRow).toList(),
         );
   }
@@ -87,16 +91,16 @@ class ChainRepository {
   // --------------- Mapping ---------------
 
   ReminderChain _chainFromRow(ReminderChainRow row) => ReminderChain(
-        id: row.id,
-        name: row.name,
-        isActive: row.isActive,
-        createdAt: row.createdAt,
-      );
+    id: row.id,
+    name: row.name,
+    isActive: row.isActive,
+    createdAt: row.createdAt,
+  );
 
   ChainEdge _edgeFromRow(ChainEdgeRow row) => ChainEdge(
-        id: row.id,
-        chainId: row.chainId,
-        sourceId: row.sourceId,
-        targetId: row.targetId,
-      );
+    id: row.id,
+    chainId: row.chainId,
+    sourceId: row.sourceId,
+    targetId: row.targetId,
+  );
 }

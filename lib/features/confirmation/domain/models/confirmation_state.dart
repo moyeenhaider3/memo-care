@@ -12,7 +12,8 @@ enum ConfirmationState {
 
   /// Medication declined. Suspends all downstream chain nodes.
   @JsonValue('skipped')
-  skipped('skipped');
+  skipped('skipped')
+  ;
 
   const ConfirmationState(this.dbValue);
 
@@ -21,8 +22,7 @@ enum ConfirmationState {
 
   /// Parse from database TEXT column value.
   static ConfirmationState fromDbString(String value) => values.firstWhere(
-        (e) => e.dbValue == value,
-        orElse: () =>
-            throw ArgumentError('Unknown ConfirmationState: $value'),
-      );
+    (e) => e.dbValue == value,
+    orElse: () => throw ArgumentError('Unknown ConfirmationState: $value'),
+  );
 }

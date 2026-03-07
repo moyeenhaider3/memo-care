@@ -14,14 +14,18 @@ class ConfirmationRepository {
 
   /// Watch all confirmations for a reminder, newest first.
   Stream<List<Confirmation>> watchForReminder(int reminderId) {
-    return _dao.watchConfirmationsForReminder(reminderId).map(
+    return _dao
+        .watchConfirmationsForReminder(reminderId)
+        .map(
           (rows) => rows.map(_fromRow).toList(),
         );
   }
 
   /// Watch the latest confirmation for a reminder.
   Stream<Confirmation?> watchLatest(int reminderId) {
-    return _dao.watchLatestConfirmation(reminderId).map(
+    return _dao
+        .watchLatestConfirmation(reminderId)
+        .map(
           (row) => row == null ? null : _fromRow(row),
         );
   }
@@ -46,10 +50,10 @@ class ConfirmationRepository {
   // --------------- Mapping ---------------
 
   Confirmation _fromRow(ConfirmationRow row) => Confirmation(
-        id: row.id,
-        reminderId: row.reminderId,
-        state: ConfirmationState.fromDbString(row.state),
-        confirmedAt: row.confirmedAt,
-        snoozeUntil: row.snoozeUntil,
-      );
+    id: row.id,
+    reminderId: row.reminderId,
+    state: ConfirmationState.fromDbString(row.state),
+    confirmedAt: row.confirmedAt,
+    snoozeUntil: row.snoozeUntil,
+  );
 }

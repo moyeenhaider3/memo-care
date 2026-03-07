@@ -14,13 +14,15 @@ class AnchorRepository {
   /// Watch all meal anchors as domain models.
   Stream<List<MealAnchor>> watchAll() {
     return _dao.watchAllAnchors().map(
-          (rows) => rows.map(_fromRow).toList(),
-        );
+      (rows) => rows.map(_fromRow).toList(),
+    );
   }
 
   /// Watch a specific anchor by meal type.
   Stream<MealAnchor?> watchByMealType(String mealType) {
-    return _dao.watchAnchorByMealType(mealType).map(
+    return _dao
+        .watchAnchorByMealType(mealType)
+        .map(
           (row) => row == null ? null : _fromRow(row),
         );
   }
@@ -66,9 +68,9 @@ class AnchorRepository {
   // --------------- Mapping ---------------
 
   MealAnchor _fromRow(MealAnchorRow row) => MealAnchor(
-        id: row.id,
-        mealType: row.mealType,
-        defaultTimeMinutes: row.defaultTime,
-        confirmedAt: row.confirmedAt,
-      );
+    id: row.id,
+    mealType: row.mealType,
+    defaultTimeMinutes: row.defaultTime,
+    confirmedAt: row.confirmedAt,
+  );
 }

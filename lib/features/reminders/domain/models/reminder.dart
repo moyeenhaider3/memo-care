@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-
 import 'package:memo_care/features/reminders/domain/models/medicine_type.dart';
 
 part 'reminder.freezed.dart';

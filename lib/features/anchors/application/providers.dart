@@ -2,7 +2,6 @@
 // ignore_for_file: specify_nonobvious_property_types
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:memo_care/core/providers/database_provider.dart';
 import 'package:memo_care/features/anchors/data/anchor_dao.dart';
 import 'package:memo_care/features/anchors/data/anchor_repository.dart';
@@ -19,7 +18,6 @@ final anchorRepositoryProvider = Provider<AnchorRepository>((ref) {
 });
 
 /// Reactive stream of all meal anchors.
-final allAnchorsProvider =
-    StreamProvider.autoDispose<List<MealAnchor>>((ref) {
+final allAnchorsProvider = StreamProvider.autoDispose<List<MealAnchor>>((ref) {
   return ref.watch(anchorRepositoryProvider).watchAll();
 });

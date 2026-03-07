@@ -21,7 +21,8 @@ enum MedicineType {
 
   /// Fire N hours after previous dose was confirmed.
   @JsonValue('dose_gap')
-  doseGap('dose_gap');
+  doseGap('dose_gap')
+  ;
 
   const MedicineType(this.dbValue);
 
@@ -30,7 +31,7 @@ enum MedicineType {
 
   /// Parse from database TEXT column value.
   static MedicineType fromDbString(String value) => values.firstWhere(
-        (e) => e.dbValue == value,
-        orElse: () => throw ArgumentError('Unknown MedicineType: $value'),
-      );
+    (e) => e.dbValue == value,
+    orElse: () => throw ArgumentError('Unknown MedicineType: $value'),
+  );
 }

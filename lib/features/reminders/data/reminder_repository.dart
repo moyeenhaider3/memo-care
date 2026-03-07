@@ -12,20 +12,24 @@ class ReminderRepository {
   /// Watch all active reminders as domain models, ordered by scheduled time.
   Stream<List<Reminder>> watchActive() {
     return _dao.watchActiveReminders().map(
-          (rows) => rows.map(_fromRow).toList(),
-        );
+      (rows) => rows.map(_fromRow).toList(),
+    );
   }
 
   /// Watch all reminders for a specific chain.
   Stream<List<Reminder>> watchForChain(int chainId) {
-    return _dao.watchRemindersForChain(chainId).map(
+    return _dao
+        .watchRemindersForChain(chainId)
+        .map(
           (rows) => rows.map(_fromRow).toList(),
         );
   }
 
   /// Watch a single reminder by ID.
   Stream<Reminder?> watchById(int id) {
-    return _dao.watchReminderById(id).map(
+    return _dao
+        .watchReminderById(id)
+        .map(
           (row) => row == null ? null : _fromRow(row),
         );
   }
@@ -75,13 +79,13 @@ class ReminderRepository {
   // --------------- Mapping ---------------
 
   Reminder _fromRow(ReminderRow row) => Reminder(
-        id: row.id,
-        chainId: row.chainId,
-        medicineName: row.medicineName,
-        medicineType: MedicineType.fromDbString(row.medicineType),
-        dosage: row.dosage,
-        scheduledAt: row.scheduledAt,
-        isActive: row.isActive,
-        gapHours: row.gapHours,
-      );
+    id: row.id,
+    chainId: row.chainId,
+    medicineName: row.medicineName,
+    medicineType: MedicineType.fromDbString(row.medicineType),
+    dosage: row.dosage,
+    scheduledAt: row.scheduledAt,
+    isActive: row.isActive,
+    gapHours: row.gapHours,
+  );
 }

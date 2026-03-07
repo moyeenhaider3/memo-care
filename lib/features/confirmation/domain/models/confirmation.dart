@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-
 import 'package:memo_care/features/confirmation/domain/models/confirmation_state.dart';
 
 part 'confirmation.freezed.dart';

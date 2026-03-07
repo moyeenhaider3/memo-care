@@ -2,7 +2,6 @@
 // ignore_for_file: specify_nonobvious_property_types
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:memo_care/core/providers/database_provider.dart';
 import 'package:memo_care/features/chain_engine/data/chain_dao.dart';
 import 'package:memo_care/features/chain_engine/data/chain_repository.dart';
@@ -20,13 +19,14 @@ final chainRepositoryProvider = Provider<ChainRepository>((ref) {
 });
 
 /// Reactive stream of all reminder chains, newest first.
-final allChainsProvider =
-    StreamProvider.autoDispose<List<ReminderChain>>((ref) {
+final allChainsProvider = StreamProvider.autoDispose<List<ReminderChain>>((
+  ref,
+) {
   return ref.watch(chainRepositoryProvider).watchAllChains();
 });
 
 /// Reactive stream of edges for a specific chain.
-final chainEdgesProvider =
-    StreamProvider.autoDispose.family<List<ChainEdge>, int>((ref, chainId) {
-  return ref.watch(chainRepositoryProvider).watchEdgesForChain(chainId);
-});
+final chainEdgesProvider = StreamProvider.autoDispose
+    .family<List<ChainEdge>, int>((ref, chainId) {
+      return ref.watch(chainRepositoryProvider).watchEdgesForChain(chainId);
+    });

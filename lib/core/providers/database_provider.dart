@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:memo_care/core/database/app_database.dart';
 
 /// Provides the singleton [AppDatabase] instance.

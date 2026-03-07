@@ -54,9 +54,9 @@
 
 ## Next Steps
 
-| Action                                       | Command                |
-| -------------------------------------------- | ---------------------- |
-| Execute Phase 03: Notification Engine        | `/gsd-execute-phase 3` |
+| Action                                | Command                |
+| ------------------------------------- | ---------------------- |
+| Execute Phase 03: Notification Engine | `/gsd-execute-phase 3` |
 
 ## Recent Decisions
 

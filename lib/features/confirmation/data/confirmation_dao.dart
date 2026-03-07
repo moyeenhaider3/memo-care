@@ -1,5 +1,4 @@
 import 'package:drift/drift.dart';
-
 import 'package:memo_care/core/database/app_database.dart';
 
 part 'confirmation_dao.g.dart';
