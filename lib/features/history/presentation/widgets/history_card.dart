@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:memo_care/core/theme/app_theme.dart';
 import 'package:memo_care/features/confirmation/domain/models/confirmation_state.dart';
 import 'package:memo_care/features/history/domain/models/history_entry.dart';
 
@@ -108,19 +109,19 @@ class _StatusChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final (color, icon) = switch (status) {
       ConfirmationState.done => (
-        Colors.green.shade700,
+        AppColors.doneGreen,
         Icons.check_circle,
       ),
       ConfirmationState.skipped => (
-        Colors.grey.shade600,
+        AppColors.skippedGrey,
         Icons.cancel,
       ),
       ConfirmationState.snoozed => (
-        Colors.orange.shade700,
+        AppColors.pendingOrange,
         Icons.snooze,
       ),
       null => (
-        Colors.red.shade700,
+        AppColors.missedRed,
         Icons.warning_amber,
       ),
     };

@@ -489,6 +489,10 @@ class _MedicineCard extends StatelessWidget {
                   icon:
                       const Icon(Icons.edit, size: 24),
                   tooltip: 'Edit ${medicine.name}',
+                  constraints: const BoxConstraints(
+                    minWidth: 56,
+                    minHeight: 56,
+                  ),
                   onPressed: onEdit,
                 ),
               ],

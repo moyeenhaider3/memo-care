@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:memo_care/core/platform/oem_detector.dart';
+import 'package:memo_care/core/theme/app_theme.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 /// Onboarding page that shows device-specific battery
@@ -204,9 +205,9 @@ class _StepCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       step.subInstruction!,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
-                        color: Colors.grey.shade700,
+                        color: AppColors.skippedGrey,
                       ),
                     ),
                   ],

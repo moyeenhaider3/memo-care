@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:memo_care/core/theme/app_theme.dart';
 
 /// Full-screen alarm screen launched by the critical
 /// notification's full-screen intent at the FULLSCREEN
@@ -61,9 +62,14 @@ class FullScreenAlarmScreen extends StatelessWidget {
             horizontal: 32,
             vertical: 48,
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+          child: CustomScrollView(
+            slivers: [
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Column(
+                  mainAxisAlignment:
+                      MainAxisAlignment.center,
+                  children: [
               // Alert icon
               const Icon(
                 Icons.medication_rounded,
@@ -141,7 +147,7 @@ class FullScreenAlarmScreen extends StatelessWidget {
                     ),
                   ),
                   style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFF2ECC71),
+                    backgroundColor: AppColors.doneButtonBackground,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
@@ -172,9 +178,9 @@ class FullScreenAlarmScreen extends StatelessWidget {
                     ),
                   ),
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFFE74C3C),
+                    foregroundColor: const Color(0xFFFF8A80),
                     side: const BorderSide(
-                      color: Color(0xFFE74C3C),
+                      color: Color(0xFFFF8A80),
                       width: 3,
                     ),
                     shape: RoundedRectangleBorder(
@@ -184,6 +190,9 @@ class FullScreenAlarmScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 32),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

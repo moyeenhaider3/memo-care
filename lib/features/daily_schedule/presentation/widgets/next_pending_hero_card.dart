@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:memo_care/core/theme/app_theme.dart';
 import 'package:memo_care/features/daily_schedule/application/daily_schedule_providers.dart';
 import 'package:memo_care/features/reminders/domain/models/reminder.dart';
 
@@ -174,7 +175,7 @@ class _PendingCard extends StatelessWidget {
                           ),
                         ),
                         style: FilledButton.styleFrom(
-                          backgroundColor: Colors.green.shade700,
+                          backgroundColor: AppColors.doneButtonBackground,
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -200,9 +201,9 @@ class _PendingCard extends StatelessWidget {
                           ),
                         ),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.red.shade700,
-                          side: BorderSide(
-                            color: Colors.red.shade700,
+                          foregroundColor: AppColors.skipButtonForeground,
+                          side: const BorderSide(
+                            color: AppColors.skipButtonForeground,
                             width: 2,
                           ),
                           shape: RoundedRectangleBorder(

@@ -61,9 +61,12 @@ class ReminderListTile extends StatelessWidget {
             constraints: const BoxConstraints(minHeight: 56),
             child: Row(
               children: [
-                // Time column
-                SizedBox(
-                  width: 80,
+                // Time column — uses intrinsic width with a
+                // minimum so short times like "1 PM" don't
+                // collapse, while longer text at 200 % font
+                // scale can grow without overflow.
+                ConstrainedBox(
+                  constraints: const BoxConstraints(minWidth: 64),
                   child: Text(
                     timeText,
                     style: theme.textTheme.bodyLarge?.copyWith(

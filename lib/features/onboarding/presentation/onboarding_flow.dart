@@ -61,6 +61,10 @@ class OnboardingFlow extends ConsumerWidget {
                 icon: const Icon(Icons.arrow_back),
                 iconSize: 28,
                 tooltip: 'Go back',
+                constraints: const BoxConstraints(
+                  minWidth: 56,
+                  minHeight: 56,
+                ),
                 onPressed: () {
                   if (currentIndex > 0) {
                     final prevStep =

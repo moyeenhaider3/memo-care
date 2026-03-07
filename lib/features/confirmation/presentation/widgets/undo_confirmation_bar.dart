@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memo_care/core/theme/app_theme.dart';
 import 'package:memo_care/features/confirmation/application/providers.dart';
 import 'package:memo_care/features/confirmation/domain/models/confirmation_state.dart';
 import 'package:memo_care/features/confirmation/domain/models/undoable_confirmation.dart';
@@ -87,7 +88,7 @@ class _UndoConfirmationBarState
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Undo failed: $reason'),
-            backgroundColor: Colors.red.shade700,
+            backgroundColor: AppColors.errorBackground,
           ),
         );
     }

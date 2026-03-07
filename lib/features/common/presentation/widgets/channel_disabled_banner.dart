@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memo_care/core/providers/health_check_providers.dart';
+import 'package:memo_care/core/theme/app_theme.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 /// Non-dismissable banner shown when notification channels are
@@ -25,7 +26,7 @@ class ChannelDisabledBanner extends ConsumerWidget {
         if (status.isHealthy) return const SizedBox.shrink();
 
         return MaterialBanner(
-          backgroundColor: Colors.orange.shade800,
+          backgroundColor: AppColors.warningBackground,
           padding: const EdgeInsets.symmetric(
             horizontal: 16,
             vertical: 12,
@@ -66,7 +67,7 @@ class ChannelDisabledBanner extends ConsumerWidget {
               onPressed: openAppSettings,
               style: TextButton.styleFrom(
                 foregroundColor: Colors.white,
-                backgroundColor: Colors.orange.shade900,
+                backgroundColor: AppColors.warningBackgroundDark,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 8,

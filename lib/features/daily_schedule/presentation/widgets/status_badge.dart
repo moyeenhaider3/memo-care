@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memo_care/core/theme/app_theme.dart';
 import 'package:memo_care/features/confirmation/domain/models/confirmation_state.dart';
 
 /// Status indicator chip for a reminder (VIEW-01).
@@ -62,25 +63,25 @@ class StatusBadge extends StatelessWidget {
 
   (String, Color, IconData) get _config {
     if (status == ConfirmationState.done) {
-      return ('Done', Colors.green.shade700, Icons.check_circle);
+      return ('Done', AppColors.doneGreen, Icons.check_circle);
     }
     if (status == ConfirmationState.skipped) {
       return (
         'Skipped',
-        Colors.grey.shade600,
+        AppColors.skippedGrey,
         Icons.cancel,
       );
     }
     if (isMissed) {
       return (
         'Missed',
-        Colors.red.shade700,
+        AppColors.missedRed,
         Icons.warning_amber,
       );
     }
     return (
       'Pending',
-      Colors.orange.shade700,
+      AppColors.pendingOrange,
       Icons.schedule,
     );
   }
