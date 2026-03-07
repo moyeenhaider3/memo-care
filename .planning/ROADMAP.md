@@ -149,7 +149,7 @@ MemoCare is built along its critical dependency path: data foundation → notifi
 3. Boot-completed rescheduling works on all test devices
 4. App launches, schedules, and fires reminders with zero network connectivity
 5. Permission flows work correctly on Android 12, 13, 14, and 15
-**Plans**: 5 plans (09-01: Patrol Infrastructure, 09-02: Core Flow Tests, 09-03: Notification/Permission Tests, 09-04: Offline/Boot/History Tests, 09-05: OEM Manual Testing Checklist)
+   **Plans**: 5 plans (09-01: Patrol Infrastructure, 09-02: Core Flow Tests, 09-03: Notification/Permission Tests, 09-04: Offline/Boot/History Tests, 09-05: OEM Manual Testing Checklist)
 
 ## Progress
 
@@ -160,7 +160,7 @@ MemoCare is built along its critical dependency path: data foundation → notifi
 | 03. Notification Engine + Alarms         | 0/8            | Planned | -         |
 | 04. Chain Engine + Confirmation          | 0/5            | Planned | -         |
 | 05. Anchor Resolution + Meal Timing      | 0/3            | Planned | -         |
-| 06. Templates + Onboarding              | 0/7            | Planned | -         |
+| 06. Templates + Onboarding               | 0/7            | Planned | -         |
 | 07. Daily View + History + Settings      | 0/5            | Planned | -         |
 | 08. Accessibility + TTS                  | 0/4            | Planned | -         |
 | 09. Integration Testing + OEM Validation | 0/5            | Planned | -         |

@@ -1,10 +1,10 @@
 # ARCHITECTURE.md — MemoCare
 
-| Field       | Value                                              |
-|-------------|----------------------------------------------------|
-| Domain      | Offline-first medication reminder (Android/Flutter) |
-| Date        | 2026-03-07                                         |
-| Confidence  | HIGH — patterns validated against Drift, Riverpod, and Android alarm APIs |
+| Field      | Value                                                                     |
+| ---------- | ------------------------------------------------------------------------- |
+| Domain     | Offline-first medication reminder (Android/Flutter)                       |
+| Date       | 2026-03-07                                                                |
+| Confidence | HIGH — patterns validated against Drift, Riverpod, and Android alarm APIs |
 
 ---
 
@@ -52,6 +52,7 @@
 ```
 
 The domain layer is **pure Dart** — no Flutter imports. This enables:
+
 - Unit-testing without widget test harness
 - Running chain evaluation inside a Dart isolate for background processing
 - Sharing logic between `workmanager` background tasks and foreground UI
@@ -60,20 +61,20 @@ The domain layer is **pure Dart** — no Flutter imports. This enables:
 
 ## 2. Component Responsibilities
 
-| Component             | Responsibility                                                        | Key Dependency            |
-|-----------------------|-----------------------------------------------------------------------|---------------------------|
-| **ChainEngine**       | Evaluate DAG edges, fire next node on DONE, suspend on SKIP           | Pure Dart, fpdart          |
-| **AnchorResolver**    | Convert fuzzy anchors ("after lunch") to DateTime; recalc dependents  | Pure Dart                  |
-| **EscalationFSM**     | Drive SILENT → AUDIBLE → FULLSCREEN per reminder                      | Pure Dart, rxdart          |
-| **ChainDao**          | CRUD for `reminder_chains`, `chain_edges` tables                      | Drift                     |
-| **ReminderDao**       | CRUD for `reminders`, `reminder_schedules`; reactive streams          | Drift                     |
-| **ConfirmationDao**   | Log confirmations (DONE/SNOOZED/SKIPPED) with timestamps             | Drift                     |
-| **AlarmScheduler**    | Schedule/cancel exact Android alarms via platform channel             | android_alarm_manager_plus |
-| **NotificationSvc**   | Build and display tiered notifications (silent, sound, fullscreen)    | flutter_local_notifications|
-| **TemplateService**   | Load/apply template packs (Diabetic, BP, School Morning)              | Pure Dart + Drift          |
-| **OnboardingOrch.**   | Orchestrate onboarding flow: condition→template→anchors→meds→review   | Riverpod, GoRouter         |
-| **TTSService**        | Read reminder text aloud, respect user language/speed prefs           | flutter_tts                |
-| **VoiceCommandSvc**   | Parse spoken confirmations ("done", "skip", "snooze 10 min")         | speech_to_text             |
+| Component           | Responsibility                                                       | Key Dependency              |
+| ------------------- | -------------------------------------------------------------------- | --------------------------- |
+| **ChainEngine**     | Evaluate DAG edges, fire next node on DONE, suspend on SKIP          | Pure Dart, fpdart           |
+| **AnchorResolver**  | Convert fuzzy anchors ("after lunch") to DateTime; recalc dependents | Pure Dart                   |
+| **EscalationFSM**   | Drive SILENT → AUDIBLE → FULLSCREEN per reminder                     | Pure Dart, rxdart           |
+| **ChainDao**        | CRUD for `reminder_chains`, `chain_edges` tables                     | Drift                       |
+| **ReminderDao**     | CRUD for `reminders`, `reminder_schedules`; reactive streams         | Drift                       |
+| **ConfirmationDao** | Log confirmations (DONE/SNOOZED/SKIPPED) with timestamps             | Drift                       |
+| **AlarmScheduler**  | Schedule/cancel exact Android alarms via platform channel            | android_alarm_manager_plus  |
+| **NotificationSvc** | Build and display tiered notifications (silent, sound, fullscreen)   | flutter_local_notifications |
+| **TemplateService** | Load/apply template packs (Diabetic, BP, School Morning)             | Pure Dart + Drift           |
+| **OnboardingOrch.** | Orchestrate onboarding flow: condition→template→anchors→meds→review  | Riverpod, GoRouter          |
+| **TTSService**      | Read reminder text aloud, respect user language/speed prefs          | flutter_tts                 |
+| **VoiceCommandSvc** | Parse spoken confirmations ("done", "skip", "snooze 10 min")         | speech_to_text              |
 
 ---
 
@@ -530,15 +531,16 @@ EscalationLevel.fullscreen →  NotificationSvc.show(
 
 ## 6. State Management Approach
 
-| Provider Type              | Use Case                                      | Example                              |
-|----------------------------|-----------------------------------------------|--------------------------------------|
-| `@Riverpod(keepAlive: true)` | App-wide singletons (DB, services)           | `appDatabaseProvider`                |
-| `@riverpod StreamProvider`  | Reactive Drift queries → UI lists             | `activeRemindersProvider`            |
-| `@riverpod AsyncNotifier`   | Chain state with imperative mutations          | `ChainStateNotifier`                 |
-| `@riverpod`                 | Computed/derived values                        | `nextReminderProvider`               |
-| `@riverpod FutureProvider`  | One-shot loads (template packs, onboarding)   | `templatePackProvider`               |
+| Provider Type                | Use Case                                    | Example                   |
+| ---------------------------- | ------------------------------------------- | ------------------------- |
+| `@Riverpod(keepAlive: true)` | App-wide singletons (DB, services)          | `appDatabaseProvider`     |
+| `@riverpod StreamProvider`   | Reactive Drift queries → UI lists           | `activeRemindersProvider` |
+| `@riverpod AsyncNotifier`    | Chain state with imperative mutations       | `ChainStateNotifier`      |
+| `@riverpod`                  | Computed/derived values                     | `nextReminderProvider`    |
+| `@riverpod FutureProvider`   | One-shot loads (template packs, onboarding) | `templatePackProvider`    |
 
 **Rules:**
+
 1. **No global mutable state.** All mutable state lives in `AsyncNotifier` or `StateNotifier` providers.
 2. **Drift streams drive UI.** Repositories expose `Stream<List<T>>`; `StreamProvider` translates to `AsyncValue<List<T>>`.
 3. **Chain engine is stateless.** It receives inputs (chain, confirmed ID, state) and returns outputs. No cached state.
@@ -548,16 +550,16 @@ EscalationLevel.fullscreen →  NotificationSvc.show(
 
 ## 7. Anti-Patterns to Avoid
 
-| Anti-Pattern                          | Why It's Dangerous Here                                                         | Correct Approach                                    |
-|---------------------------------------|---------------------------------------------------------------------------------|-----------------------------------------------------|
-| **Chain logic in UI layer**           | Untestable; can't run in background isolate                                    | Pure Dart domain class, no Flutter imports            |
-| **Direct SQLite calls (no Drift)**    | Loses type safety, reactive streams, migration support                          | Always go through Drift DAOs                         |
-| **Single notification channel**       | Android groups all notifications; escalation tiers collapse                     | Separate channels: `silent`, `urgent`, `critical`    |
-| **Timer-based alarm scheduling**      | Killed by Doze mode; unreliable after app process death                         | `android_alarm_manager_plus` with exact alarms       |
-| **Storing chain graph in JSON blob**  | Can't query edges, validate constraints, or stream changes                     | Relational tables: `chains`, `edges`, `reminders`    |
-| **Fat providers**                     | One provider doing data fetch + chain eval + alarm scheduling                  | Split: repo provider → engine → scheduler            |
-| **Ignoring isolate boundary**         | Passing non-serializable objects to `alarmCallback`                            | Pass only IDs; re-hydrate from Drift in isolate      |
-| **Hardcoded escalation timeouts**     | Users in different contexts need different urgency                              | Store timeouts in `user_preferences` table           |
+| Anti-Pattern                         | Why It's Dangerous Here                                       | Correct Approach                                  |
+| ------------------------------------ | ------------------------------------------------------------- | ------------------------------------------------- |
+| **Chain logic in UI layer**          | Untestable; can't run in background isolate                   | Pure Dart domain class, no Flutter imports        |
+| **Direct SQLite calls (no Drift)**   | Loses type safety, reactive streams, migration support        | Always go through Drift DAOs                      |
+| **Single notification channel**      | Android groups all notifications; escalation tiers collapse   | Separate channels: `silent`, `urgent`, `critical` |
+| **Timer-based alarm scheduling**     | Killed by Doze mode; unreliable after app process death       | `android_alarm_manager_plus` with exact alarms    |
+| **Storing chain graph in JSON blob** | Can't query edges, validate constraints, or stream changes    | Relational tables: `chains`, `edges`, `reminders` |
+| **Fat providers**                    | One provider doing data fetch + chain eval + alarm scheduling | Split: repo provider → engine → scheduler         |
+| **Ignoring isolate boundary**        | Passing non-serializable objects to `alarmCallback`           | Pass only IDs; re-hydrate from Drift in isolate   |
+| **Hardcoded escalation timeouts**    | Users in different contexts need different urgency            | Store timeouts in `user_preferences` table        |
 
 ---
 
@@ -582,14 +584,14 @@ EscalationLevel.fullscreen →  NotificationSvc.show(
 
 **Boundary contracts:**
 
-| Boundary                         | Interface                                                  | Data Crossing               |
-|----------------------------------|------------------------------------------------------------|-----------------------------|
-| Confirmation → ChainEngine      | `ChainEngine.evaluate(chain, id, state)`                   | `ConfirmationState` enum    |
-| ChainEngine → AlarmScheduler    | `AlarmScheduler.scheduleAll(List<Reminder>)`               | Domain `Reminder` models    |
-| ChainEngine → AnchorResolver    | `AnchorResolver.resolve(anchor, confirmedAt, dependents)`  | `MealAnchor` + `DateTime`  |
-| AlarmScheduler → NotificationSvc| `NotificationSvc.show(reminder, escalationLevel)`          | `Reminder` + `EscalationLevel` |
-| NotificationSvc → TTSService    | `TTSService.speak(reminder.displayText)`                   | `String`                    |
-| Background Isolate → Drift DB   | Open fresh `AppDatabase()` instance in isolate             | Reminder ID (int)           |
+| Boundary                         | Interface                                                 | Data Crossing                  |
+| -------------------------------- | --------------------------------------------------------- | ------------------------------ |
+| Confirmation → ChainEngine       | `ChainEngine.evaluate(chain, id, state)`                  | `ConfirmationState` enum       |
+| ChainEngine → AlarmScheduler     | `AlarmScheduler.scheduleAll(List<Reminder>)`              | Domain `Reminder` models       |
+| ChainEngine → AnchorResolver     | `AnchorResolver.resolve(anchor, confirmedAt, dependents)` | `MealAnchor` + `DateTime`      |
+| AlarmScheduler → NotificationSvc | `NotificationSvc.show(reminder, escalationLevel)`         | `Reminder` + `EscalationLevel` |
+| NotificationSvc → TTSService     | `TTSService.speak(reminder.displayText)`                  | `String`                       |
+| Background Isolate → Drift DB    | Open fresh `AppDatabase()` instance in isolate            | Reminder ID (int)              |
 
 **Key constraint:** The chain engine never directly calls platform services. The application layer (Riverpod notifiers) orchestrates domain → platform handoff. This keeps the domain layer testable with zero mocking of platform channels.
 
@@ -647,16 +649,16 @@ CREATE TABLE meal_anchors (
 
 The architecture layers map directly to the `FEATURES.md` build order:
 
-| Phase | Feature              | Architecture Layer                       |
-|-------|----------------------|------------------------------------------|
-| 1     | Storage              | `core/database/` — Drift DB + migrations |
-| 2     | Data Model           | `features/*/domain/models/` — Freezed    |
-| 3     | Notification Engine  | `core/platform/notification_service.dart` |
-| 4     | Confirmation States  | `features/confirmation/`                 |
-| 5     | Chain Engine         | `features/chain_engine/domain/`          |
-| 6     | Meal Anchoring       | `features/anchors/`                      |
-| 7     | Templates            | `features/templates/`                    |
-| 8     | NLP                  | `features/nlp/` (v1.x deferred)         |
+| Phase | Feature             | Architecture Layer                        |
+| ----- | ------------------- | ----------------------------------------- |
+| 1     | Storage             | `core/database/` — Drift DB + migrations  |
+| 2     | Data Model          | `features/*/domain/models/` — Freezed     |
+| 3     | Notification Engine | `core/platform/notification_service.dart` |
+| 4     | Confirmation States | `features/confirmation/`                  |
+| 5     | Chain Engine        | `features/chain_engine/domain/`           |
+| 6     | Meal Anchoring      | `features/anchors/`                       |
+| 7     | Templates           | `features/templates/`                     |
+| 8     | NLP                 | `features/nlp/` (v1.x deferred)           |
 
 Each phase only depends on layers completed in prior phases. No forward references.
 
@@ -664,8 +666,8 @@ Each phase only depends on layers completed in prior phases. No forward referenc
 
 ## 11. Sources
 
-| Source                                     | Relevance                                      |
-|--------------------------------------------|-------------------------------------------------|
+| Source                                     | Relevance                                        |
+| ------------------------------------------ | ------------------------------------------------ |
 | Drift documentation (drift.simonbinder.eu) | DAO pattern, reactive streams, isolate usage     |
 | Riverpod docs (riverpod.dev)               | AsyncNotifier, code-gen, provider lifecycle      |
 | android_alarm_manager_plus README          | Exact alarm API, isolate callback constraints    |

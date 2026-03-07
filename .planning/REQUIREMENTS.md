@@ -144,45 +144,47 @@ Deferred to post-launch. Tracked for future roadmap.
 
 ## Out of Scope
 
-| Feature | Reason |
-|---------|--------|
-| Caregiver/family portal | Requires cloud backend, auth, permissions — v2 |
-| Caregiver SMS / auto-call escalation | Third-party telephony services — v2 |
-| Ramadan/fasting mode | Complex chain rewiring around Sehri/Iftar — v2 |
-| Social/communication reminders | Scope creep beyond medication focus — v2 |
-| iOS / web / desktop | Android-only for v1 |
-| Cloud sync / cross-device | Offline-only for v1 |
-| Kids dashboard | Multi-user model required — v2 |
-| Visual timeline builder (drag-and-drop) | Template + form is sufficient — v2 |
-| Drug interaction checker | Licensed medical database, liability — never |
-| Pill identification (camera) | Complex ML, orthogonal to core — never |
-| Gamification (streaks, badges) | Potentially patronizing for elderly audience — revisit v2 |
-| Vitals logging (weight, BP readings) | Separate product category — v2+ |
-| Refill reminders | Inventory tracking adds data entry burden — v2 |
-| Multilingual UI | English-only UI for v1; externalize strings from day 1 for future i18n |
+| Feature                                 | Reason                                                                 |
+| --------------------------------------- | ---------------------------------------------------------------------- |
+| Caregiver/family portal                 | Requires cloud backend, auth, permissions — v2                         |
+| Caregiver SMS / auto-call escalation    | Third-party telephony services — v2                                    |
+| Ramadan/fasting mode                    | Complex chain rewiring around Sehri/Iftar — v2                         |
+| Social/communication reminders          | Scope creep beyond medication focus — v2                               |
+| iOS / web / desktop                     | Android-only for v1                                                    |
+| Cloud sync / cross-device               | Offline-only for v1                                                    |
+| Kids dashboard                          | Multi-user model required — v2                                         |
+| Visual timeline builder (drag-and-drop) | Template + form is sufficient — v2                                     |
+| Drug interaction checker                | Licensed medical database, liability — never                           |
+| Pill identification (camera)            | Complex ML, orthogonal to core — never                                 |
+| Gamification (streaks, badges)          | Potentially patronizing for elderly audience — revisit v2              |
+| Vitals logging (weight, BP readings)    | Separate product category — v2+                                        |
+| Refill reminders                        | Inventory tracking adds data entry burden — v2                         |
+| Multilingual UI                         | English-only UI for v1; externalize strings from day 1 for future i18n |
 
 ## Traceability
 
-| Requirement | Phase | Status |
-|-------------|-------|--------|
-| FNDN-01..05 | Phase 01 | Pending |
-| DATA-01..07 | Phase 02 | Pending |
-| NOTF-01..09 | Phase 03 | Pending |
-| ESCL-01..06 | Phase 03 | Pending |
+| Requirement  | Phase    | Status  |
+| ------------ | -------- | ------- |
+| FNDN-01..05  | Phase 01 | Pending |
+| DATA-01..07  | Phase 02 | Pending |
+| NOTF-01..09  | Phase 03 | Pending |
+| ESCL-01..06  | Phase 03 | Pending |
 | CHAIN-01..06 | Phase 04 | Pending |
-| ANCR-01..05 | Phase 05 | Pending |
-| TMPL-01..05 | Phase 06 | Pending |
-| ONBD-01..05 | Phase 06 | Pending |
-| VIEW-01..05 | Phase 07 | Pending |
-| HIST-01..03 | Phase 07 | Pending |
-| A11Y-01..07 | Phase 08 | Pending |
-| OFFL-01..03 | Phase 09 | Pending |
+| ANCR-01..05  | Phase 05 | Pending |
+| TMPL-01..05  | Phase 06 | Pending |
+| ONBD-01..05  | Phase 06 | Pending |
+| VIEW-01..05  | Phase 07 | Pending |
+| HIST-01..03  | Phase 07 | Pending |
+| A11Y-01..07  | Phase 08 | Pending |
+| OFFL-01..03  | Phase 09 | Pending |
 
 **Coverage:**
+
 - v1.0 requirements: 62 total
 - Mapped to phases: 62
 - Unmapped: 0 ✓
 
 ---
-*Requirements defined: 2026-03-07*
-*Last updated: 2026-03-07 after research synthesis*
+
+_Requirements defined: 2026-03-07_
+_Last updated: 2026-03-07 after research synthesis_

@@ -14,16 +14,16 @@
 
 ## Plan Summary
 
-| Phase | Plans | Waves | Notes |
-| ----- | ----- | ----- | ----- |
-| 01    | 3     | 2     | Dependencies, folder structure, Drift+bootstrap |
-| 02    | 4     | 4     | Enums+models, DAOs, repos+providers, unit tests |
-| 03    | 8     | 3     | FSM, notifications, permissions, alarms, OEM, boot, full-screen |
-| 04    | 5     | 4     | Error types, validator (TDD), engine (TDD), confirmation, notifiers |
-| 05    | 3     | 3     | Anchor models, resolver (TDD), notifier+integration |
-| 06    | 7     | 3     | Templates, onboarding state, service, router, 3 UI steps |
-| 07    | 5     | 3     | Router+settings, providers, home, history+settings, chain detail |
-| 08    | 4     | 2     | TTS, undo bar, font/contrast audit, semantics+TalkBack |
+| Phase | Plans | Waves | Notes                                                                   |
+| ----- | ----- | ----- | ----------------------------------------------------------------------- |
+| 01    | 3     | 2     | Dependencies, folder structure, Drift+bootstrap                         |
+| 02    | 4     | 4     | Enums+models, DAOs, repos+providers, unit tests                         |
+| 03    | 8     | 3     | FSM, notifications, permissions, alarms, OEM, boot, full-screen         |
+| 04    | 5     | 4     | Error types, validator (TDD), engine (TDD), confirmation, notifiers     |
+| 05    | 3     | 3     | Anchor models, resolver (TDD), notifier+integration                     |
+| 06    | 7     | 3     | Templates, onboarding state, service, router, 3 UI steps                |
+| 07    | 5     | 3     | Router+settings, providers, home, history+settings, chain detail        |
+| 08    | 4     | 2     | TTS, undo bar, font/contrast audit, semantics+TalkBack                  |
 | 09    | 5     | 3     | Patrol infra, core flows, notification tests, offline tests, OEM manual |
 
 ## Completed Artifacts
@@ -52,10 +52,10 @@
 
 ## Next Steps
 
-| Action                                      | Command                |
-| ------------------------------------------- | ---------------------- |
-| Execute Phase 01: Project Foundation        | `/gsd-execute-phase 1` |
-| Execute Phase 02: Data Layer + Models       | `/gsd-execute-phase 2` |
+| Action                                | Command                |
+| ------------------------------------- | ---------------------- |
+| Execute Phase 01: Project Foundation  | `/gsd-execute-phase 1` |
+| Execute Phase 02: Data Layer + Models | `/gsd-execute-phase 2` |
 
 ## Recent Decisions
 

@@ -16,6 +16,7 @@
 **Why it happens:** OEMs add proprietary battery optimization layers on top of stock Android Doze. MIUI's "Battery Saver" kills background processes after 10 minutes. Samsung's "Sleeping Apps" list silently adds apps after 3 days of low foreground use. These bypass `AlarmManager.setExactAndAllowWhileIdle()`.
 
 **How to avoid:**
+
 - Use a **foreground service with notification** for active reminder windows (not just alarm callbacks)
 - Implement OEM-specific detection: check `Build.MANUFACTURER` and guide users through whitelisting (AutoStart on Xiaomi, "Unmonitored apps" on Samsung)
 - Show an onboarding screen with device-specific battery optimization disable instructions
@@ -35,6 +36,7 @@
 **Why it happens:** DAG validation isn't enforced at write time. The chain builder UI allows arbitrary linking. Template pack import doesn't run cycle detection. A "dose-gap" reminder that depends on "after-meal" which depends on "before-meal" seems linear but can cycle if the user edits the after-meal to also trigger on the dose-gap's completion.
 
 **How to avoid:**
+
 - Run **topological sort** (Kahn's algorithm) on every chain mutation — reject if cycle detected
 - Store `in_degree` counts in Drift and validate invariants on write
 - Limit max chain depth to 10 (no medical regimen needs deeper)
@@ -54,6 +56,7 @@
 **Why it happens:** Drift migrations are imperative SQL. Skipping a version (1→3 directly), renaming columns without `ALTER TABLE`, or adding NOT NULL columns without defaults all crash. Testing only covers fresh installs, not upgrade paths from every prior version.
 
 **How to avoid:**
+
 - Write **every migration as a separate numbered `.dart` file** with rollback SQL
 - Test upgrade path matrix: v1→v2, v1→v3, v2→v3 in integration tests
 - Always add columns as `NULLABLE` or with `DEFAULT` values
@@ -74,6 +77,7 @@
 **Why it happens:** Android 12 introduced `SCHEDULE_EXACT_ALARM` (auto-granted for alarm apps). Android 13 added `POST_NOTIFICATIONS` runtime permission. Android 14 made `USE_FULL_SCREEN_INTENT` a special permission — only auto-granted for apps in the "Communication" or "Alarm" category. Android 15 further restricted background activity launches. Each version changes the rules.
 
 **How to avoid:**
+
 - Check `NotificationManager.canUseFullScreenIntent()` on Android 14+ before relying on it
 - If denied, guide user to Settings → Apps → Special access → Full-screen notifications
 - Declare `<category android:name="android.intent.category.ALARM" />` in manifest to get auto-grant on Android 14
@@ -93,6 +97,7 @@
 **Why it happens:** Each alarm schedules independently. Snooze creates additional alarms. Chain triggers fire synchronously, each scheduling its own alarm. No batching or coalescing.
 
 **How to avoid:**
+
 - **Batch alarms** within a 2-minute window into a single alarm that fires multiple notifications
 - Cap snooze retries per reminder (max 3 snoozes, then auto-SKIP with escalation to caregiver)
 - Use a single recurring `AlarmManager` alarm every 1 minute during active hours, check Drift for due reminders (alarm-as-scheduler pattern)
@@ -112,6 +117,7 @@
 **Why it happens:** The chain engine eagerly resolves the entire downstream DAG on each confirmation. With `fpdart` functional chains, it's tempting to do a pure recursive resolution — but pure doesn't mean fast.
 
 **How to avoid:**
+
 - **Lazy resolution:** On confirmation, only schedule the immediate next step(s). Each step schedules its own successors when it fires.
 - Add `max_cascade_depth` per trigger (default: 1 level ahead, configurable to 2 for dose-gap)
 - Use `Isolate` for chain computation if resolution touches > 5 nodes
@@ -130,6 +136,7 @@
 **Why it happens:** Accessibility tested with default font scale only. `Semantics` widgets added as afterthought. Elderly testing done by 30-year-old developers, not actual 70-year-old users with tremor and presbyopia.
 
 **How to avoid:**
+
 - Set minimum touch target to **56dp** (above Material's 48dp) for all interactive elements
 - Test at **200% font scale** and **largest display size** on device settings
 - Every widget gets a `Semantics` label that reads as natural language: "Take Metformin 500mg, tap to confirm"
@@ -150,6 +157,7 @@
 **Why it happens:** TFLite models aren't tree-shaken. Dictionary/vocabulary files for Hindi NER add bulk. Default quantization (float32) isn't applied.
 
 **How to avoid:**
+
 - Use **int8 quantization** — reduces model 4x with < 2% accuracy loss for NER tasks
 - Ship NLP as an **on-demand module** via Play Feature Delivery (deferred download post-install)
 - Start with **regex + rule-based parser** for v0.x, only add TFLite in v1.x when proven necessary
@@ -169,6 +177,7 @@
 **Why it happens:** Snooze is treated as "not yet decided" rather than a distinct state with limits. The chain engine waits for DONE/SKIPPED to propagate but SNOOZED is an infinite limbo.
 
 **How to avoid:**
+
 - **Max snooze count per reminder:** 3 (configurable per med type). After max, auto-transition to SKIPPED with reason "auto-skipped after max snooze"
 - Snooze timeout: if snoozed 3x, fire escalation tier 3 (full-screen) regardless of normal escalation schedule
 - SNOOZED state must propagate a "tentative schedule" to downstream chain steps so they aren't fully blocked
@@ -187,6 +196,7 @@
 **Why it happens:** Dart's `DateTime` has `isUtc` but no proper timezone database. `AlarmManager` uses epoch millis (UTC). Converting between local display time and stored UTC time without anchoring to a zone database causes drift.
 
 **How to avoid:**
+
 - Store all times as **UTC epoch millis** in Drift
 - Use `timezone` package with IANA database for display conversion
 - For dose-gap calculations, use `Duration` from UTC anchors, never local `DateTime` arithmetic
@@ -206,6 +216,7 @@
 **Why it happens:** `BOOT_COMPLETED` BroadcastReceiver isn't registered, or it's registered but the Flutter engine isn't initialized in the receiver so Drift can't be queried for pending reminders.
 
 **How to avoid:**
+
 - Register `BOOT_COMPLETED` and `QUICKBOOT_POWERON` (HTC/some OEMs) receivers in `AndroidManifest.xml`
 - In the receiver, start a **headless Flutter engine** (`FlutterEngine` in `Application.onCreate`) to query Drift and reschedule all pending alarms
 - Also handle `ACTION_MY_PACKAGE_REPLACED` (app update clears alarms on some devices)
@@ -225,6 +236,7 @@
 **Why it happens:** `NotificationManager.notify()` silently drops notifications when the channel is disabled. There's no exception. The `areNotificationsEnabled()` API exists but apps rarely check it proactively.
 
 **How to avoid:**
+
 - Check `NotificationManager.areNotificationsEnabled()` **and** `NotificationChannel.getImportance() != IMPORTANCE_NONE` on each app foreground resume
 - If disabled, show an **in-app banner** (not a notification, obviously) with a direct intent to channel settings
 - Create notification channels with `IMPORTANCE_HIGH` and names like "Medication Reminders — Critical" so users understand the consequence of disabling
@@ -239,37 +251,41 @@
 
 ## 2. Technical Debt Patterns
 
-| Shortcut | Why It's Tempting | Long-Term Cost |
-|----------|-------------------|----------------|
-| Storing alarm times as local `DateTime` strings | Simple to read in debug | Breaks on DST, impossible to sort/query across zones |
-| Single Drift database file for everything | Fast to start | 50MB+ DB on heavy users, migration is all-or-nothing, can't archive old chains |
-| `setState` for notification state | Quick UI update | State lost on widget rebuild, impossible to test, Riverpod exists for this |
-| Hardcoding escalation timings | "We'll make it configurable later" | Every med type needs different escalation; hardcoded = rewrite |
-| Skipping `freezed` for chain state models | "Too much codegen" | Mutable state in DAG traversal = race conditions, impossible equality checks |
-| One giant `ReminderProvider` | "It's all related" | 800-line provider, untestable, every UI rebuild triggers full chain recompute |
-| String-based medicine type checks | `if (type == "before-meal")` | Typo = silent bug, no exhaustive switch, add new type = grep entire codebase |
-| Platform channel for every Android API | Direct control | Maintenance burden, version skew, `method_channel` error handling is verbose |
+| Shortcut                                        | Why It's Tempting                  | Long-Term Cost                                                                 |
+| ----------------------------------------------- | ---------------------------------- | ------------------------------------------------------------------------------ |
+| Storing alarm times as local `DateTime` strings | Simple to read in debug            | Breaks on DST, impossible to sort/query across zones                           |
+| Single Drift database file for everything       | Fast to start                      | 50MB+ DB on heavy users, migration is all-or-nothing, can't archive old chains |
+| `setState` for notification state               | Quick UI update                    | State lost on widget rebuild, impossible to test, Riverpod exists for this     |
+| Hardcoding escalation timings                   | "We'll make it configurable later" | Every med type needs different escalation; hardcoded = rewrite                 |
+| Skipping `freezed` for chain state models       | "Too much codegen"                 | Mutable state in DAG traversal = race conditions, impossible equality checks   |
+| One giant `ReminderProvider`                    | "It's all related"                 | 800-line provider, untestable, every UI rebuild triggers full chain recompute  |
+| String-based medicine type checks               | `if (type == "before-meal")`       | Typo = silent bug, no exhaustive switch, add new type = grep entire codebase   |
+| Platform channel for every Android API          | Direct control                     | Maintenance burden, version skew, `method_channel` error handling is verbose   |
 
 ---
 
 ## 3. Integration Gotchas
 
 ### Android Alarm Manager
+
 - `setExactAndAllowWhileIdle()` has a **minimum 9-minute interval** in Doze on Android 12+. Scheduling two alarms 5 minutes apart? Second one gets deferred.
 - `PendingIntent` extras are limited in size. Don't pass full medication JSON — pass the Drift row ID and query in the callback.
 - `PendingIntent.FLAG_UPDATE_CURRENT` vs `FLAG_NO_CREATE`: Using the wrong flag silently replaces or ignores alarm updates. Use unique request codes per reminder (hash of `chain_id + step_index`).
 
 ### flutter_local_notifications
+
 - Android 13+ requires `POST_NOTIFICATIONS` permission at runtime. The plugin's `requestPermissions()` must be called and the result checked — it can return `false` permanently if the user selects "Don't ask again."
 - Custom notification sounds must be in `res/raw/`, not assets. Flutter asset bundling doesn't put files there. Requires manual Android-side setup.
 - `BigTextStyleInformation` truncates at ~450 characters. Medication instructions longer than this get cut off silently.
 
 ### Drift (SQLite)
+
 - WAL mode is enabled by default. On app crash during write, WAL file can grow unbounded. Add `PRAGMA wal_checkpoint(TRUNCATE)` on app startup.
 - `SELECT` during `transaction()` block sees uncommitted writes in the same transaction (SQLite isolation is serializable within a connection). This is correct but surprising — chain state queries inside a confirmation transaction will see the just-updated state.
 - Custom SQL queries bypass Drift's type safety. Every raw query is a migration risk.
 
 ### WorkManager
+
 - Minimum periodic interval is **15 minutes**. Cannot be used as a reliable alarm for medication reminders that need minute-level precision.
 - `OneTimeWorkRequest` with initial delay is **not exact** — subject to Doze batching. Only use as a fallback heartbeat, never as the primary alarm mechanism.
 
@@ -278,18 +294,22 @@
 ## 4. Performance Traps
 
 ### Many Medications, Long Chains
+
 - A user on 12 medications with 3 doses each = 36 reminders/day. If each has a 3-step chain with branching, the DAG has 100+ nodes. Querying all pending nodes on boot with joins across `reminders`, `chain_steps`, and `medications` tables without proper indexing = 500ms+ on budget devices.
 - **Fix:** Composite index on `(chain_id, status, scheduled_time)`. Denormalize `next_step_id` into the reminder row for O(1) chain traversal. Pre-compute daily schedule on midnight alarm.
 
 ### Riverpod Rebuild Avalanche
+
 - `ref.watch(chainProvider(chainId))` in a `ListView` of 36 reminders. One confirmation invalidates the chain, all 36 items rebuild. On a Redmi 9A (2GB RAM), this causes 200ms frame drops.
 - **Fix:** Split providers: `reminderStatusProvider(reminderId)` watches only its own status. Chain mutations notify only affected step IDs via `ref.invalidate()` targeting specific family members.
 
 ### Drift Query in UI Thread
+
 - `select(reminders).get()` is async but runs on the main isolate's event loop. With 1000+ historical reminders, the query itself blocks the UI for 100ms+.
 - **Fix:** Use Drift's `computeWithDatabase()` or run queries in a separate `Isolate` for any list exceeding 50 rows. Paginate history views.
 
 ### TTS Blocking Chain Confirmation
+
 - `FlutterTts.speak("Take Metformin 500mg")` is async but the audio engine initialization on first call takes 300-800ms on cold start. If TTS is called before showing the notification UI, the notification appears late.
 - **Fix:** Pre-initialize TTS engine on app startup. Cache the engine instance. Speak and show notification in parallel, don't await TTS before notification.
 
@@ -298,18 +318,22 @@
 ## 5. Security Mistakes
 
 ### Health Data Sensitivity
+
 - Medication names, dosages, and adherence patterns are **sensitive health data** even though there's no backend. A stolen/shared phone exposes the user's entire medical regimen.
 - **Mitigation:** Offer optional app-level PIN/biometric lock. Encrypt the Drift database using `sqlcipher_flutter_libs` (drop-in SQLite replacement with AES-256). Never log medication names in debug output.
 
 ### Drift Database File Access
+
 - The `.sqlite` file is world-readable on rooted devices and accessible via `adb backup` (unless `android:allowBackup="false"` is set).
 - **Mitigation:** Set `android:allowBackup="false"` in `AndroidManifest.xml` **and** `android:fullBackupContent` to exclude the DB. Use `EncryptedSharedPreferences` for any tokens/keys.
 
 ### Export/Share Features
+
 - Weekly adherence reports exported as PDF/CSV may be shared via WhatsApp to a caregiver. If the export contains full medication details and is sent to the wrong contact, it's a privacy breach.
 - **Mitigation:** Warn before export. Don't include dosages in shareable summaries unless explicitly opted in. Watermark exports with timestamp + intended recipient.
 
 ### Debug Builds Leaking Data
+
 - `flutter run --debug` enables Dart DevTools. If a debug build is given to a beta tester, anyone on the same network can inspect the app's state, including medication data.
 - **Mitigation:** Never distribute debug builds. Use `--profile` for beta testing. Strip logs with `kReleaseMode` checks.
 
@@ -318,24 +342,31 @@
 ## 6. UX Pitfalls — Elderly User Specific
 
 ### P-UX-01: Confirm Button Too Small or Ambiguous
+
 Elderly users with reduced motor control need targets > 56dp. A "✓" icon without text label is meaningless. Use "I Took It ✓" with green fill, minimum 56×56dp touch area, 2dp border.
 
 ### P-UX-02: Undo Window Too Short
+
 Confirming a medication accidentally (DONE instead of SKIP) must be reversible. A 3-second undo toast disappears before the user processes it. Use a **10-second undo bar** pinned to the bottom of the screen with large "UNDO" button.
 
 ### P-UX-03: Information Overload on Home Screen
+
 Showing all 12 medications' chain states, next doses, adherence percentages simultaneously overwhelms. Show **only the next pending action** prominently. Everything else behind a "See All" expansion.
 
 ### P-UX-04: Notification Sound Indistinguishable
+
 Default notification sound is the same as WhatsApp/SMS. User ignores medication reminders because they sound like everything else. Use a **distinct, configurable alarm tone** that the user picks during onboarding. Escalation Tier 2+ should use a unique, non-dismissable sound.
 
 ### P-UX-05: Onboarding Requires Too Many Steps
+
 "Add medication → set type → set time → set chain → enable notifications → disable battery optimization → grant alarm permission → grant full-screen permission" = 8 steps before the app works. Template packs should reduce this to: "Select condition → review schedule → grant permissions (batch) → done."
 
 ### P-UX-06: Error Messages in Developer Language
+
 "SQLiteException: UNIQUE constraint failed: reminders.chain_id" means nothing to an elderly user. Every error must be translated: "This medication time overlaps with another. Would you like to adjust?"
 
 ### P-UX-07: Font Scaling Breaks Layout
+
 Setting phone to "Largest" font size (200% scale) causes text to overflow `Container` widgets, buttons to stack vertically off-screen, and the confirm action to become unreachable. **Every screen must be tested at 200% font scale.**
 
 ---
@@ -362,35 +393,39 @@ Setting phone to "Largest" font size (200% scale) causes text to overflow `Conta
 ## 8. Recovery Strategies
 
 ### Missed Alarm Recovery
+
 On app open, query Drift for all reminders where `scheduled_time < now AND status = PENDING`. Show a "Missed Reminders" screen. Allow bulk DONE/SKIP. Re-derive chain state from confirmed subset.
 
 ### Corrupt Database Recovery
+
 Wrap Drift `openConnection` in try-catch. On `SqliteException`, attempt `PRAGMA integrity_check`. If failed, rename corrupt file to `.bak`, create fresh DB, and show "Data recovery needed" screen with option to export backup file to support channel.
 
 ### Chain State Inconsistency
+
 Add a `chain_audit` function that runs on app startup: verify every chain's DAG is acyclic, every non-terminal node has a valid `next_step_id`, every DONE node has a `confirmed_at` timestamp. Log inconsistencies, auto-repair where possible (orphaned nodes → mark as SKIPPED with reason "system recovery").
 
 ### Permission Revocation Recovery
+
 On every `AppLifecycleState.resumed`, run a permission health check: exact alarms, notifications, full-screen intent, battery optimization whitelist. Store results in a `system_health` table. If any critical permission is revoked, show a non-dismissable banner (not a dialog — elderly users dismiss dialogs reflexively).
 
 ---
 
 ## 9. Pitfall-to-Phase Mapping
 
-| Pitfall | Phase | Priority |
-|---------|-------|----------|
-| P-01: OEM battery killers | Phase 70 (Notification Engine) | **BLOCKER** |
-| P-02: DAG cycles/deadlocks | Phase 71 (Chain Engine) | **BLOCKER** |
-| P-03: Drift migration failures | Phase 70 (Data Layer) | HIGH |
-| P-04: Full-screen intent permissions | Phase 70 (Notification Engine) | HIGH |
-| P-05: Battery drain from alarms | Phase 70 (Notification Engine) | HIGH |
-| P-06: Cascade storm | Phase 71 (Chain Engine) | HIGH |
-| P-07: Accessibility theater | All UI phases | **BLOCKER** |
-| P-08: TFLite APK bloat | v1.x (NLP milestone) | MEDIUM |
-| P-09: Snooze loops | Phase 71 (Chain Engine) | HIGH |
-| P-10: Timezone/DST handling | Phase 70 (Data Layer) | HIGH |
-| P-11: Boot-completed receiver | Phase 70 (Notification Engine) | **BLOCKER** |
-| P-12: Notification channel disabled | Phase 70 (Notification Engine) | HIGH |
+| Pitfall                              | Phase                          | Priority    |
+| ------------------------------------ | ------------------------------ | ----------- |
+| P-01: OEM battery killers            | Phase 70 (Notification Engine) | **BLOCKER** |
+| P-02: DAG cycles/deadlocks           | Phase 71 (Chain Engine)        | **BLOCKER** |
+| P-03: Drift migration failures       | Phase 70 (Data Layer)          | HIGH        |
+| P-04: Full-screen intent permissions | Phase 70 (Notification Engine) | HIGH        |
+| P-05: Battery drain from alarms      | Phase 70 (Notification Engine) | HIGH        |
+| P-06: Cascade storm                  | Phase 71 (Chain Engine)        | HIGH        |
+| P-07: Accessibility theater          | All UI phases                  | **BLOCKER** |
+| P-08: TFLite APK bloat               | v1.x (NLP milestone)           | MEDIUM      |
+| P-09: Snooze loops                   | Phase 71 (Chain Engine)        | HIGH        |
+| P-10: Timezone/DST handling          | Phase 70 (Data Layer)          | HIGH        |
+| P-11: Boot-completed receiver        | Phase 70 (Notification Engine) | **BLOCKER** |
+| P-12: Notification channel disabled  | Phase 70 (Notification Engine) | HIGH        |
 
 ---
 
