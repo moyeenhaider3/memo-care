@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memo_care/core/providers/database_provider.dart';
 import 'package:memo_care/features/chain_engine/data/chain_dao.dart';
 import 'package:memo_care/features/chain_engine/data/chain_repository.dart';
+import 'package:memo_care/features/chain_engine/domain/chain_engine.dart';
+import 'package:memo_care/features/chain_engine/domain/chain_validator.dart';
 import 'package:memo_care/features/chain_engine/domain/models/chain_edge.dart';
 import 'package:memo_care/features/chain_engine/domain/models/reminder_chain.dart';
 
@@ -16,6 +18,17 @@ final chainDaoProvider = Provider<ChainDao>((ref) {
 /// Provides the [ChainRepository] wrapping the [ChainDao].
 final chainRepositoryProvider = Provider<ChainRepository>((ref) {
   return ChainRepository(ref.watch(chainDaoProvider));
+});
+
+/// Chain engine provider — stateless pure Dart evaluator.
+final chainEngineProvider = Provider<ChainEngine>((ref) {
+  return const ChainEngine();
+});
+
+/// Chain validator provider — stateless cycle detection
+/// and max-depth check.
+final chainValidatorProvider = Provider<ChainValidator>((ref) {
+  return const ChainValidator();
 });
 
 /// Reactive stream of all reminder chains, newest first.
