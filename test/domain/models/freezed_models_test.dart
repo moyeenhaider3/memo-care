@@ -15,7 +15,6 @@ void main() {
       final chain = ReminderChain(
         id: 1,
         name: 'Morning Routine',
-        isActive: true,
         createdAt: testTime,
       );
       final json = chain.toJson();
@@ -84,7 +83,7 @@ void main() {
     });
 
     test('fromJson/toJson roundtrip with null optional fields', () {
-      final reminder = Reminder(
+      const reminder = Reminder(
         id: 2,
         chainId: 10,
         medicineName: 'Insulin',
@@ -99,7 +98,7 @@ void main() {
     });
 
     test('isActive defaults to false', () {
-      final reminder = Reminder(
+      const reminder = Reminder(
         id: 1,
         chainId: 10,
         medicineName: 'Test',
@@ -109,7 +108,7 @@ void main() {
     });
 
     test('medicineType serializes as snake_case in JSON', () {
-      final reminder = Reminder(
+      const reminder = Reminder(
         id: 1,
         chainId: 10,
         medicineName: 'Test',
@@ -158,7 +157,7 @@ void main() {
 
   group('MealAnchor', () {
     test('fromJson/toJson roundtrip', () {
-      final anchor = MealAnchor(
+      const anchor = MealAnchor(
         id: 1,
         mealType: 'breakfast',
         defaultTimeMinutes: 480, // 08:00
@@ -169,7 +168,7 @@ void main() {
     });
 
     test('defaultTimeMinutes represents minutes from midnight', () {
-      final anchor = MealAnchor(
+      const anchor = MealAnchor(
         id: 1,
         mealType: 'lunch',
         defaultTimeMinutes: 780, // 13:00
@@ -181,7 +180,7 @@ void main() {
     });
 
     test('confirmedAt is nullable', () {
-      final anchor = MealAnchor(
+      const anchor = MealAnchor(
         id: 1,
         mealType: 'dinner',
         defaultTimeMinutes: 1140, // 19:00
