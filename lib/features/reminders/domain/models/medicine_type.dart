@@ -35,3 +35,19 @@ enum MedicineType {
     orElse: () => throw ArgumentError('Unknown MedicineType: $value'),
   );
 }
+
+/// Maps each [MedicineType] to a natural-language context
+/// phrase for TTS (A11Y-06).
+///
+/// Used by `buildReminderTtsText` in the alarm callback to
+/// construct "Time to take {name}, {dose}, {context}".
+extension MedicineTypeTts on MedicineType {
+  /// The spoken context phrase for this medicine type.
+  String get ttsContext => switch (this) {
+    MedicineType.beforeMeal => 'before your meal',
+    MedicineType.afterMeal => 'after your meal',
+    MedicineType.emptyStomach => 'on an empty stomach',
+    MedicineType.fixedTime => 'at your scheduled time',
+    MedicineType.doseGap => 'for your next dose',
+  };
+}

@@ -1,9 +1,12 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:memo_care/core/database/app_database.dart';
 import 'package:memo_care/core/platform/notification_service.dart';
+import 'package:memo_care/core/platform/tts_service.dart';
 import 'package:memo_care/features/escalation/domain/escalation_level.dart';
+import 'package:memo_care/features/reminders/domain/models/medicine_type.dart';
 
 // ── Action ID constants ──────────────────────────────────────────
 
@@ -60,6 +63,11 @@ Future<void> alarmFiredCallback(int reminderId) async {
       onBackgroundResponse: onNotificationAction,
     );
 
+    // Start TTS init in parallel — don't block
+    // notification display (PITFALLS.md §4).
+    final tts = TTSService();
+    final ttsInitFuture = tts.initialize();
+
     // Build payload with reminder ID for action handling.
     final payload = jsonEncode({'reminderId': reminderId});
 
@@ -73,6 +81,24 @@ Future<void> alarmFiredCallback(int reminderId) async {
       actions: kReminderActions,
       payload: payload,
     );
+
+    // Speak reminder aloud (A11Y-06).
+    try {
+      await ttsInitFuture;
+      final ttsText = buildReminderTtsText(
+        medicineName: reminder.medicineName,
+        dosage: reminder.dosage,
+        contextPhrase: MedicineType.fromDbString(
+          reminder.medicineType,
+        ).ttsContext,
+      );
+      await tts.speak(ttsText);
+    } on Exception catch (e) {
+      // TTS failure is non-fatal — notification already
+      // displayed.
+      debugPrint('TTS speak failed in alarm callback: '
+          '$e');
+    }
   } finally {
     await db.close();
   }

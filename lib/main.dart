@@ -1,12 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memo_care/app.dart';
+import 'package:memo_care/core/platform/tts_service.dart';
+import 'package:memo_care/core/providers/tts_providers.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Pre-initialize TTS to avoid 300-800ms cold-start
+  // delay on first speech request (PITFALLS.md §4).
+  final ttsService = TTSService();
+  try {
+    await ttsService.initialize();
+  } on Exception catch (e) {
+    debugPrint(
+      'TTS pre-initialization failed (non-fatal): $e',
+    );
+  }
+
   runApp(
-    const ProviderScope(
-      child: MemoCareApp(),
+    ProviderScope(
+      overrides: [
+        ttsServiceProvider.overrideWithValue(ttsService),
+      ],
+      child: const MemoCareApp(),
     ),
   );
 }
