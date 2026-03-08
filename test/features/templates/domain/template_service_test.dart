@@ -86,6 +86,16 @@ void main() {
         callbackHandle: any(named: 'callbackHandle'),
       ),
     ).thenAnswer((_) async => true);
+
+    when(
+      () => scheduler.scheduleAll(
+        reminders: any(named: 'reminders'),
+        callbackHandle: any(named: 'callbackHandle'),
+      ),
+    ).thenAnswer(
+      (inv) async =>
+          (inv.namedArguments[#reminders]! as List).length,
+    );
   }
 
   group('TemplateService.apply', () {

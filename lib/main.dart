@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memo_care/app.dart';
+import 'package:memo_care/core/platform/alarm_scheduler.dart';
 import 'package:memo_care/core/platform/tts_service.dart';
 import 'package:memo_care/core/providers/tts_providers.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize AndroidAlarmManager before any scheduling.
+  await AlarmScheduler.initialize();
 
   // Pre-initialize TTS to avoid 300-800ms cold-start
   // delay on first speech request (PITFALLS.md §4).

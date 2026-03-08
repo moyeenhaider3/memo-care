@@ -14,6 +14,9 @@ sealed class TemplateError {
 
   /// Human-readable error description.
   String get message;
+
+  @override
+  String toString() => message;
 }
 
 /// DAG cycle detected in the template's edge structure.
@@ -209,6 +212,8 @@ class TemplateService {
       }
 
       // Step 6: Schedule alarms for reminders with times.
+      final schedulable =
+          <({int reminderId, DateTime fireAt})>[];
       for (final entry in indexToId.entries) {
         final med = pack.medicines[entry.key];
         final override = userOverrides[med.chainPosition];
@@ -218,12 +223,16 @@ class TemplateService {
           mealAnchorTimes: mealAnchorTimes,
         );
         if (scheduledAt != null) {
-          await _alarmScheduler.schedule(
-            reminderId: entry.value,
-            fireAt: scheduledAt,
-            callbackHandle: alarmFiredCallback,
+          schedulable.add(
+            (reminderId: entry.value, fireAt: scheduledAt),
           );
         }
+      }
+      if (schedulable.isNotEmpty) {
+        await _alarmScheduler.scheduleAll(
+          reminders: schedulable,
+          callbackHandle: alarmFiredCallback,
+        );
       }
 
       return right(

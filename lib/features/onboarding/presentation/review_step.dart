@@ -18,8 +18,7 @@ class ReviewStep extends ConsumerStatefulWidget {
   const ReviewStep({super.key});
 
   @override
-  ConsumerState<ReviewStep> createState() =>
-      _ReviewStepState();
+  ConsumerState<ReviewStep> createState() => _ReviewStepState();
 }
 
 class _ReviewStepState extends ConsumerState<ReviewStep> {
@@ -29,9 +28,7 @@ class _ReviewStepState extends ConsumerState<ReviewStep> {
     final hours = minutesFromMidnight ~/ 60;
     final minutes = minutesFromMidnight % 60;
     final period = hours >= 12 ? 'PM' : 'AM';
-    final displayHours = hours == 0
-        ? 12
-        : (hours > 12 ? hours - 12 : hours);
+    final displayHours = hours == 0 ? 12 : (hours > 12 ? hours - 12 : hours);
     return '${displayHours.toString().padLeft(2, '0')}:'
         '${minutes.toString().padLeft(2, '0')} $period';
   }
@@ -61,8 +58,7 @@ class _ReviewStepState extends ConsumerState<ReviewStep> {
     final state = ref.read(onboardingNotifierProvider);
 
     try {
-      if (state.useTemplate &&
-          state.selectedTemplateId != null) {
+      if (state.useTemplate && state.selectedTemplateId != null) {
         await _createFromTemplate(state);
       } else {
         await _createManualChain(state);
@@ -79,12 +75,9 @@ class _ReviewStepState extends ConsumerState<ReviewStep> {
   Future<void> _createFromTemplate(
     OnboardingState state,
   ) async {
-    final templateService =
-        ref.read(templateServiceProvider);
-    final templateRepo =
-        ref.read(templateRepositoryProvider);
-    final pack =
-        templateRepo.getById(state.selectedTemplateId!);
+    final templateService = ref.read(templateServiceProvider);
+    final templateRepo = ref.read(templateRepositoryProvider);
+    final pack = templateRepo.getById(state.selectedTemplateId!);
 
     if (pack == null) {
       _showError(
@@ -95,9 +88,7 @@ class _ReviewStepState extends ConsumerState<ReviewStep> {
     }
 
     final overrides = <int, CustomMedicineEntry>{};
-    for (var i = 0;
-        i < state.customMedicines.length;
-        i++) {
+    for (var i = 0; i < state.customMedicines.length; i++) {
       overrides[i] = state.customMedicines[i];
     }
 
@@ -110,7 +101,7 @@ class _ReviewStepState extends ConsumerState<ReviewStep> {
     result.match(
       (error) => _showError(
         'Could not create your schedule. '
-        'Please try again.\n($error)',
+        'Please try again.\n(${error.message})',
       ),
       (_) => _navigateToPermissions(),
     );
@@ -119,8 +110,7 @@ class _ReviewStepState extends ConsumerState<ReviewStep> {
   Future<void> _createManualChain(
     OnboardingState state,
   ) async {
-    final templateService =
-        ref.read(templateServiceProvider);
+    final templateService = ref.read(templateServiceProvider);
     final syntheticPack = _buildSyntheticPack(state);
     final result = await templateService.apply(
       pack: syntheticPack,
@@ -128,7 +118,8 @@ class _ReviewStepState extends ConsumerState<ReviewStep> {
     );
     result.match(
       (error) => _showError(
-        'Could not create your schedule: $error',
+        'Could not create your schedule: '
+        '${error.message}',
       ),
       (_) => _navigateToPermissions(),
     );
@@ -150,8 +141,7 @@ class _ReviewStepState extends ConsumerState<ReviewStep> {
             anchorMeal: entry.value.anchorMeal != null
                 ? TemplateMealType.values.firstWhere(
                     (t) => t.name == entry.value.anchorMeal,
-                    orElse: () =>
-                        TemplateMealType.breakfast,
+                    orElse: () => TemplateMealType.breakfast,
                   )
                 : null,
           ),
@@ -159,7 +149,8 @@ class _ReviewStepState extends ConsumerState<ReviewStep> {
         .toList();
 
     return TemplatePack(
-      id: 'manual_'
+      id:
+          'manual_'
           '${DateTime.now().millisecondsSinceEpoch}',
       name: 'My Medications',
       description: 'Manually configured medications',
@@ -189,8 +180,7 @@ class _ReviewStepState extends ConsumerState<ReviewStep> {
             message,
             style: const TextStyle(fontSize: 18),
           ),
-          backgroundColor:
-              Theme.of(context).colorScheme.error,
+          backgroundColor: Theme.of(context).colorScheme.error,
           duration: const Duration(seconds: 5),
         ),
       );
@@ -225,8 +215,7 @@ class _ReviewStepState extends ConsumerState<ReviewStep> {
                   state.selectedCondition,
                 ),
               ),
-              if (state.useTemplate &&
-                  state.selectedTemplateId != null)
+              if (state.useTemplate && state.selectedTemplateId != null)
                 _SectionCard(
                   icon: Icons.playlist_add_check,
                   title: 'Template',
@@ -234,9 +223,7 @@ class _ReviewStepState extends ConsumerState<ReviewStep> {
                       .replaceAll('_', ' ')
                       .split(' ')
                       .map(
-                        (w) =>
-                            w[0].toUpperCase() +
-                            w.substring(1),
+                        (w) => w[0].toUpperCase() + w.substring(1),
                       )
                       .join(' '),
                 ),
@@ -264,11 +251,11 @@ class _ReviewStepState extends ConsumerState<ReviewStep> {
           width: double.infinity,
           child: Semantics(
             button: true,
-            label: 'Confirm and create your '
+            label:
+                'Confirm and create your '
                 'medication schedule',
             child: ElevatedButton(
-              onPressed:
-                  _isCreating ? null : _createSchedule,
+              onPressed: _isCreating ? null : _createSchedule,
               child: _isCreating
                   ? const SizedBox(
                       height: 24,
@@ -387,7 +374,8 @@ class _MedicinesCard extends StatelessWidget {
             else
               ...medicines.map(
                 (med) => Semantics(
-                  label: '${med.name}'
+                  label:
+                      '${med.name}'
                       '${med.dosage != null ? ', ${med.dosage}' : ''}'
                       ', ${typeLabel(med.medicineType)}',
                   child: Padding(
@@ -409,8 +397,7 @@ class _MedicinesCard extends StatelessWidget {
                             '${med.name}'
                             '${med.dosage != null ? ' — ${med.dosage}' : ''}'
                             ' (${typeLabel(med.medicineType)})',
-                            style:
-                                theme.textTheme.bodyMedium,
+                            style: theme.textTheme.bodyMedium,
                           ),
                         ),
                       ],
