@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:memo_care/core/theme/app_theme.dart';
@@ -66,10 +67,12 @@ class _AllDoneCard extends StatelessWidget {
           padding: const EdgeInsets.all(24),
           child: Column(
             children: [
-              Icon(
-                Icons.check_circle_outline,
-                size: 56,
-                color: theme.colorScheme.primary,
+              ExcludeSemantics(
+                child: Icon(
+                  Icons.check_circle_outline,
+                  size: 56,
+                  color: theme.colorScheme.primary,
+                ),
               ),
               const SizedBox(height: 12),
               Text(
@@ -162,23 +165,29 @@ class _PendingCard extends StatelessWidget {
                 children: [
                   // "I Took It ✓" button
                   Expanded(
-                    child: SizedBox(
-                      height: 56,
-                      child: FilledButton.icon(
-                        onPressed: onDone,
-                        icon: const Icon(Icons.check, size: 24),
-                        label: const Text(
-                          'I Took It',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
+                    child: Semantics(
+                      sortKey: const OrdinalSortKey(2),
+                      label: 'Confirm taking '
+                          '${reminder.medicineName}',
+                      button: true,
+                      child: SizedBox(
+                        height: 56,
+                        child: FilledButton.icon(
+                          onPressed: onDone,
+                          icon: const Icon(Icons.check, size: 24),
+                          label: const Text(
+                            'I Took It',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
-                        style: FilledButton.styleFrom(
-                          backgroundColor: AppColors.doneButtonBackground,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                          style: FilledButton.styleFrom(
+                            backgroundColor: AppColors.doneButtonBackground,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
                         ),
                       ),
@@ -188,26 +197,32 @@ class _PendingCard extends StatelessWidget {
 
                   // "Skip ✗" button
                   Expanded(
-                    child: SizedBox(
-                      height: 56,
-                      child: OutlinedButton.icon(
-                        onPressed: onSkip,
-                        icon: const Icon(Icons.close, size: 24),
-                        label: const Text(
-                          'Skip',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
+                    child: Semantics(
+                      sortKey: const OrdinalSortKey(3),
+                      label: 'Skip '
+                          '${reminder.medicineName}',
+                      button: true,
+                      child: SizedBox(
+                        height: 56,
+                        child: OutlinedButton.icon(
+                          onPressed: onSkip,
+                          icon: const Icon(Icons.close, size: 24),
+                          label: const Text(
+                            'Skip',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.skipButtonForeground,
-                          side: const BorderSide(
-                            color: AppColors.skipButtonForeground,
-                            width: 2,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppColors.skipButtonForeground,
+                            side: const BorderSide(
+                              color: AppColors.skipButtonForeground,
+                              width: 2,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
                         ),
                       ),

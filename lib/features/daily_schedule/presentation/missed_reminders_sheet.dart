@@ -117,10 +117,12 @@ class _MissedRemindersSheetState extends ConsumerState<MissedRemindersSheet> {
             // Header
             Row(
               children: [
-                const Icon(
-                  Icons.warning_amber_rounded,
-                  size: 32,
-                  color: AppColors.warningAmber,
+                const ExcludeSemantics(
+                  child: Icon(
+                    Icons.warning_amber_rounded,
+                    size: 32,
+                    color: AppColors.warningAmber,
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -191,22 +193,28 @@ class _MissedRemindersSheetState extends ConsumerState<MissedRemindersSheet> {
                           ),
 
                           // Done button
-                          SizedBox(
-                            height: 56,
-                            child: FilledButton(
-                              onPressed: () => _markDone(reminder),
-                              style: FilledButton.styleFrom(
-                                backgroundColor:
-                                    AppColors.doneButtonBackground,
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
+                          Semantics(
+                            label: 'Mark '
+                                '${reminder.medicineName} '
+                                'as done',
+                            button: true,
+                            child: SizedBox(
+                              height: 56,
+                              child: FilledButton(
+                                onPressed: () => _markDone(reminder),
+                                style: FilledButton.styleFrom(
+                                  backgroundColor:
+                                      AppColors.doneButtonBackground,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
                                 ),
-                              ),
-                              child: const Text(
-                                'Done',
-                                style: TextStyle(
-                                  fontSize: 16,
+                                child: const Text(
+                                  'Done',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
                                 ),
                               ),
                             ),
@@ -214,24 +222,29 @@ class _MissedRemindersSheetState extends ConsumerState<MissedRemindersSheet> {
                           const SizedBox(width: 8),
 
                           // Skip button
-                          SizedBox(
-                            height: 56,
-                            child: OutlinedButton(
-                              onPressed: () => _markSkip(reminder),
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor:
-                                    AppColors.skipButtonForeground,
-                                side: const BorderSide(
-                                  color: AppColors.skipButtonForeground,
+                          Semantics(
+                            label: 'Skip '
+                                '${reminder.medicineName}',
+                            button: true,
+                            child: SizedBox(
+                              height: 56,
+                              child: OutlinedButton(
+                                onPressed: () => _markSkip(reminder),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor:
+                                      AppColors.skipButtonForeground,
+                                  side: const BorderSide(
+                                    color: AppColors.skipButtonForeground,
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
                                 ),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                ),
-                              ),
-                              child: const Text(
-                                'Skip',
-                                style: TextStyle(
-                                  fontSize: 16,
+                                child: const Text(
+                                  'Skip',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
                                 ),
                               ),
                             ),

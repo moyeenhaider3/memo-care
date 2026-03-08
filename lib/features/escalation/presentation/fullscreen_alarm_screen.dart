@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:memo_care/core/theme/app_theme.dart';
 
@@ -70,126 +71,170 @@ class FullScreenAlarmScreen extends StatelessWidget {
                   mainAxisAlignment:
                       MainAxisAlignment.center,
                   children: [
-              // Alert icon
-              const Icon(
-                Icons.medication_rounded,
-                color: Colors.white,
-                size: 80,
-              ),
-              const SizedBox(height: 24),
-
-              // "Time to take" label
-              const Text(
-                'Time to take your medicine',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 20,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-
-              // Medicine name — HUGE text
-              Text(
-                medicineName,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 8),
-
-              // Dosage
-              Text(
-                dosage,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 22,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-
-              // Scheduled time
-              Text(
-                'Due at $scheduledTime',
-                style: const TextStyle(
-                  color: Colors.white54,
-                  fontSize: 18,
-                ),
-                textAlign: TextAlign.center,
-              ),
-
-              const Spacer(),
-
-              // DONE button — GIANT green
-              SizedBox(
-                width: double.infinity,
-                height: 80,
-                child: FilledButton.icon(
-                  onPressed: () {
-                    _restoreSystemUI();
-                    onDone();
-                  },
-                  icon: const Icon(
-                    Icons.check_circle,
-                    size: 36,
-                  ),
-                  label: const Text(
-                    'I TOOK IT',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                    // Alert icon — decorative
+                    const ExcludeSemantics(
+                      child: Icon(
+                        Icons.medication_rounded,
+                        color: Colors.white,
+                        size: 80,
+                      ),
                     ),
-                  ),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.doneButtonBackground,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
+                    const SizedBox(height: 24),
 
-              // SKIP button — GIANT red
-              SizedBox(
-                width: double.infinity,
-                height: 80,
-                child: OutlinedButton.icon(
-                  onPressed: () {
-                    _restoreSystemUI();
-                    onSkip();
-                  },
-                  icon: const Icon(
-                    Icons.cancel,
-                    size: 36,
-                  ),
-                  label: const Text(
-                    'SKIP',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                    // "Time to take" label
+                    Semantics(
+                      header: true,
+                      sortKey: const OrdinalSortKey(0),
+                      child: const Text(
+                        'Time to take your medicine',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 20,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: const Color(0xFFFF8A80),
-                    side: const BorderSide(
-                      color: Color(0xFFFF8A80),
-                      width: 3,
+                    const SizedBox(height: 16),
+
+                    // Medicine name — HUGE text
+                    Semantics(
+                      sortKey: const OrdinalSortKey(1),
+                      label:
+                          'Alarm: $medicineName, '
+                          '$dosage, due at '
+                          '$scheduledTime',
+                      child: Text(
+                        medicineName,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 36,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                    const SizedBox(height: 8),
+
+                    // Dosage — included in name Semantics
+                    ExcludeSemantics(
+                      child: Text(
+                        dosage,
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 22,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 32),
+                    const SizedBox(height: 8),
+
+                    // Scheduled time — included above
+                    ExcludeSemantics(
+                      child: Text(
+                        'Due at $scheduledTime',
+                        style: const TextStyle(
+                          color: Colors.white54,
+                          fontSize: 18,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+
+                    const Spacer(),
+
+                    // DONE button — GIANT green
+                    Semantics(
+                      sortKey: const OrdinalSortKey(2),
+                      label:
+                          'Confirm taking '
+                          '$medicineName',
+                      button: true,
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 80,
+                        child: FilledButton.icon(
+                          onPressed: () {
+                            _restoreSystemUI();
+                            onDone();
+                          },
+                          icon: const Icon(
+                            Icons.check_circle,
+                            size: 36,
+                          ),
+                          label: const Text(
+                            'I TOOK IT',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight:
+                                  FontWeight.bold,
+                            ),
+                          ),
+                          style: FilledButton.styleFrom(
+                            backgroundColor:
+                                AppColors
+                                    .doneButtonBackground,
+                            foregroundColor:
+                                Colors.white,
+                            shape:
+                                RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(
+                                    16,
+                                  ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    // SKIP button — GIANT red
+                    Semantics(
+                      sortKey: const OrdinalSortKey(3),
+                      label: 'Skip $medicineName',
+                      button: true,
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 80,
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            _restoreSystemUI();
+                            onSkip();
+                          },
+                          icon: const Icon(
+                            Icons.cancel,
+                            size: 36,
+                          ),
+                          label: const Text(
+                            'SKIP',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight:
+                                  FontWeight.bold,
+                            ),
+                          ),
+                          style:
+                              OutlinedButton.styleFrom(
+                            foregroundColor:
+                                const Color(0xFFFF8A80),
+                            side: const BorderSide(
+                              color: Color(0xFFFF8A80),
+                              width: 3,
+                            ),
+                            shape:
+                                RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.circular(
+                                    16,
+                                  ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
                   ],
                 ),
               ),

@@ -207,9 +207,12 @@ class _ReviewStepState extends ConsumerState<ReviewStep> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 8),
-        Text(
-          'Review Your Schedule',
-          style: theme.textTheme.titleLarge,
+        Semantics(
+          header: true,
+          child: Text(
+            'Review Your Schedule',
+            style: theme.textTheme.titleLarge,
+          ),
         ),
         const SizedBox(height: 16),
         Expanded(
@@ -259,18 +262,23 @@ class _ReviewStepState extends ConsumerState<ReviewStep> {
         const SizedBox(height: 16),
         SizedBox(
           width: double.infinity,
-          child: ElevatedButton(
-            onPressed:
-                _isCreating ? null : _createSchedule,
-            child: _isCreating
-                ? const SizedBox(
-                    height: 24,
-                    width: 24,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 3,
-                    ),
-                  )
-                : const Text('Looks Good — Set It Up!'),
+          child: Semantics(
+            button: true,
+            label: 'Confirm and create your '
+                'medication schedule',
+            child: ElevatedButton(
+              onPressed:
+                  _isCreating ? null : _createSchedule,
+              child: _isCreating
+                  ? const SizedBox(
+                      height: 24,
+                      width: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 3,
+                      ),
+                    )
+                  : const Text('Looks Good — Set It Up!'),
+            ),
           ),
         ),
         const SizedBox(height: 16),
@@ -293,35 +301,40 @@ class _SectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(
-                  icon,
-                  size: 28,
-                  color: theme.colorScheme.primary,
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  title,
-                  style: theme.textTheme.titleSmall,
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.only(left: 40),
-              child: Text(
-                content,
-                style: theme.textTheme.bodyMedium,
+    return Semantics(
+      label: '$title: $content',
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  ExcludeSemantics(
+                    child: Icon(
+                      icon,
+                      size: 28,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    title,
+                    style: theme.textTheme.titleSmall,
+                  ),
+                ],
               ),
-            ),
-          ],
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.only(left: 40),
+                child: Text(
+                  content,
+                  style: theme.textTheme.bodyMedium,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -348,15 +361,20 @@ class _MedicinesCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.medication,
-                  size: 28,
-                  color: theme.colorScheme.primary,
+                ExcludeSemantics(
+                  child: Icon(
+                    Icons.medication,
+                    size: 28,
+                    color: theme.colorScheme.primary,
+                  ),
                 ),
                 const SizedBox(width: 12),
-                Text(
-                  'Medicines',
-                  style: theme.textTheme.titleSmall,
+                Semantics(
+                  header: true,
+                  child: Text(
+                    'Medicines',
+                    style: theme.textTheme.titleSmall,
+                  ),
                 ),
               ],
             ),
@@ -368,25 +386,35 @@ class _MedicinesCard extends StatelessWidget {
               )
             else
               ...medicines.map(
-                (med) => Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 4,
-                  ),
-                  child: Row(
-                    children: [
-                      const SizedBox(width: 40),
-                      const Icon(Icons.circle, size: 8),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          '${med.name}'
-                          '${med.dosage != null ? ' — ${med.dosage}' : ''}'
-                          ' (${typeLabel(med.medicineType)})',
-                          style:
-                              theme.textTheme.bodyMedium,
+                (med) => Semantics(
+                  label: '${med.name}'
+                      '${med.dosage != null ? ', ${med.dosage}' : ''}'
+                      ', ${typeLabel(med.medicineType)}',
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 4,
+                    ),
+                    child: Row(
+                      children: [
+                        const SizedBox(width: 40),
+                        const ExcludeSemantics(
+                          child: Icon(
+                            Icons.circle,
+                            size: 8,
+                          ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            '${med.name}'
+                            '${med.dosage != null ? ' — ${med.dosage}' : ''}'
+                            ' (${typeLabel(med.medicineType)})',
+                            style:
+                                theme.textTheme.bodyMedium,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

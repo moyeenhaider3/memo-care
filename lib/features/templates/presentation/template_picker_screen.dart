@@ -33,9 +33,12 @@ class TemplatePickerScreen extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 8),
-        Text(
-          'Choose a template',
-          style: theme.textTheme.titleLarge,
+        Semantics(
+          header: true,
+          child: Text(
+            'Choose a template',
+            style: theme.textTheme.titleLarge,
+          ),
         ),
         const SizedBox(height: 8),
         Text(

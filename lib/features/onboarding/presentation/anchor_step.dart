@@ -116,9 +116,12 @@ class _AnchorStepState extends ConsumerState<AnchorStep> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 8),
-        Text(
-          'Set your meal times',
-          style: theme.textTheme.titleLarge,
+        Semantics(
+          header: true,
+          child: Text(
+            'Set your meal times',
+            style: theme.textTheme.titleLarge,
+          ),
         ),
         const SizedBox(height: 8),
         Text(
@@ -203,17 +206,21 @@ class _AnchorStepState extends ConsumerState<AnchorStep> {
         const Spacer(),
         SizedBox(
           width: double.infinity,
-          child: ElevatedButton(
-            onPressed: () {
-              ref
-                  .read(onboardingNotifierProvider.notifier)
-                  .goToStep(OnboardingStep.medicines);
-              context.go(
-                '${AppRoutes.onboarding}/'
-                '${AppRoutes.medicines}',
-              );
-            },
-            child: const Text('Continue'),
+          child: Semantics(
+            button: true,
+            label: 'Continue to medicines',
+            child: ElevatedButton(
+              onPressed: () {
+                ref
+                    .read(onboardingNotifierProvider.notifier)
+                    .goToStep(OnboardingStep.medicines);
+                context.go(
+                  '${AppRoutes.onboarding}/'
+                  '${AppRoutes.medicines}',
+                );
+              },
+              child: const Text('Continue'),
+            ),
           ),
         ),
         const SizedBox(height: 16),

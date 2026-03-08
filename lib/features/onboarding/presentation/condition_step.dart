@@ -71,9 +71,12 @@ class ConditionStep extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 8),
-        Text(
-          'What do you need help with?',
-          style: theme.textTheme.titleLarge,
+        Semantics(
+          header: true,
+          child: Text(
+            'What do you need help with?',
+            style: theme.textTheme.titleLarge,
+          ),
         ),
         const SizedBox(height: 8),
         Text(

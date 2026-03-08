@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memo_care/features/confirmation/application/confirmation_notifier.dart';
 import 'package:memo_care/features/confirmation/domain/models/confirmation_state.dart';
@@ -104,10 +105,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'MemoCare',
-          style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
+        title: Semantics(
+          header: true,
+          sortKey: const OrdinalSortKey(0),
+          child: Text(
+            'MemoCare',
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         centerTitle: false,
@@ -139,47 +144,61 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 slivers: [
                   // Hero card (pinned at top)
                   SliverToBoxAdapter(
-                    child: NextPendingHeroCard(
-                      onDone: _handleDone,
-                      onSkip: _handleSkip,
+                    child: Semantics(
+                      sortKey: const OrdinalSortKey(1),
+                      child: NextPendingHeroCard(
+                        onDone: _handleDone,
+                        onSkip: _handleSkip,
+                      ),
                     ),
                   ),
 
                   // "Today's Schedule" header
                   SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                        16,
-                        8,
-                        16,
-                        8,
-                      ),
-                      child: Row(
-                        children: [
-                          Text(
-                            "Today's Schedule",
-                            style: theme.textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.secondaryContainer,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              '${schedule.todayReminders.length}',
-                              style: theme.textTheme.labelLarge?.copyWith(
-                                color: theme.colorScheme.onSecondaryContainer,
+                    child: Semantics(
+                      header: true,
+                      sortKey: const OrdinalSortKey(4),
+                      label: "Today's Schedule, "
+                          '${schedule.todayReminders.length} '
+                          'items',
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          16,
+                          8,
+                          16,
+                          8,
+                        ),
+                        child: Row(
+                          children: [
+                            Text(
+                              "Today's Schedule",
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: 8),
+                            ExcludeSemantics(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.secondaryContainer,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  '${schedule.todayReminders.length}',
+                                  style: theme.textTheme.labelLarge?.copyWith(
+                                    color: theme
+                                        .colorScheme
+                                        .onSecondaryContainer,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -213,12 +232,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         final isMissed = schedule.missedReminders.any(
                           (m) => m.id == reminder.id,
                         );
-                        return ReminderListTile(
-                          reminder: reminder,
-                          // If missed, pass null so StatusBadge
-                          // uses isMissed flag logic. Otherwise
-                          // also null (pending).
-                          confirmationStatus: isMissed ? null : null,
+                        return Semantics(
+                          sortKey: OrdinalSortKey(
+                            5.0 + index,
+                          ),
+                          child: ReminderListTile(
+                            reminder: reminder,
+                            // If missed, pass null so StatusBadge
+                            // uses isMissed flag logic. Otherwise
+                            // also null (pending).
+                            confirmationStatus: isMissed ? null : null,
+                          ),
                         );
                       },
                     ),

@@ -161,50 +161,57 @@ class _UndoConfirmationBarState
                 ),
 
                 // Countdown indicator
-                AnimatedBuilder(
-                  animation: _controller,
-                  builder: (context, child) {
-                    return SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(
-                        value: 1 - _controller.value,
-                        strokeWidth: 3,
-                        color: theme.colorScheme.primary,
-                        backgroundColor: theme
-                            .colorScheme.onInverseSurface
-                            .withValues(alpha: 0.2),
-                      ),
-                    );
-                  },
+                ExcludeSemantics(
+                  child: AnimatedBuilder(
+                    animation: _controller,
+                    builder: (context, child) {
+                      return SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          value: 1 - _controller.value,
+                          strokeWidth: 3,
+                          color: theme.colorScheme.primary,
+                          backgroundColor: theme
+                              .colorScheme.onInverseSurface
+                              .withValues(alpha: 0.2),
+                        ),
+                      );
+                    },
+                  ),
                 ),
                 const SizedBox(width: 12),
 
                 // UNDO button
-                SizedBox(
-                  height: 48,
-                  child: TextButton(
-                    onPressed: _undoing ? null : _handleUndo,
-                    style: TextButton.styleFrom(
-                      foregroundColor:
-                          theme.colorScheme.inversePrimary,
-                      textStyle: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                Semantics(
+                  label: 'Undo confirmation of '
+                      '${widget.undoable.medicineName}',
+                  button: true,
+                  child: SizedBox(
+                    height: 48,
+                    child: TextButton(
+                      onPressed: _undoing ? null : _handleUndo,
+                      style: TextButton.styleFrom(
+                        foregroundColor:
+                            theme.colorScheme.inversePrimary,
+                        textStyle: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
+                      child: _undoing
+                          ? SizedBox(
+                              width: 20,
+                              height: 20,
+                              child:
+                                  CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: theme.colorScheme
+                                    .inversePrimary,
+                              ),
+                            )
+                          : const Text('UNDO'),
                     ),
-                    child: _undoing
-                        ? SizedBox(
-                            width: 20,
-                            height: 20,
-                            child:
-                                CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: theme.colorScheme
-                                  .inversePrimary,
-                            ),
-                          )
-                        : const Text('UNDO'),
                   ),
                 ),
               ],

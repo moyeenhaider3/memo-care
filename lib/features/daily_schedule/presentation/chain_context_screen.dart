@@ -38,10 +38,13 @@ class ChainContextScreen extends ConsumerWidget {
           onPressed: () => context.pop(),
           tooltip: 'Back',
         ),
-        title: Text(
-          'Chain Context',
-          style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
+        title: Semantics(
+          header: true,
+          child: Text(
+            'Chain Context',
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         centerTitle: false,
@@ -285,14 +288,16 @@ class _ChainNode extends StatelessWidget {
           child: Row(
             children: [
               // Node indicator
-              Container(
-                width: 12,
-                height: 12,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isCurrent
-                      ? theme.colorScheme.primary
-                      : theme.colorScheme.outline,
+              ExcludeSemantics(
+                child: Container(
+                  width: 12,
+                  height: 12,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isCurrent
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.outline,
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -359,21 +364,23 @@ class _Connector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(left: 21),
-      child: Column(
-        children: [
-          Container(
-            width: 2,
-            height: 24,
-            color: theme.colorScheme.outline.withValues(alpha: 0.4),
-          ),
-          Icon(
-            Icons.arrow_drop_down,
-            size: 20,
-            color: theme.colorScheme.outline.withValues(alpha: 0.6),
-          ),
-        ],
+    return ExcludeSemantics(
+      child: Padding(
+        padding: const EdgeInsets.only(left: 21),
+        child: Column(
+          children: [
+            Container(
+              width: 2,
+              height: 24,
+              color: theme.colorScheme.outline.withValues(alpha: 0.4),
+            ),
+            Icon(
+              Icons.arrow_drop_down,
+              size: 20,
+              color: theme.colorScheme.outline.withValues(alpha: 0.6),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -310,11 +310,14 @@ class _MedicineStepState extends ConsumerState<MedicineStep> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 8),
-        Text(
-          state.useTemplate
-              ? 'Your Medicines'
-              : 'Add Your Medicines',
-          style: theme.textTheme.titleLarge,
+        Semantics(
+          header: true,
+          child: Text(
+            state.useTemplate
+                ? 'Your Medicines'
+                : 'Add Your Medicines',
+            style: theme.textTheme.titleLarge,
+          ),
         ),
         const SizedBox(height: 8),
         Text(
@@ -375,28 +378,36 @@ class _MedicineStepState extends ConsumerState<MedicineStep> {
         const SizedBox(height: 8),
         SizedBox(
           width: double.infinity,
-          child: OutlinedButton.icon(
-            onPressed: _showAddMedicineDialog,
-            icon: const Icon(Icons.add),
-            label: const Text('Add Medicine'),
+          child: Semantics(
+            button: true,
+            label: 'Add a medicine',
+            child: OutlinedButton.icon(
+              onPressed: _showAddMedicineDialog,
+              icon: const Icon(Icons.add),
+              label: const Text('Add Medicine'),
+            ),
           ),
         ),
         const SizedBox(height: 12),
         SizedBox(
           width: double.infinity,
-          child: ElevatedButton(
-            onPressed: medicines.isEmpty
-                ? null
-                : () {
-                    notifier.goToStep(
-                      OnboardingStep.review,
-                    );
-                    context.go(
-                      '${AppRoutes.onboarding}/'
-                      '${AppRoutes.review}',
-                    );
-                  },
-            child: const Text('Continue'),
+          child: Semantics(
+            button: true,
+            label: 'Continue to review',
+            child: ElevatedButton(
+              onPressed: medicines.isEmpty
+                  ? null
+                  : () {
+                      notifier.goToStep(
+                        OnboardingStep.review,
+                      );
+                      context.go(
+                        '${AppRoutes.onboarding}/'
+                        '${AppRoutes.review}',
+                      );
+                    },
+              child: const Text('Continue'),
+            ),
           ),
         ),
         const SizedBox(height: 16),
