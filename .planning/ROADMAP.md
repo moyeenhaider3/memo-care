@@ -153,14 +153,16 @@ MemoCare is built along its critical dependency path: data foundation → notifi
 
 ## Progress
 
-| Phase                                    | Plans Complete | Status  | Completed |
-| ---------------------------------------- | -------------- | ------- | --------- |
-| 01. Project Foundation                   | 0/3            | Planned | -         |
-| 02. Data Layer + Models                  | 0/4            | Planned | -         |
-| 03. Notification Engine + Alarms         | 0/8            | Planned | -         |
-| 04. Chain Engine + Confirmation          | 0/5            | Planned | -         |
-| 05. Anchor Resolution + Meal Timing      | 0/3            | Planned | -         |
-| 06. Templates + Onboarding               | 0/7            | Planned | -         |
-| 07. Daily View + History + Settings      | 0/5            | Planned | -         |
-| 08. Accessibility + TTS                  | 0/4            | Planned | -         |
-| 09. Integration Testing + OEM Validation | 0/5            | Planned | -         |
+| Phase                                    | Plans Complete | Status | Completed  |
+| ---------------------------------------- | -------------- | ------ | ---------- |
+| 01. Project Foundation                   | 3/3            | Done   | 2026-03-07 |
+| 02. Data Layer + Models                  | 4/4            | Done   | 2026-03-07 |
+| 03. Notification Engine + Alarms         | 8/8            | Done   | 2026-03-07 |
+| 04. Chain Engine + Confirmation          | 5/5            | Done   | 2026-03-07 |
+| 05. Anchor Resolution + Meal Timing      | 3/3            | Done   | 2026-03-07 |
+| 06. Templates + Onboarding               | 7/7            | Done   | 2026-03-07 |
+| 07. Daily View + History + Settings      | 5/5            | Done   | 2026-03-07 |
+| 08. Accessibility + TTS                  | 4/4            | Done   | 2026-03-08 |
+| 09. Integration Testing + OEM Validation | 5/5            | Done\* | 2026-03-08 |
+
+\* Phase 09 Plan 09-05 (OEM Manual Testing) has checkpoint:human-verify — requires physical device test execution.
