@@ -21,23 +21,25 @@ class SettingsRepository {
   final _controller = StreamController<AppSettings>.broadcast();
 
   // -- SharedPreferences keys --
-  static const _kSnoozeDuration =
-      'settings_snooze_duration_minutes';
-  static const _kSilentTimeout =
-      'settings_silent_timeout_minutes';
-  static const _kAudibleTimeout =
-      'settings_audible_timeout_minutes';
-  static const _kNotificationsEnabled =
-      'settings_notifications_enabled';
+  static const _kSnoozeDuration = 'settings_snooze_duration_minutes';
+  static const _kSilentTimeout = 'settings_silent_timeout_minutes';
+  static const _kAudibleTimeout = 'settings_audible_timeout_minutes';
+  static const _kNotificationsEnabled = 'settings_notifications_enabled';
   static const _kSoundEnabled = 'settings_sound_enabled';
-  static const _kVibrationEnabled =
-      'settings_vibration_enabled';
+  static const _kVibrationEnabled = 'settings_vibration_enabled';
 
   /// Returns the current settings snapshot.
   AppSettings get current => _load();
 
   /// Reactive stream of settings changes.
-  Stream<AppSettings> watch() => _controller.stream;
+  ///
+  /// Emits the current value immediately on listen, then
+  /// subsequent updates. Uses `startWith` semantics via
+  /// `async*` to avoid broadcast-stream initial-event loss.
+  Stream<AppSettings> watch() async* {
+    yield _load();
+    yield* _controller.stream;
+  }
 
   /// Updates snooze duration.
   Future<void> setSnoozeDuration(int minutes) async {
@@ -110,17 +112,12 @@ class SettingsRepository {
 
   AppSettings _load() {
     return AppSettings(
-      snoozeDurationMinutes:
-          _prefs.getInt(_kSnoozeDuration) ?? 5,
-      silentTimeoutMinutes:
-          _prefs.getInt(_kSilentTimeout) ?? 2,
-      audibleTimeoutMinutes:
-          _prefs.getInt(_kAudibleTimeout) ?? 3,
-      notificationsEnabled:
-          _prefs.getBool(_kNotificationsEnabled) ?? true,
+      snoozeDurationMinutes: _prefs.getInt(_kSnoozeDuration) ?? 5,
+      silentTimeoutMinutes: _prefs.getInt(_kSilentTimeout) ?? 2,
+      audibleTimeoutMinutes: _prefs.getInt(_kAudibleTimeout) ?? 3,
+      notificationsEnabled: _prefs.getBool(_kNotificationsEnabled) ?? true,
       soundEnabled: _prefs.getBool(_kSoundEnabled) ?? true,
-      vibrationEnabled:
-          _prefs.getBool(_kVibrationEnabled) ?? true,
+      vibrationEnabled: _prefs.getBool(_kVibrationEnabled) ?? true,
     );
   }
 

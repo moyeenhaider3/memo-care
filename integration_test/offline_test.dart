@@ -27,36 +27,29 @@ void main() {
         await $.pumpApp();
 
         // ── Onboarding ──
-        await $.call('What do you need help with?')
-            .waitUntilVisible();
+        await $.call('What do you need help with?').waitUntilVisible();
         await $.call('Diabetes').tap();
         await $.pumpAndSettle();
 
-        await $.call('Choose a template')
-            .waitUntilVisible();
+        await $.call('Choose a template').waitUntilVisible();
         await $.call('Select').tap();
         await $.pumpAndSettle();
 
-        await $.call('Set your meal times')
-            .waitUntilVisible();
+        await $.call('Set your meal times').waitUntilVisible();
         await $.call('Continue').tap();
         await $.pumpAndSettle();
 
-        await $.call('Your Medicines')
-            .waitUntilVisible();
+        await $.call('Your Medicines').waitUntilVisible();
         await $.call('Continue').tap();
         await $.pumpAndSettle();
 
-        await $.call('Review Your Schedule')
-            .waitUntilVisible();
-        await $.call('Looks Good \u2014 Set It Up!')
-            .tap();
+        await $.call('Review Your Schedule').waitUntilVisible();
+        await $.call('Looks Good \u2014 Set It Up!').tap();
         await $.pumpAndSettle();
 
         // Skip permissions (airplane mode blocks
         // some system dialogs on certain OEMs).
-        await $.call('Allow Permissions')
-            .waitUntilVisible();
+        await $.call('Allow Permissions').waitUntilVisible();
         await $.call('Skip for now').tap();
         await $.pumpAndSettle();
 
@@ -84,8 +77,7 @@ void main() {
         await $.pumpApp();
 
         // ── Assert: first screen is onboarding ──
-        await $.call('What do you need help with?')
-            .waitUntilVisible();
+        await $.call('What do you need help with?').waitUntilVisible();
 
         // No login, signup, or auth screen at all.
         expect(

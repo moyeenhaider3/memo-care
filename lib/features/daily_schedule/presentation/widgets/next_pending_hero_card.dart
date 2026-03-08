@@ -167,7 +167,8 @@ class _PendingCard extends StatelessWidget {
                   Expanded(
                     child: Semantics(
                       sortKey: const OrdinalSortKey(2),
-                      label: 'Confirm taking '
+                      label:
+                          'Confirm taking '
                           '${reminder.medicineName}',
                       button: true,
                       child: SizedBox(
@@ -199,7 +200,8 @@ class _PendingCard extends StatelessWidget {
                   Expanded(
                     child: Semantics(
                       sortKey: const OrdinalSortKey(3),
-                      label: 'Skip '
+                      label:
+                          'Skip '
                           '${reminder.medicineName}',
                       button: true,
                       child: SizedBox(

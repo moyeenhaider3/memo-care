@@ -79,17 +79,23 @@ class ReminderRepository {
   /// Watches today's reminders mapped to domain models (VIEW-01).
   Stream<List<Reminder>> watchToday() {
     final now = DateTime.now();
-    final todayStart =
-        DateTime.utc(now.year, now.month, now.day);
-    final todayEnd =
-        todayStart.add(const Duration(days: 1));
+    // Use LOCAL midnight boundaries, then convert to UTC millis
+    // so the query range matches the user's actual "today".
+    final todayStart = DateTime(now.year, now.month, now.day);
+    final todayEnd = todayStart.add(const Duration(days: 1));
     return _dao
         .watchTodayReminders(
-          todayStartUtcMs:
-              todayStart.millisecondsSinceEpoch,
-          todayEndUtcMs: todayEnd.millisecondsSinceEpoch,
+          todayStartUtcMs: todayStart.toUtc().millisecondsSinceEpoch,
+          todayEndUtcMs: todayEnd.toUtc().millisecondsSinceEpoch,
         )
         .map((rows) => rows.map(_fromRow).toList());
+  }
+
+  /// Watches IDs of reminders with terminal confirmations
+  /// (done/skipped). Used to exclude confirmed reminders
+  /// from the hero card.
+  Stream<Set<int>> watchConfirmedIds() {
+    return _dao.watchConfirmedReminderIds();
   }
 
   /// Watches missed reminders — past scheduled, still
@@ -97,8 +103,7 @@ class ReminderRepository {
   Stream<List<Reminder>> watchMissed() {
     return _dao
         .watchMissedReminders(
-          nowUtcMs:
-              DateTime.now().toUtc().millisecondsSinceEpoch,
+          nowUtcMs: DateTime.now().toUtc().millisecondsSinceEpoch,
         )
         .map((rows) => rows.map(_fromRow).toList());
   }

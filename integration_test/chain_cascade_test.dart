@@ -84,8 +84,7 @@ void main() {
         await $.pumpAndSettle();
 
         // ── Assert: missed reminder sheet appears ──
-        await $.call('Missed Reminders')
-            .waitUntilVisible();
+        await $.call('Missed Reminders').waitUntilVisible();
       },
     );
   });
@@ -107,7 +106,9 @@ Widget _scopedApp(AppDatabase db) {
 /// Seeds a 2-node chain: insulin → metformin.
 Future<void> _seedDiabeticChain(AppDatabase db) async {
   // Create the chain.
-  await db.into(db.reminderChains).insert(
+  await db
+      .into(db.reminderChains)
+      .insert(
         ReminderChainsCompanion.insert(
           name: 'Diabetic Morning',
           createdAt: DateTime.now(),
@@ -120,24 +121,26 @@ Future<void> _seedDiabeticChain(AppDatabase db) async {
     const Duration(minutes: 1),
   );
 
-  await db.into(db.reminders).insert(
+  await db
+      .into(db.reminders)
+      .insert(
         RemindersCompanion.insert(
           chainId: 1,
           medicineName: 'Insulin',
-          medicineType:
-              MedicineType.beforeMeal.dbValue,
+          medicineType: MedicineType.beforeMeal.dbValue,
           dosage: const Value('10 units'),
           scheduledAt: Value(insulinTime),
           isActive: const Value(true),
         ),
       );
 
-  await db.into(db.reminders).insert(
+  await db
+      .into(db.reminders)
+      .insert(
         RemindersCompanion.insert(
           chainId: 1,
           medicineName: 'Metformin',
-          medicineType:
-              MedicineType.afterMeal.dbValue,
+          medicineType: MedicineType.afterMeal.dbValue,
           dosage: const Value('500 mg'),
           // Not scheduled until insulin is confirmed.
           isActive: const Value(false),
@@ -145,7 +148,9 @@ Future<void> _seedDiabeticChain(AppDatabase db) async {
       );
 
   // Edge: insulin(1) → metformin(2)
-  await db.into(db.chainEdges).insert(
+  await db
+      .into(db.chainEdges)
+      .insert(
         ChainEdgesCompanion.insert(
           chainId: 1,
           sourceId: 1,
@@ -158,7 +163,9 @@ Future<void> _seedDiabeticChain(AppDatabase db) async {
 Future<void> _seedPastDueReminder(
   AppDatabase db,
 ) async {
-  await db.into(db.reminderChains).insert(
+  await db
+      .into(db.reminderChains)
+      .insert(
         ReminderChainsCompanion.insert(
           name: 'Morning Routine',
           createdAt: DateTime.now(),
@@ -168,12 +175,13 @@ Future<void> _seedPastDueReminder(
   final pastTime = DateTime.now().subtract(
     const Duration(hours: 2),
   );
-  await db.into(db.reminders).insert(
+  await db
+      .into(db.reminders)
+      .insert(
         RemindersCompanion.insert(
           chainId: 1,
           medicineName: 'Aspirin',
-          medicineType:
-              MedicineType.fixedTime.dbValue,
+          medicineType: MedicineType.fixedTime.dbValue,
           dosage: const Value('75 mg'),
           scheduledAt: Value(pastTime),
           isActive: const Value(true),

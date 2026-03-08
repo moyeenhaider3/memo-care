@@ -68,8 +68,7 @@ class FullScreenAlarmScreen extends StatelessWidget {
               SliverFillRemaining(
                 hasScrollBody: false,
                 child: Column(
-                  mainAxisAlignment:
-                      MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     // Alert icon — decorative
                     const ExcludeSemantics(
@@ -167,22 +166,16 @@ class FullScreenAlarmScreen extends StatelessWidget {
                             'I TOOK IT',
                             style: TextStyle(
                               fontSize: 24,
-                              fontWeight:
-                                  FontWeight.bold,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                           style: FilledButton.styleFrom(
-                            backgroundColor:
-                                AppColors
-                                    .doneButtonBackground,
-                            foregroundColor:
-                                Colors.white,
-                            shape:
-                                RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(
-                                    16,
-                                  ),
+                            backgroundColor: AppColors.doneButtonBackground,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                16,
+                              ),
                             ),
                           ),
                         ),
@@ -211,24 +204,19 @@ class FullScreenAlarmScreen extends StatelessWidget {
                             'SKIP',
                             style: TextStyle(
                               fontSize: 24,
-                              fontWeight:
-                                  FontWeight.bold,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                          style:
-                              OutlinedButton.styleFrom(
-                            foregroundColor:
-                                const Color(0xFFFF8A80),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFFFF8A80),
                             side: const BorderSide(
                               color: Color(0xFFFF8A80),
                               width: 3,
                             ),
-                            shape:
-                                RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(
-                                    16,
-                                  ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                16,
+                              ),
                             ),
                           ),
                         ),

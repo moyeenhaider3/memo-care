@@ -22,42 +22,42 @@ abstract final class TestAnchors {
   /// Standard anchors: breakfast 08:00, lunch 13:00,
   /// dinner 20:00.
   static List<MealAnchor> defaultAnchors() => const [
-        MealAnchor(
-          id: 1,
-          mealType: 'breakfast',
-          defaultTimeMinutes: 480,
-        ),
-        MealAnchor(
-          id: 2,
-          mealType: 'lunch',
-          defaultTimeMinutes: 780,
-        ),
-        MealAnchor(
-          id: 3,
-          mealType: 'dinner',
-          defaultTimeMinutes: 1200,
-        ),
-      ];
+    MealAnchor(
+      id: 1,
+      mealType: 'breakfast',
+      defaultTimeMinutes: 480,
+    ),
+    MealAnchor(
+      id: 2,
+      mealType: 'lunch',
+      defaultTimeMinutes: 780,
+    ),
+    MealAnchor(
+      id: 3,
+      mealType: 'dinner',
+      defaultTimeMinutes: 1200,
+    ),
+  ];
 
   /// Early anchors: breakfast 06:00, lunch 11:00,
   /// dinner 18:00.
   static List<MealAnchor> earlyAnchors() => const [
-        MealAnchor(
-          id: 4,
-          mealType: 'breakfast',
-          defaultTimeMinutes: 360,
-        ),
-        MealAnchor(
-          id: 5,
-          mealType: 'lunch',
-          defaultTimeMinutes: 660,
-        ),
-        MealAnchor(
-          id: 6,
-          mealType: 'dinner',
-          defaultTimeMinutes: 1080,
-        ),
-      ];
+    MealAnchor(
+      id: 4,
+      mealType: 'breakfast',
+      defaultTimeMinutes: 360,
+    ),
+    MealAnchor(
+      id: 5,
+      mealType: 'lunch',
+      defaultTimeMinutes: 660,
+    ),
+    MealAnchor(
+      id: 6,
+      mealType: 'dinner',
+      defaultTimeMinutes: 1080,
+    ),
+  ];
 }
 
 // ── Test reminders ─────────────────────────────────────
@@ -84,13 +84,13 @@ abstract final class TestReminders {
 
   /// Fixed-time reminder at 10:00 AM.
   static Reminder fixedTime() => Reminder(
-        id: 3,
-        chainId: 2,
-        medicineName: 'Amlodipine',
-        medicineType: MedicineType.fixedTime,
-        dosage: '5 mg',
-        scheduledAt: DateTime(2025, 1, 1, 10),
-      );
+    id: 3,
+    chainId: 2,
+    medicineName: 'Amlodipine',
+    medicineType: MedicineType.fixedTime,
+    dosage: '5 mg',
+    scheduledAt: DateTime(2025, 1, 1, 10),
+  );
 
   /// Dose-gap reminder — 4-hour interval.
   static const doseGap = Reminder(
@@ -108,8 +108,7 @@ abstract final class TestReminders {
 /// Factory methods for pre-built chain configurations.
 abstract final class TestChains {
   /// Simple 1-node chain (fixed time, no dependencies).
-  static ({ReminderChain chain, List<Reminder> reminders})
-      simpleChain() {
+  static ({ReminderChain chain, List<Reminder> reminders}) simpleChain() {
     final chain = ReminderChain(
       id: 2,
       name: 'Simple Fixed Time',
@@ -125,7 +124,8 @@ abstract final class TestChains {
     ReminderChain chain,
     List<Reminder> reminders,
     List<ChainEdge> edges,
-  }) diabeticMorningChain() {
+  })
+  diabeticMorningChain() {
     final chain = ReminderChain(
       id: 1,
       name: 'Diabetic Morning Routine',
@@ -156,7 +156,8 @@ abstract final class TestChains {
     ReminderChain chain,
     List<Reminder> reminders,
     List<ChainEdge> edges,
-  }) complexChain() {
+  })
+  complexChain() {
     final chain = ReminderChain(
       id: 3,
       name: 'Complex Morning Routine',

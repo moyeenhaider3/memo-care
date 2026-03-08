@@ -163,20 +163,20 @@ Deferred to post-launch. Tracked for future roadmap.
 
 ## Traceability
 
-| Requirement  | Phase    | Status  |
-| ------------ | -------- | ------- |
-| FNDN-01..05  | Phase 01 | Done    |
-| DATA-01..07  | Phase 02 | Done    |
-| NOTF-01..09  | Phase 03 | Done    |
-| ESCL-01..06  | Phase 03 | Done    |
-| CHAIN-01..06 | Phase 04 | Done    |
-| ANCR-01..05  | Phase 05 | Done    |
-| TMPL-01..05  | Phase 06 | Done    |
-| ONBD-01..05  | Phase 06 | Done    |
-| VIEW-01..05  | Phase 07 | Done    |
-| HIST-01..03  | Phase 07 | Done    |
-| A11Y-01..07  | Phase 08 | Done    |
-| OFFL-01..03  | Phase 09 | Done    |
+| Requirement  | Phase    | Status |
+| ------------ | -------- | ------ |
+| FNDN-01..05  | Phase 01 | Done   |
+| DATA-01..07  | Phase 02 | Done   |
+| NOTF-01..09  | Phase 03 | Done   |
+| ESCL-01..06  | Phase 03 | Done   |
+| CHAIN-01..06 | Phase 04 | Done   |
+| ANCR-01..05  | Phase 05 | Done   |
+| TMPL-01..05  | Phase 06 | Done   |
+| ONBD-01..05  | Phase 06 | Done   |
+| VIEW-01..05  | Phase 07 | Done   |
+| HIST-01..03  | Phase 07 | Done   |
+| A11Y-01..07  | Phase 08 | Done   |
+| OFFL-01..03  | Phase 09 | Done   |
 
 **Coverage:**
 

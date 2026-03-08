@@ -1,6 +1,5 @@
 // Riverpod autoDispose builder return types are not publicly
 // exported.
-// ignore_for_file: specify_nonobvious_property_types
 
 import 'dart:async';
 
@@ -12,6 +11,7 @@ import 'package:memo_care/features/confirmation/application/providers.dart';
 import 'package:memo_care/features/confirmation/domain/confirmation_service.dart';
 import 'package:memo_care/features/confirmation/domain/models/confirmation_state.dart';
 import 'package:memo_care/features/confirmation/domain/models/undoable_confirmation.dart';
+import 'package:memo_care/features/history/application/history_notifier.dart';
 import 'package:memo_care/features/reminders/application/providers.dart';
 import 'package:memo_care/features/reminders/data/reminder_repository.dart';
 import 'package:memo_care/features/reminders/domain/models/reminder.dart';
@@ -97,6 +97,8 @@ class ConfirmationNotifier extends AsyncNotifier<void> {
 
       // Refresh chain state for watchers.
       ref.invalidate(chainNotifierProvider(chainId));
+      // Refresh history so it picks up the new confirmation.
+      ref.invalidate(historyNotifierProvider);
       state = const AsyncData<void>(null);
 
       return UndoableConfirmation(
@@ -164,8 +166,10 @@ class ConfirmationNotifier extends AsyncNotifier<void> {
 
 /// Provider for [ConfirmationNotifier].
 ///
-/// Auto-disposes when no longer watched.
+/// Kept alive (no autoDispose) because [confirm] is called
+/// imperatively via `ref.read` and performs long-running async
+/// work — autoDispose would dispose the Ref mid-operation.
 final confirmationNotifierProvider =
-    AsyncNotifierProvider.autoDispose<ConfirmationNotifier, void>(
+    AsyncNotifierProvider<ConfirmationNotifier, void>(
       ConfirmationNotifier.new,
     );

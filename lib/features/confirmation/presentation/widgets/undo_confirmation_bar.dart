@@ -41,8 +41,7 @@ class UndoConfirmationBar extends ConsumerStatefulWidget {
       _UndoConfirmationBarState();
 }
 
-class _UndoConfirmationBarState
-    extends ConsumerState<UndoConfirmationBar>
+class _UndoConfirmationBarState extends ConsumerState<UndoConfirmationBar>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   bool _undoing = false;
@@ -68,8 +67,7 @@ class _UndoConfirmationBarState
     setState(() => _undoing = true);
     _controller.stop();
 
-    final service =
-        ref.read(undoConfirmationServiceProvider);
+    final service = ref.read(undoConfirmationServiceProvider);
     final result = await service.undo(widget.undoable);
 
     if (!mounted) return;
@@ -115,7 +113,8 @@ class _UndoConfirmationBarState
 
     return Semantics(
       liveRegion: true,
-      label: '${widget.undoable.medicineName} '
+      label:
+          '${widget.undoable.medicineName} '
           '$actionLabel. Tap undo to revert.',
       child: Material(
         elevation: 6,
@@ -133,15 +132,12 @@ class _UndoConfirmationBarState
                 Expanded(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         widget.undoable.medicineName,
-                        style: theme.textTheme.bodyLarge
-                            ?.copyWith(
-                          color: theme
-                              .colorScheme.onInverseSurface,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: theme.colorScheme.onInverseSurface,
                           fontWeight: FontWeight.w600,
                         ),
                         overflow: TextOverflow.ellipsis,
@@ -149,11 +145,10 @@ class _UndoConfirmationBarState
                       const SizedBox(height: 2),
                       Text(
                         actionLabel,
-                        style: theme.textTheme.bodySmall
-                            ?.copyWith(
-                          color: theme
-                              .colorScheme.onInverseSurface
-                              .withValues(alpha: 0.7),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onInverseSurface.withValues(
+                            alpha: 0.7,
+                          ),
                         ),
                       ),
                     ],
@@ -172,8 +167,7 @@ class _UndoConfirmationBarState
                           value: 1 - _controller.value,
                           strokeWidth: 3,
                           color: theme.colorScheme.primary,
-                          backgroundColor: theme
-                              .colorScheme.onInverseSurface
+                          backgroundColor: theme.colorScheme.onInverseSurface
                               .withValues(alpha: 0.2),
                         ),
                       );
@@ -184,7 +178,8 @@ class _UndoConfirmationBarState
 
                 // UNDO button
                 Semantics(
-                  label: 'Undo confirmation of '
+                  label:
+                      'Undo confirmation of '
                       '${widget.undoable.medicineName}',
                   button: true,
                   child: SizedBox(
@@ -192,8 +187,7 @@ class _UndoConfirmationBarState
                     child: TextButton(
                       onPressed: _undoing ? null : _handleUndo,
                       style: TextButton.styleFrom(
-                        foregroundColor:
-                            theme.colorScheme.inversePrimary,
+                        foregroundColor: theme.colorScheme.inversePrimary,
                         textStyle: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -203,11 +197,9 @@ class _UndoConfirmationBarState
                           ? SizedBox(
                               width: 20,
                               height: 20,
-                              child:
-                                  CircularProgressIndicator(
+                              child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                color: theme.colorScheme
-                                    .inversePrimary,
+                                color: theme.colorScheme.inversePrimary,
                               ),
                             )
                           : const Text('UNDO'),

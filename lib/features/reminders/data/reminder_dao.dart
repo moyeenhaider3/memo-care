@@ -1,5 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:memo_care/core/database/app_database.dart';
+import 'package:memo_care/features/daily_schedule/application/daily_schedule_notifier.dart'
+    show DailyScheduleNotifier;
 
 part 'reminder_dao.g.dart';
 
@@ -78,6 +80,23 @@ class ReminderDao extends DatabaseAccessor<AppDatabase>
         .watch();
   }
 
+  /// Watches IDs of reminders that have a terminal
+  /// (done/skipped) confirmation.
+  ///
+  /// Used by [DailyScheduleNotifier] to exclude confirmed
+  /// reminders from the "next pending" hero card.
+  Stream<Set<int>> watchConfirmedReminderIds() {
+    final query = customSelect(
+      'SELECT DISTINCT c.reminder_id '
+      'FROM confirmations c '
+      "WHERE c.state IN ('done', 'skipped')",
+      readsFrom: {confirmations},
+    );
+    return query.watch().map(
+      (rows) => rows.map((row) => row.read<int>('reminder_id')).toSet(),
+    );
+  }
+
   /// Watches missed reminders (VIEW-04).
   ///
   /// A reminder is "missed" if `scheduled_at < now` AND
@@ -107,16 +126,21 @@ class ReminderDao extends DatabaseAccessor<AppDatabase>
     required int offset,
     String? medicineNameFilter,
   }) {
+    final nowUtcMs = DateTime.now().toUtc().millisecondsSinceEpoch;
     final filterClause = medicineNameFilter != null
         ? 'AND r.medicine_name LIKE ?'
         : '';
     final variables = <Variable<Object>>[
+      Variable.withInt(nowUtcMs),
       if (medicineNameFilter != null)
         Variable.withString('%$medicineNameFilter%'),
       Variable.withInt(limit),
       Variable.withInt(offset),
     ];
 
+    // Only show reminders that are past their scheduled time
+    // (confirmed or missed). Future pending reminders are
+    // excluded from history.
     return customSelect(
       'SELECT r.id AS r_id, r.medicine_name, r.dosage, '
       'r.scheduled_at, '
@@ -124,7 +148,8 @@ class ReminderDao extends DatabaseAccessor<AppDatabase>
       'FROM reminders r '
       'LEFT JOIN confirmations c ON c.reminder_id = r.id '
       "AND c.state IN ('done', 'skipped') "
-      'WHERE 1=1 $filterClause '
+      'WHERE r.scheduled_at <= ? '
+      '$filterClause '
       'ORDER BY r.scheduled_at DESC '
       'LIMIT ? OFFSET ?',
       variables: variables,
@@ -154,17 +179,20 @@ class ReminderDao extends DatabaseAccessor<AppDatabase>
   Future<int> getHistoryTotalCount({
     String? medicineNameFilter,
   }) {
+    final nowUtcMs = DateTime.now().toUtc().millisecondsSinceEpoch;
     final filterClause = medicineNameFilter != null
         ? 'AND r.medicine_name LIKE ?'
         : '';
     final variables = <Variable<Object>>[
+      Variable.withInt(nowUtcMs),
       if (medicineNameFilter != null)
         Variable.withString('%$medicineNameFilter%'),
     ];
 
     return customSelect(
       'SELECT COUNT(*) AS cnt FROM reminders r '
-      'WHERE 1=1 $filterClause',
+      'WHERE r.scheduled_at <= ? '
+      '$filterClause',
       variables: variables,
       readsFrom: {reminders},
     ).getSingle().then((row) => row.read<int>('cnt'));

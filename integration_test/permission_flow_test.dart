@@ -15,40 +15,32 @@ void main() {
         await $.pumpApp();
 
         // ── Navigate through onboarding ──
-        await $.call('What do you need help with?')
-            .waitUntilVisible();
+        await $.call('What do you need help with?').waitUntilVisible();
         await $.call('Diabetes').tap();
         await $.pumpAndSettle();
 
-        await $.call('Choose a template')
-            .waitUntilVisible();
+        await $.call('Choose a template').waitUntilVisible();
         await $.call('Select').tap();
         await $.pumpAndSettle();
 
-        await $.call('Set your meal times')
-            .waitUntilVisible();
+        await $.call('Set your meal times').waitUntilVisible();
         await $.call('Continue').tap();
         await $.pumpAndSettle();
 
-        await $.call('Your Medicines')
-            .waitUntilVisible();
+        await $.call('Your Medicines').waitUntilVisible();
         await $.call('Continue').tap();
         await $.pumpAndSettle();
 
-        await $.call('Review Your Schedule')
-            .waitUntilVisible();
-        await $.call('Looks Good \u2014 Set It Up!')
-            .tap();
+        await $.call('Review Your Schedule').waitUntilVisible();
+        await $.call('Looks Good \u2014 Set It Up!').tap();
         await $.pumpAndSettle();
 
         // ── Permission step — grant all ──
-        await $.call('Allow Permissions')
-            .waitUntilVisible();
+        await $.call('Allow Permissions').waitUntilVisible();
         await $.call('Grant All Permissions').tap();
 
         // Grant each native dialog that appears.
-        await $.platform.mobile
-            .grantPermissionWhenInUse();
+        await $.platform.mobile.grantPermissionWhenInUse();
         await $.pumpAndSettle();
 
         // ── Verify home screen is functional ──
@@ -67,35 +59,28 @@ void main() {
         await $.pumpApp();
 
         // ── Navigate to permission step ──
-        await $.call('What do you need help with?')
-            .waitUntilVisible();
+        await $.call('What do you need help with?').waitUntilVisible();
         await $.call('Diabetes').tap();
         await $.pumpAndSettle();
 
-        await $.call('Choose a template')
-            .waitUntilVisible();
+        await $.call('Choose a template').waitUntilVisible();
         await $.call('Select').tap();
         await $.pumpAndSettle();
 
-        await $.call('Set your meal times')
-            .waitUntilVisible();
+        await $.call('Set your meal times').waitUntilVisible();
         await $.call('Continue').tap();
         await $.pumpAndSettle();
 
-        await $.call('Your Medicines')
-            .waitUntilVisible();
+        await $.call('Your Medicines').waitUntilVisible();
         await $.call('Continue').tap();
         await $.pumpAndSettle();
 
-        await $.call('Review Your Schedule')
-            .waitUntilVisible();
-        await $.call('Looks Good \u2014 Set It Up!')
-            .tap();
+        await $.call('Review Your Schedule').waitUntilVisible();
+        await $.call('Looks Good \u2014 Set It Up!').tap();
         await $.pumpAndSettle();
 
         // ── Deny notification permission ──
-        await $.call('Allow Permissions')
-            .waitUntilVisible();
+        await $.call('Allow Permissions').waitUntilVisible();
         await $.call('Grant All Permissions').tap();
 
         // Deny the native permission dialog.
@@ -112,12 +97,12 @@ void main() {
         // User should still be able to view the
         // schedule and interact with the app.
         final hasContent =
-            $.call('MemoCare').exists ||
-            $.call('Skip for now').exists;
+            $.call('MemoCare').exists || $.call('Skip for now').exists;
         expect(
           hasContent,
           isTrue,
-          reason: 'App should be functional '
+          reason:
+              'App should be functional '
               'even with denied permissions',
         );
       },
@@ -130,35 +115,28 @@ void main() {
         await $.pumpApp();
 
         // ── Complete onboarding with denial ──
-        await $.call('What do you need help with?')
-            .waitUntilVisible();
+        await $.call('What do you need help with?').waitUntilVisible();
         await $.call('Diabetes').tap();
         await $.pumpAndSettle();
 
-        await $.call('Choose a template')
-            .waitUntilVisible();
+        await $.call('Choose a template').waitUntilVisible();
         await $.call('Select').tap();
         await $.pumpAndSettle();
 
-        await $.call('Set your meal times')
-            .waitUntilVisible();
+        await $.call('Set your meal times').waitUntilVisible();
         await $.call('Continue').tap();
         await $.pumpAndSettle();
 
-        await $.call('Your Medicines')
-            .waitUntilVisible();
+        await $.call('Your Medicines').waitUntilVisible();
         await $.call('Continue').tap();
         await $.pumpAndSettle();
 
-        await $.call('Review Your Schedule')
-            .waitUntilVisible();
-        await $.call('Looks Good \u2014 Set It Up!')
-            .tap();
+        await $.call('Review Your Schedule').waitUntilVisible();
+        await $.call('Looks Good \u2014 Set It Up!').tap();
         await $.pumpAndSettle();
 
         // Skip permissions during onboarding.
-        await $.call('Allow Permissions')
-            .waitUntilVisible();
+        await $.call('Allow Permissions').waitUntilVisible();
         await $.call('Skip for now').tap();
         await $.pumpAndSettle();
 

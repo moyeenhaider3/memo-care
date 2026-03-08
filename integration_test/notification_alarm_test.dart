@@ -43,17 +43,17 @@ void main() {
         // ── Silent tier ──
         // Wait for the notification to appear.
         await $.platform.mobile.openNotifications();
-        final initial = await $.platform.mobile
-            .getNotifications();
+        final initial = await $.platform.mobile.getNotifications();
         expect(
-          initial.any((n) => n.title.contains(
-                'TestMed',
-              )),
+          initial.any(
+            (n) => n.title.contains(
+              'TestMed',
+            ),
+          ),
           isTrue,
           reason: 'Silent notification should appear',
         );
-        await $.platform.mobile
-            .closeNotifications();
+        await $.platform.mobile.closeNotifications();
 
         // ── Audible tier ──
         // Wait through the 2 min silent timeout.
@@ -61,16 +61,15 @@ void main() {
           const Duration(minutes: 2, seconds: 10),
         );
         await $.platform.mobile.openNotifications();
-        final afterSilent = await $.platform.mobile
-            .getNotifications();
+        final afterSilent = await $.platform.mobile.getNotifications();
         expect(
           afterSilent.isNotEmpty,
           isTrue,
-          reason: 'Notification should persist '
+          reason:
+              'Notification should persist '
               'after escalation to audible',
         );
-        await $.platform.mobile
-            .closeNotifications();
+        await $.platform.mobile.closeNotifications();
 
         // ── Fullscreen tier ──
         // Wait through the 3 min audible timeout.
@@ -128,9 +127,7 @@ void main() {
         await $.platform.mobile.openNotifications();
 
         // Tap DONE via notification action.
-        final notifications = await $.platform
-            .mobile
-            .getNotifications();
+        final notifications = await $.platform.mobile.getNotifications();
         expect(
           notifications.any(
             (n) => n.title.contains('ActionTest'),
@@ -140,8 +137,7 @@ void main() {
         );
 
         // Tap the notification to open the app.
-        await $.platform.mobile
-            .tapOnNotificationByIndex(0);
+        await $.platform.mobile.tapOnNotificationByIndex(0);
         await $.pumpAndSettle();
 
         // Verify the reminder shows as done.
@@ -179,13 +175,11 @@ void main() {
 
         // Open/close shade multiple times.
         for (var i = 0; i < 3; i++) {
-          await $.platform.mobile
-              .openNotifications();
+          await $.platform.mobile.openNotifications();
           await Future<void>.delayed(
             const Duration(seconds: 2),
           );
-          await $.platform.mobile
-              .closeNotifications();
+          await $.platform.mobile.closeNotifications();
           await Future<void>.delayed(
             const Duration(seconds: 2),
           );
@@ -198,19 +192,17 @@ void main() {
 
         // Notification should still be present.
         await $.platform.mobile.openNotifications();
-        final notifications = await $.platform
-            .mobile
-            .getNotifications();
+        final notifications = await $.platform.mobile.getNotifications();
         expect(
           notifications.any(
             (n) => n.title.contains('PersistTest'),
           ),
           isTrue,
-          reason: 'Notification must persist '
+          reason:
+              'Notification must persist '
               'until user acts',
         );
-        await $.platform.mobile
-            .closeNotifications();
+        await $.platform.mobile.closeNotifications();
 
         await db.close();
       },
@@ -232,8 +224,7 @@ void main() {
         // device-specific and may need adaptation
         // for different Android skins.
         await $.platform.mobile.openQuickSettings();
-        await $.platform.mobile
-            .closeNotifications();
+        await $.platform.mobile.closeNotifications();
 
         // Simulate returning to the app after
         // disabling a notification channel.
@@ -271,19 +262,22 @@ Future<void> _seedReminder(
   required String name,
   required DateTime scheduledAt,
 }) async {
-  await db.into(db.reminderChains).insert(
+  await db
+      .into(db.reminderChains)
+      .insert(
         ReminderChainsCompanion.insert(
           name: 'Test Chain',
           createdAt: DateTime.now(),
         ),
       );
 
-  await db.into(db.reminders).insert(
+  await db
+      .into(db.reminders)
+      .insert(
         RemindersCompanion.insert(
           chainId: 1,
           medicineName: name,
-          medicineType:
-              MedicineType.fixedTime.dbValue,
+          medicineType: MedicineType.fixedTime.dbValue,
           dosage: const Value('100 mg'),
           scheduledAt: Value(scheduledAt),
           isActive: const Value(true),

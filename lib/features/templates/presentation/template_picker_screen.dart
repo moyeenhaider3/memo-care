@@ -18,15 +18,11 @@ class TemplatePickerScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final onboardingState =
-        ref.watch(onboardingNotifierProvider);
-    final notifier =
-        ref.read(onboardingNotifierProvider.notifier);
-    final templateRepo =
-        ref.read(templateRepositoryProvider);
+    final onboardingState = ref.watch(onboardingNotifierProvider);
+    final notifier = ref.read(onboardingNotifierProvider.notifier);
+    final templateRepo = ref.read(templateRepositoryProvider);
 
-    final condition =
-        onboardingState.selectedCondition ?? '';
+    final condition = onboardingState.selectedCondition ?? '';
     final packs = templateRepo.getByCondition(condition);
 
     return Column(
@@ -57,9 +53,7 @@ class TemplatePickerScreen extends ConsumerWidget {
                       Icon(
                         Icons.info_outline,
                         size: 48,
-                        color: theme
-                            .colorScheme
-                            .onSurfaceVariant,
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                       const SizedBox(height: 16),
                       Text(
@@ -96,7 +90,8 @@ class TemplatePickerScreen extends ConsumerWidget {
         Center(
           child: Semantics(
             button: true,
-            label: 'Skip templates and set up medicines '
+            label:
+                'Skip templates and set up medicines '
                 'manually',
             child: TextButton.icon(
               onPressed: () {
@@ -137,7 +132,8 @@ class _TemplateCard extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: '${pack.name} — ${pack.description}. '
+      label:
+          '${pack.name} — ${pack.description}. '
           '${pack.medicines.length} medicines. '
           'Tap to select.',
       child: Card(
@@ -147,8 +143,7 @@ class _TemplateCard extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
@@ -161,8 +156,7 @@ class _TemplateCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         pack.name,
-                        style:
-                            theme.textTheme.titleSmall,
+                        style: theme.textTheme.titleSmall,
                       ),
                     ),
                   ],
@@ -181,12 +175,9 @@ class _TemplateCard extends StatelessWidget {
                         (m) => Chip(
                           label: Text(
                             m.name,
-                            style: theme
-                                .textTheme
-                                .labelMedium,
+                            style: theme.textTheme.labelMedium,
                           ),
-                          visualDensity:
-                              VisualDensity.compact,
+                          visualDensity: VisualDensity.compact,
                         ),
                       )
                       .toList(),

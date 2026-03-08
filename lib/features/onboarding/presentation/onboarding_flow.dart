@@ -30,16 +30,11 @@ class OnboardingFlow extends ConsumerWidget {
 
   /// Maps each step to its GoRouter path for back navigation.
   static const Map<OnboardingStep, String> _stepPaths = {
-    OnboardingStep.condition:
-        '${AppRoutes.onboarding}/${AppRoutes.condition}',
-    OnboardingStep.template:
-        '${AppRoutes.onboarding}/${AppRoutes.template}',
-    OnboardingStep.anchors:
-        '${AppRoutes.onboarding}/${AppRoutes.anchors}',
-    OnboardingStep.medicines:
-        '${AppRoutes.onboarding}/${AppRoutes.medicines}',
-    OnboardingStep.review:
-        '${AppRoutes.onboarding}/${AppRoutes.review}',
+    OnboardingStep.condition: '${AppRoutes.onboarding}/${AppRoutes.condition}',
+    OnboardingStep.template: '${AppRoutes.onboarding}/${AppRoutes.template}',
+    OnboardingStep.anchors: '${AppRoutes.onboarding}/${AppRoutes.anchors}',
+    OnboardingStep.medicines: '${AppRoutes.onboarding}/${AppRoutes.medicines}',
+    OnboardingStep.review: '${AppRoutes.onboarding}/${AppRoutes.review}',
     OnboardingStep.permissions:
         '${AppRoutes.onboarding}/${AppRoutes.permissions}',
   };
@@ -47,10 +42,8 @@ class OnboardingFlow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(onboardingNotifierProvider);
-    final currentIndex =
-        _visibleSteps.indexOf(state.currentStep);
-    final progress =
-        (currentIndex + 1) / _visibleSteps.length;
+    final currentIndex = _visibleSteps.indexOf(state.currentStep);
+    final progress = (currentIndex + 1) / _visibleSteps.length;
     final isFirstStep = currentIndex <= 0;
 
     return Scaffold(
@@ -67,14 +60,12 @@ class OnboardingFlow extends ConsumerWidget {
                 ),
                 onPressed: () {
                   if (currentIndex > 0) {
-                    final prevStep =
-                        _visibleSteps[currentIndex - 1];
+                    final prevStep = _visibleSteps[currentIndex - 1];
                     final prevPath = _stepPaths[prevStep];
                     if (prevPath != null) {
                       ref
                           .read(
-                            onboardingNotifierProvider
-                                .notifier,
+                            onboardingNotifierProvider.notifier,
                           )
                           .goToStep(prevStep);
                       context.go(prevPath);
@@ -94,8 +85,7 @@ class OnboardingFlow extends ConsumerWidget {
             value: progress.clamp(0.0, 1.0),
             minHeight: 6,
             semanticsLabel: 'Onboarding progress',
-            semanticsValue:
-                '${(progress * 100).round()}%',
+            semanticsValue: '${(progress * 100).round()}%',
           ),
           Expanded(
             child: SafeArea(

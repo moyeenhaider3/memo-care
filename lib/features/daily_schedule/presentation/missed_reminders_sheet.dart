@@ -179,13 +179,9 @@ class _MissedRemindersSheetState extends ConsumerState<MissedRemindersSheet> {
                                 Text(
                                   '$timeText'
                                   '${reminder.dosage != null ? " · "
-                                      "${reminder.dosage}" : ""}',
-                                  style: theme
-                                      .textTheme.bodyMedium
-                                      ?.copyWith(
-                                    color: theme
-                                        .colorScheme
-                                        .onSurfaceVariant,
+                                            "${reminder.dosage}" : ""}',
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                               ],
@@ -194,7 +190,8 @@ class _MissedRemindersSheetState extends ConsumerState<MissedRemindersSheet> {
 
                           // Done button
                           Semantics(
-                            label: 'Mark '
+                            label:
+                                'Mark '
                                 '${reminder.medicineName} '
                                 'as done',
                             button: true,
@@ -223,7 +220,8 @@ class _MissedRemindersSheetState extends ConsumerState<MissedRemindersSheet> {
 
                           // Skip button
                           Semantics(
-                            label: 'Skip '
+                            label:
+                                'Skip '
                                 '${reminder.medicineName}',
                             button: true,
                             child: SizedBox(
@@ -283,8 +281,7 @@ class _MissedRemindersSheetState extends ConsumerState<MissedRemindersSheet> {
                           ),
                         ),
                         style: FilledButton.styleFrom(
-                          backgroundColor:
-                              AppColors.doneButtonBackground,
+                          backgroundColor: AppColors.doneButtonBackground,
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -317,8 +314,7 @@ class _MissedRemindersSheetState extends ConsumerState<MissedRemindersSheet> {
                           ),
                         ),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor:
-                              AppColors.skipButtonForeground,
+                          foregroundColor: AppColors.skipButtonForeground,
                           side: const BorderSide(
                             color: AppColors.skipButtonForeground,
                             width: 2,

@@ -22,12 +22,10 @@ class OemBatteryGuidancePage extends StatefulWidget {
   final VoidCallback onContinue;
 
   @override
-  State<OemBatteryGuidancePage> createState() =>
-      _OemBatteryGuidancePageState();
+  State<OemBatteryGuidancePage> createState() => _OemBatteryGuidancePageState();
 }
 
-class _OemBatteryGuidancePageState
-    extends State<OemBatteryGuidancePage> {
+class _OemBatteryGuidancePageState extends State<OemBatteryGuidancePage> {
   late final _detector = OemDetector();
   late OemGuidance? _guidance;
   late bool _loading = true;
@@ -74,9 +72,7 @@ class _OemBatteryGuidancePageState
                 guidance.severity >= 8
                     ? Icons.warning_rounded
                     : Icons.info_outline_rounded,
-                color: guidance.severity >= 8
-                    ? Colors.orange
-                    : Colors.blue,
+                color: guidance.severity >= 8 ? Colors.orange : Colors.blue,
                 size: 48,
               ),
               const SizedBox(height: 16),
@@ -104,8 +100,7 @@ class _OemBatteryGuidancePageState
               Expanded(
                 child: ListView.separated(
                   itemCount: guidance.steps.length,
-                  separatorBuilder: (_, _) =>
-                      const SizedBox(height: 12),
+                  separatorBuilder: (_, _) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
                     final step = guidance.steps[index];
                     return _StepCard(
@@ -191,8 +186,7 @@ class _StepCard extends StatelessWidget {
             // Instruction text
             Expanded(
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     step.instruction,

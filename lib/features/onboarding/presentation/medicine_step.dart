@@ -19,8 +19,7 @@ class MedicineStep extends ConsumerStatefulWidget {
   const MedicineStep({super.key});
 
   @override
-  ConsumerState<MedicineStep> createState() =>
-      _MedicineStepState();
+  ConsumerState<MedicineStep> createState() => _MedicineStepState();
 }
 
 class _MedicineStepState extends ConsumerState<MedicineStep> {
@@ -38,8 +37,7 @@ class _MedicineStepState extends ConsumerState<MedicineStep> {
     if (_templatePrePopulated) return;
 
     final state = ref.read(onboardingNotifierProvider);
-    if (!state.useTemplate ||
-        state.selectedTemplateId == null) {
+    if (!state.useTemplate || state.selectedTemplateId == null) {
       return;
     }
     if (state.customMedicines.isNotEmpty) {
@@ -47,14 +45,11 @@ class _MedicineStepState extends ConsumerState<MedicineStep> {
       return;
     }
 
-    final templateRepo =
-        ref.read(templateRepositoryProvider);
-    final pack =
-        templateRepo.getById(state.selectedTemplateId!);
+    final templateRepo = ref.read(templateRepositoryProvider);
+    final pack = templateRepo.getById(state.selectedTemplateId!);
     if (pack == null) return;
 
-    final notifier =
-        ref.read(onboardingNotifierProvider.notifier);
+    final notifier = ref.read(onboardingNotifierProvider.notifier);
     for (final med in pack.medicines) {
       notifier.addCustomMedicine(
         CustomMedicineEntry(
@@ -84,226 +79,211 @@ class _MedicineStepState extends ConsumerState<MedicineStep> {
     final dosageController = TextEditingController();
     var selectedType = MedicineType.fixedTime;
 
-    unawaited(showDialog<void>(
-      context: context,
-      builder: (dialogContext) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            final theme = Theme.of(context);
-            return AlertDialog(
-              title: Text(
-                'Add Medicine',
-                style: theme.textTheme.titleMedium,
-              ),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextField(
-                      controller: nameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Medicine Name',
-                        hintText: 'e.g., Metformin',
+    unawaited(
+      showDialog<void>(
+        context: context,
+        builder: (dialogContext) {
+          return StatefulBuilder(
+            builder: (context, setDialogState) {
+              final theme = Theme.of(context);
+              return AlertDialog(
+                title: Text(
+                  'Add Medicine',
+                  style: theme.textTheme.titleMedium,
+                ),
+                content: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextField(
+                        controller: nameController,
+                        decoration: const InputDecoration(
+                          labelText: 'Medicine Name',
+                          hintText: 'e.g., Metformin',
+                        ),
+                        style: theme.textTheme.bodyMedium,
+                        autofocus: true,
                       ),
-                      style: theme.textTheme.bodyMedium,
-                      autofocus: true,
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: dosageController,
-                      decoration: const InputDecoration(
-                        labelText: 'Dosage',
-                        hintText: 'e.g., 500mg',
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: dosageController,
+                        decoration: const InputDecoration(
+                          labelText: 'Dosage',
+                          hintText: 'e.g., 500mg',
+                        ),
+                        style: theme.textTheme.bodyMedium,
                       ),
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 12),
-                    DropdownButtonFormField<MedicineType>(
-                      initialValue: selectedType,
-                      decoration: const InputDecoration(
-                        labelText: 'Type',
-                      ),
-                      items: MedicineType.values.map(
-                        (type) {
-                          return DropdownMenuItem(
-                            value: type,
-                            child: Text(
-                              _medicineTypeLabel(type),
-                              style: theme
-                                  .textTheme
-                                  .bodyMedium,
-                            ),
-                          );
+                      const SizedBox(height: 12),
+                      DropdownButtonFormField<MedicineType>(
+                        initialValue: selectedType,
+                        decoration: const InputDecoration(
+                          labelText: 'Type',
+                        ),
+                        items: MedicineType.values.map(
+                          (type) {
+                            return DropdownMenuItem(
+                              value: type,
+                              child: Text(
+                                _medicineTypeLabel(type),
+                                style: theme.textTheme.bodyMedium,
+                              ),
+                            );
+                          },
+                        ).toList(),
+                        onChanged: (value) {
+                          if (value != null) {
+                            setDialogState(
+                              () => selectedType = value,
+                            );
+                          }
                         },
-                      ).toList(),
-                      onChanged: (value) {
-                        if (value != null) {
-                          setDialogState(
-                            () => selectedType = value,
-                          );
-                        }
-                      },
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () =>
-                      Navigator.pop(dialogContext),
-                  child: const Text('Cancel'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    final name =
-                        nameController.text.trim();
-                    if (name.isNotEmpty) {
-                      final dosage =
-                          dosageController.text.trim();
-                      ref
-                          .read(
-                            onboardingNotifierProvider
-                                .notifier,
-                          )
-                          .addCustomMedicine(
-                            CustomMedicineEntry(
-                              name: name,
-                              medicineType: selectedType,
-                              dosage: dosage.isEmpty
-                                  ? null
-                                  : dosage,
-                            ),
-                          );
-                      Navigator.pop(dialogContext);
-                    }
-                  },
-                  child: const Text('Add'),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    ));
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(dialogContext),
+                    child: const Text('Cancel'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      final name = nameController.text.trim();
+                      if (name.isNotEmpty) {
+                        final dosage = dosageController.text.trim();
+                        ref
+                            .read(
+                              onboardingNotifierProvider.notifier,
+                            )
+                            .addCustomMedicine(
+                              CustomMedicineEntry(
+                                name: name,
+                                medicineType: selectedType,
+                                dosage: dosage.isEmpty ? null : dosage,
+                              ),
+                            );
+                        Navigator.pop(dialogContext);
+                      }
+                    },
+                    child: const Text('Add'),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      ),
+    );
   }
 
   void _showEditMedicineDialog(
     int index,
     CustomMedicineEntry medicine,
   ) {
-    final nameController =
-        TextEditingController(text: medicine.name);
-    final dosageController =
-        TextEditingController(text: medicine.dosage ?? '');
+    final nameController = TextEditingController(text: medicine.name);
+    final dosageController = TextEditingController(text: medicine.dosage ?? '');
     var selectedType = medicine.medicineType;
 
-    unawaited(showDialog<void>(
-      context: context,
-      builder: (dialogContext) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            final theme = Theme.of(context);
-            return AlertDialog(
-              title: Text(
-                'Edit Medicine',
-                style: theme.textTheme.titleMedium,
-              ),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextField(
-                      controller: nameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Medicine Name',
+    unawaited(
+      showDialog<void>(
+        context: context,
+        builder: (dialogContext) {
+          return StatefulBuilder(
+            builder: (context, setDialogState) {
+              final theme = Theme.of(context);
+              return AlertDialog(
+                title: Text(
+                  'Edit Medicine',
+                  style: theme.textTheme.titleMedium,
+                ),
+                content: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextField(
+                        controller: nameController,
+                        decoration: const InputDecoration(
+                          labelText: 'Medicine Name',
+                        ),
+                        style: theme.textTheme.bodyMedium,
                       ),
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: dosageController,
-                      decoration: const InputDecoration(
-                        labelText: 'Dosage',
+                      const SizedBox(height: 12),
+                      TextField(
+                        controller: dosageController,
+                        decoration: const InputDecoration(
+                          labelText: 'Dosage',
+                        ),
+                        style: theme.textTheme.bodyMedium,
                       ),
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 12),
-                    DropdownButtonFormField<MedicineType>(
-                      initialValue: selectedType,
-                      decoration: const InputDecoration(
-                        labelText: 'Type',
-                      ),
-                      items: MedicineType.values.map(
-                        (type) {
-                          return DropdownMenuItem(
-                            value: type,
-                            child: Text(
-                              _medicineTypeLabel(type),
-                              style: theme
-                                  .textTheme
-                                  .bodyMedium,
-                            ),
-                          );
+                      const SizedBox(height: 12),
+                      DropdownButtonFormField<MedicineType>(
+                        initialValue: selectedType,
+                        decoration: const InputDecoration(
+                          labelText: 'Type',
+                        ),
+                        items: MedicineType.values.map(
+                          (type) {
+                            return DropdownMenuItem(
+                              value: type,
+                              child: Text(
+                                _medicineTypeLabel(type),
+                                style: theme.textTheme.bodyMedium,
+                              ),
+                            );
+                          },
+                        ).toList(),
+                        onChanged: (value) {
+                          if (value != null) {
+                            setDialogState(
+                              () => selectedType = value,
+                            );
+                          }
                         },
-                      ).toList(),
-                      onChanged: (value) {
-                        if (value != null) {
-                          setDialogState(
-                            () => selectedType = value,
-                          );
-                        }
-                      },
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () =>
-                      Navigator.pop(dialogContext),
-                  child: const Text('Cancel'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    final name =
-                        nameController.text.trim();
-                    if (name.isNotEmpty) {
-                      final dosage =
-                          dosageController.text.trim();
-                      ref
-                          .read(
-                            onboardingNotifierProvider
-                                .notifier,
-                          )
-                          .updateCustomMedicine(
-                            index,
-                            medicine.copyWith(
-                              name: name,
-                              medicineType: selectedType,
-                              dosage: dosage.isEmpty
-                                  ? null
-                                  : dosage,
-                            ),
-                          );
-                      Navigator.pop(dialogContext);
-                    }
-                  },
-                  child: const Text('Save'),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    ));
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(dialogContext),
+                    child: const Text('Cancel'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      final name = nameController.text.trim();
+                      if (name.isNotEmpty) {
+                        final dosage = dosageController.text.trim();
+                        ref
+                            .read(
+                              onboardingNotifierProvider.notifier,
+                            )
+                            .updateCustomMedicine(
+                              index,
+                              medicine.copyWith(
+                                name: name,
+                                medicineType: selectedType,
+                                dosage: dosage.isEmpty ? null : dosage,
+                              ),
+                            );
+                        Navigator.pop(dialogContext);
+                      }
+                    },
+                    child: const Text('Save'),
+                  ),
+                ],
+              );
+            },
+          );
+        },
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final state = ref.watch(onboardingNotifierProvider);
-    final notifier =
-        ref.read(onboardingNotifierProvider.notifier);
+    final notifier = ref.read(onboardingNotifierProvider.notifier);
     final medicines = state.customMedicines;
 
     return Column(
@@ -313,9 +293,7 @@ class _MedicineStepState extends ConsumerState<MedicineStep> {
         Semantics(
           header: true,
           child: Text(
-            state.useTemplate
-                ? 'Your Medicines'
-                : 'Add Your Medicines',
+            state.useTemplate ? 'Your Medicines' : 'Add Your Medicines',
             style: theme.textTheme.titleLarge,
           ),
         ),
@@ -323,7 +301,7 @@ class _MedicineStepState extends ConsumerState<MedicineStep> {
         Text(
           state.useTemplate
               ? 'These were set up from your template. '
-                  'Tap to edit any field.'
+                    'Tap to edit any field.'
               : 'Add the medicines you need reminders for.',
           style: theme.textTheme.bodyMedium,
         ),
@@ -337,10 +315,9 @@ class _MedicineStepState extends ConsumerState<MedicineStep> {
                       Icon(
                         Icons.medication_outlined,
                         size: 64,
-                        color: theme
-                            .colorScheme
-                            .onSurfaceVariant
-                            .withValues(alpha: 0.5),
+                        color: theme.colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.5,
+                        ),
                       ),
                       const SizedBox(height: 16),
                       Text(
@@ -362,13 +339,11 @@ class _MedicineStepState extends ConsumerState<MedicineStep> {
                       typeLabel: _medicineTypeLabel(
                         med.medicineType,
                       ),
-                      onEdit: () =>
-                          _showEditMedicineDialog(
+                      onEdit: () => _showEditMedicineDialog(
                         index,
                         med,
                       ),
-                      onDismissed: () =>
-                          notifier.removeCustomMedicine(
+                      onDismissed: () => notifier.removeCustomMedicine(
                         index,
                       ),
                     );
@@ -436,7 +411,8 @@ class _MedicineCard extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Semantics(
-      label: '${medicine.name}, '
+      label:
+          '${medicine.name}, '
           '${medicine.dosage ?? "no dosage"}, '
           '$typeLabel. Swipe to remove.',
       child: Dismissible(
@@ -466,39 +442,29 @@ class _MedicineCard extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         medicine.name,
-                        style:
-                            theme.textTheme.titleSmall,
+                        style: theme.textTheme.titleSmall,
                       ),
                       const SizedBox(height: 2),
                       Text(
                         [
-                          if (medicine.dosage != null)
-                            medicine.dosage!,
+                          if (medicine.dosage != null) medicine.dosage!,
                           typeLabel,
-                          if (medicine.anchorMeal !=
-                              null)
+                          if (medicine.anchorMeal != null)
                             '(${medicine.anchorMeal})',
                         ].join(' · '),
-                        style: theme
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(
-                          color: theme
-                              .colorScheme
-                              .onSurfaceVariant,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
                   ),
                 ),
                 IconButton(
-                  icon:
-                      const Icon(Icons.edit, size: 24),
+                  icon: const Icon(Icons.edit, size: 24),
                   tooltip: 'Edit ${medicine.name}',
                   constraints: const BoxConstraints(
                     minWidth: 56,

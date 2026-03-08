@@ -38,10 +38,10 @@ void main() {
         // ── Assert: entries appear ──
         // At least one confirmation should show.
         expect(
-          $.call('Done').exists ||
-              $.call('Skipped').exists,
+          $.call('Done').exists || $.call('Skipped').exists,
           isTrue,
-          reason: 'History should show '
+          reason:
+              'History should show '
               'confirmed entries',
         );
       },
@@ -141,7 +141,9 @@ Widget _scopedApp(AppDatabase db) {
 Future<void> _seedConfirmations(
   AppDatabase db,
 ) async {
-  await db.into(db.reminderChains).insert(
+  await db
+      .into(db.reminderChains)
+      .insert(
         ReminderChainsCompanion.insert(
           name: 'Test Chain',
           createdAt: DateTime.now(),
@@ -152,12 +154,13 @@ Future<void> _seedConfirmations(
 
   // Metformin reminders + confirmations.
   for (var i = 0; i < 3; i++) {
-    final id = await db.into(db.reminders).insert(
+    final id = await db
+        .into(db.reminders)
+        .insert(
           RemindersCompanion.insert(
             chainId: 1,
             medicineName: 'Metformin',
-            medicineType:
-                MedicineType.afterMeal.dbValue,
+            medicineType: MedicineType.afterMeal.dbValue,
             dosage: const Value('500 mg'),
             scheduledAt: Value(
               now.subtract(Duration(hours: i + 1)),
@@ -166,7 +169,9 @@ Future<void> _seedConfirmations(
           ),
         );
 
-    await db.into(db.confirmations).insert(
+    await db
+        .into(db.confirmations)
+        .insert(
           ConfirmationsCompanion.insert(
             reminderId: id,
             state: 'done',
@@ -179,12 +184,13 @@ Future<void> _seedConfirmations(
 
   // Insulin reminders + confirmations.
   for (var i = 0; i < 2; i++) {
-    final id = await db.into(db.reminders).insert(
+    final id = await db
+        .into(db.reminders)
+        .insert(
           RemindersCompanion.insert(
             chainId: 1,
             medicineName: 'Insulin',
-            medicineType:
-                MedicineType.beforeMeal.dbValue,
+            medicineType: MedicineType.beforeMeal.dbValue,
             dosage: const Value('10 units'),
             scheduledAt: Value(
               now.subtract(Duration(hours: i + 4)),
@@ -193,7 +199,9 @@ Future<void> _seedConfirmations(
           ),
         );
 
-    await db.into(db.confirmations).insert(
+    await db
+        .into(db.confirmations)
+        .insert(
           ConfirmationsCompanion.insert(
             reminderId: id,
             state: 'done',
@@ -211,7 +219,9 @@ Future<void> _seedManyConfirmations(
   AppDatabase db, {
   required int count,
 }) async {
-  await db.into(db.reminderChains).insert(
+  await db
+      .into(db.reminderChains)
+      .insert(
         ReminderChainsCompanion.insert(
           name: 'Pagination Chain',
           createdAt: DateTime.now(),
@@ -221,12 +231,13 @@ Future<void> _seedManyConfirmations(
   final now = DateTime.now();
 
   for (var i = 0; i < count; i++) {
-    final id = await db.into(db.reminders).insert(
+    final id = await db
+        .into(db.reminders)
+        .insert(
           RemindersCompanion.insert(
             chainId: 1,
             medicineName: 'Med-${i + 1}',
-            medicineType:
-                MedicineType.fixedTime.dbValue,
+            medicineType: MedicineType.fixedTime.dbValue,
             dosage: const Value('100 mg'),
             scheduledAt: Value(
               now.subtract(Duration(hours: i + 1)),
@@ -235,7 +246,9 @@ Future<void> _seedManyConfirmations(
           ),
         );
 
-    await db.into(db.confirmations).insert(
+    await db
+        .into(db.confirmations)
+        .insert(
           ConfirmationsCompanion.insert(
             reminderId: id,
             state: i.isEven ? 'done' : 'skipped',

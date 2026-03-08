@@ -5,6 +5,7 @@
 > permission flows on OEM devices.
 >
 > **Device Requirements:** Minimum 3 physical devices:
+>
 > - 1 × Xiaomi (MIUI 14/15)
 > - 1 × Samsung (OneUI 5/6)
 > - 1 × Huawei (EMUI 13/14 or HarmonyOS 3/4)

@@ -14,23 +14,22 @@ import 'package:memo_care/features/reminders/domain/models/reminder.dart';
 import 'package:mocktail/mocktail.dart';
 
 // ── Mocks ──────────────────────────────────────────────
-class _MockDailyScheduleNotifier
-    extends AsyncNotifier<DailyScheduleState>
-    // AsyncNotifier requires extends, not mixin.
-    with Mock // ignore: prefer_mixin
+class _MockDailyScheduleNotifier extends AsyncNotifier<DailyScheduleState>
+        // AsyncNotifier requires extends, not mixin.
+        with
+        Mock // ignore: prefer_mixin
     implements DailyScheduleNotifier {
   @override
-  Future<DailyScheduleState> build() async =>
-      const DailyScheduleState(
-        todayReminders: [],
-        missedReminders: [],
-      );
+  Future<DailyScheduleState> build() async => const DailyScheduleState(
+    todayReminders: [],
+    missedReminders: [],
+  );
 }
 
-class _MockConfirmationNotifier
-    extends AsyncNotifier<void>
-    // AsyncNotifier requires extends, not mixin.
-    with Mock // ignore: prefer_mixin
+class _MockConfirmationNotifier extends AsyncNotifier<void>
+        // AsyncNotifier requires extends, not mixin.
+        with
+        Mock // ignore: prefer_mixin
     implements ConfirmationNotifier {
   @override
   Future<void> build() async {}
@@ -46,12 +45,12 @@ const _testReminder = Reminder(
 );
 
 Widget _scaled(Widget child) => MediaQuery(
-      data: const MediaQueryData(
-        textScaler: TextScaler.linear(2),
-        size: Size(411, 731),
-      ),
-      child: MaterialApp(home: Scaffold(body: child)),
-    );
+  data: const MediaQueryData(
+    textScaler: TextScaler.linear(2),
+    size: Size(411, 731),
+  ),
+  child: MaterialApp(home: Scaffold(body: child)),
+);
 
 void main() {
   group('Font Scale 200 % — no overflow', () {
@@ -189,10 +188,8 @@ void main() {
     testWidgets(
       'HomeScreen renders without overflow',
       (tester) async {
-        final schedNotifier =
-            _MockDailyScheduleNotifier();
-        final confNotifier =
-            _MockConfirmationNotifier();
+        final schedNotifier = _MockDailyScheduleNotifier();
+        final confNotifier = _MockConfirmationNotifier();
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
@@ -221,8 +218,7 @@ void main() {
             home: Scaffold(
               body: ReminderListTile(
                 reminder: _testReminder,
-                confirmationStatus:
-                    ConfirmationState.done,
+                confirmationStatus: ConfirmationState.done,
               ),
             ),
           ),

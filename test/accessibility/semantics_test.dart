@@ -17,17 +17,16 @@ import 'package:mocktail/mocktail.dart';
 
 // ── Mocks ──────────────────────────────────────────────
 
-class _MockDailyScheduleNotifier
-    extends AsyncNotifier<DailyScheduleState>
-    // AsyncNotifier requires extends, not mixin.
-    with Mock // ignore: prefer_mixin
+class _MockDailyScheduleNotifier extends AsyncNotifier<DailyScheduleState>
+        // AsyncNotifier requires extends, not mixin.
+        with
+        Mock // ignore: prefer_mixin
     implements DailyScheduleNotifier {
   @override
-  Future<DailyScheduleState> build() async =>
-      const DailyScheduleState(
-        todayReminders: [],
-        missedReminders: [],
-      );
+  Future<DailyScheduleState> build() async => const DailyScheduleState(
+    todayReminders: [],
+    missedReminders: [],
+  );
 }
 
 // ── Test data ──────────────────────────────────────────
@@ -41,8 +40,8 @@ const _testReminder = Reminder(
 );
 
 Widget _wrap(Widget child) => MaterialApp(
-      home: Scaffold(body: child),
-    );
+  home: Scaffold(body: child),
+);
 
 /// Finds a [Semantics] widget whose `properties.label`
 /// matches [expected].
@@ -52,23 +51,21 @@ void _expectSemanticsLabel(
 ) {
   final found = tester.widgetList<Semantics>(
     find.byWidgetPredicate(
-      (w) =>
-          w is Semantics &&
-          w.properties.label == expected,
+      (w) => w is Semantics && w.properties.label == expected,
     ),
   );
   expect(
     found.length,
     greaterThanOrEqualTo(1),
-    reason: 'Expected Semantics(label: "$expected") '
+    reason:
+        'Expected Semantics(label: "$expected") '
         'but found none',
   );
 }
 
 void main() {
   group('Semantics — StatusBadge', () {
-    testWidgets('done badge has correct Semantics label',
-        (tester) async {
+    testWidgets('done badge has correct Semantics label', (tester) async {
       await tester.pumpWidget(
         _wrap(
           const StatusBadge(
@@ -80,8 +77,7 @@ void main() {
       _expectSemanticsLabel(tester, 'Status: Done');
     });
 
-    testWidgets('missed badge has correct Semantics label',
-        (tester) async {
+    testWidgets('missed badge has correct Semantics label', (tester) async {
       await tester.pumpWidget(
         _wrap(
           const StatusBadge(
@@ -94,9 +90,7 @@ void main() {
       _expectSemanticsLabel(tester, 'Status: Missed');
     });
 
-    testWidgets(
-        'pending badge has correct Semantics label',
-        (tester) async {
+    testWidgets('pending badge has correct Semantics label', (tester) async {
       await tester.pumpWidget(
         _wrap(const StatusBadge(status: null)),
       );
@@ -104,9 +98,7 @@ void main() {
       _expectSemanticsLabel(tester, 'Status: Pending');
     });
 
-    testWidgets(
-        'skipped badge has correct Semantics label',
-        (tester) async {
+    testWidgets('skipped badge has correct Semantics label', (tester) async {
       await tester.pumpWidget(
         _wrap(
           const StatusBadge(
@@ -120,9 +112,9 @@ void main() {
   });
 
   group('Semantics — ReminderListTile', () {
-    testWidgets(
-        'tile has Semantics label with medicine details',
-        (tester) async {
+    testWidgets('tile has Semantics label with medicine details', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         _wrap(
           const ReminderListTile(
@@ -142,9 +134,7 @@ void main() {
       );
     });
 
-    testWidgets(
-        'tile Semantics has button: true (tappable)',
-        (tester) async {
+    testWidgets('tile Semantics has button: true (tappable)', (tester) async {
       await tester.pumpWidget(
         _wrap(
           const ReminderListTile(
@@ -155,15 +145,13 @@ void main() {
 
       // Verify by checking that the Semantics widget
       // has button: true — find it via widget predicate.
-      final semanticsWidget =
-          tester.widget<Semantics>(
+      final semanticsWidget = tester.widget<Semantics>(
         find.byWidgetPredicate(
           (w) =>
               w is Semantics &&
               (w.properties.button ?? false) &&
               w.properties.label != null &&
-              w.properties.label!
-                  .contains('Metformin'),
+              w.properties.label!.contains('Metformin'),
         ),
       );
       expect(
@@ -174,9 +162,7 @@ void main() {
   });
 
   group('Semantics — NextPendingHeroCard', () {
-    testWidgets(
-        'all-done card has correct Semantics',
-        (tester) async {
+    testWidgets('all-done card has correct Semantics', (tester) async {
       final notifier = _MockDailyScheduleNotifier();
       await tester.pumpWidget(
         ProviderScope(
@@ -204,13 +190,10 @@ void main() {
     });
   });
 
-  group(
-      'Semantics — FullScreenAlarmScreen '
+  group('Semantics — FullScreenAlarmScreen '
       'focus order', () {
-    testWidgets(
-        'alarm title, done button and skip button '
-        'have Semantics',
-        (tester) async {
+    testWidgets('alarm title, done button and skip button '
+        'have Semantics', (tester) async {
       await tester.pumpWidget(
         _wrap(
           FullScreenAlarmScreen(
@@ -257,10 +240,8 @@ void main() {
       );
     });
 
-    testWidgets(
-        'focus order increases sequentially '
-        '(OrdinalSortKey)',
-        (tester) async {
+    testWidgets('focus order increases sequentially '
+        '(OrdinalSortKey)', (tester) async {
       await tester.pumpWidget(
         _wrap(
           FullScreenAlarmScreen(
@@ -276,8 +257,7 @@ void main() {
 
       // Collect OrdinalSortKey values from Semantics
       // widgets in the tree.
-      final semanticsWidgets =
-          tester.widgetList<Semantics>(
+      final semanticsWidgets = tester.widgetList<Semantics>(
         find.byType(Semantics),
       );
       final sortKeys = <double>[];
@@ -294,7 +274,8 @@ void main() {
         expect(
           sortKeys[i],
           greaterThanOrEqualTo(sortKeys[i - 1]),
-          reason: 'OrdinalSortKey values should '
+          reason:
+              'OrdinalSortKey values should '
               'increase: ${sortKeys[i - 1]} → '
               '${sortKeys[i]}',
         );
@@ -303,9 +284,9 @@ void main() {
   });
 
   group('Semantics — UndoConfirmationBar', () {
-    testWidgets(
-        'has liveRegion Semantics and undo button label',
-        (tester) async {
+    testWidgets('has liveRegion Semantics and undo button label', (
+      tester,
+    ) async {
       const undoable = UndoableConfirmation(
         confirmationId: 1,
         reminderId: 1,
@@ -347,9 +328,7 @@ void main() {
   });
 
   group('Semantics — ExcludeSemantics', () {
-    testWidgets(
-        'FullScreenAlarm decorative icon is excluded',
-        (tester) async {
+    testWidgets('FullScreenAlarm decorative icon is excluded', (tester) async {
       await tester.pumpWidget(
         _wrap(
           FullScreenAlarmScreen(
@@ -366,14 +345,14 @@ void main() {
       // The medication_rounded icon should be wrapped
       // in ExcludeSemantics — verify it exists as widget
       // but has no Semantics label of its own.
-      final excludeWidgets =
-          tester.widgetList<ExcludeSemantics>(
+      final excludeWidgets = tester.widgetList<ExcludeSemantics>(
         find.byType(ExcludeSemantics),
       );
       expect(
         excludeWidgets.length,
         greaterThanOrEqualTo(1),
-        reason: 'Decorative icon should be excluded '
+        reason:
+            'Decorative icon should be excluded '
             'from Semantics tree',
       );
     });

@@ -158,7 +158,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     child: Semantics(
                       header: true,
                       sortKey: const OrdinalSortKey(4),
-                      label: "Today's Schedule, "
+                      label:
+                          "Today's Schedule, "
                           '${schedule.todayReminders.length} '
                           'items',
                       child: Padding(
@@ -190,9 +191,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 child: Text(
                                   '${schedule.todayReminders.length}',
                                   style: theme.textTheme.labelLarge?.copyWith(
-                                    color: theme
-                                        .colorScheme
-                                        .onSecondaryContainer,
+                                    color:
+                                        theme.colorScheme.onSecondaryContainer,
                                   ),
                                 ),
                               ),

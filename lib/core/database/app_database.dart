@@ -9,6 +9,7 @@ import 'package:memo_care/features/confirmation/data/confirmation_dao.dart';
 import 'package:memo_care/features/reminders/data/reminder_dao.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 
 part 'app_database.g.dart';
 
@@ -128,6 +129,10 @@ LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final dbFolder = await getApplicationDocumentsDirectory();
     final file = File(p.join(dbFolder.path, 'memo_care.sqlite'));
+
+    // Required on Android to find the bundled libsqlite3.so
+    await applyWorkaroundToOpenSqlite3OnOldAndroidVersions();
+
     return NativeDatabase.createInBackground(file);
   });
 }

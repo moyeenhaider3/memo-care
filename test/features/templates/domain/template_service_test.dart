@@ -12,11 +12,9 @@ import 'package:memo_care/features/templates/domain/models/template_packs.dart';
 import 'package:memo_care/features/templates/domain/template_service.dart';
 import 'package:mocktail/mocktail.dart';
 
-class _MockChainRepository extends Mock
-    implements ChainRepository {}
+class _MockChainRepository extends Mock implements ChainRepository {}
 
-class _MockReminderRepository extends Mock
-    implements ReminderRepository {}
+class _MockReminderRepository extends Mock implements ReminderRepository {}
 
 class _MockChainValidator extends Mock implements ChainValidator {}
 
@@ -48,8 +46,9 @@ void main() {
   });
 
   void stubHappyPath() {
-    when(() => chainRepo.createChain(name: any(named: 'name')))
-        .thenAnswer((_) async => 1);
+    when(
+      () => chainRepo.createChain(name: any(named: 'name')),
+    ).thenAnswer((_) async => 1);
 
     var reminderIdCounter = 100;
     when(
@@ -59,6 +58,7 @@ void main() {
         medicineType: any(named: 'medicineType'),
         dosage: any(named: 'dosage'),
         scheduledAt: any(named: 'scheduledAt'),
+        isActive: any(named: 'isActive'),
         gapHours: any(named: 'gapHours'),
       ),
     ).thenAnswer((_) async => reminderIdCounter++);
@@ -93,8 +93,7 @@ void main() {
         callbackHandle: any(named: 'callbackHandle'),
       ),
     ).thenAnswer(
-      (inv) async =>
-          (inv.namedArguments[#reminders]! as List).length,
+      (inv) async => (inv.namedArguments[#reminders]! as List).length,
     );
   }
 
@@ -128,6 +127,7 @@ void main() {
             medicineType: any(named: 'medicineType'),
             dosage: any(named: 'dosage'),
             scheduledAt: any(named: 'scheduledAt'),
+            isActive: true,
             gapHours: any(named: 'gapHours'),
           ),
         ).called(6);
@@ -179,6 +179,7 @@ void main() {
             medicineType: MedicineType.beforeMeal,
             dosage: '15 units',
             scheduledAt: any(named: 'scheduledAt'),
+            isActive: true,
             gapHours: any(named: 'gapHours'),
           ),
         ).called(1);
@@ -195,11 +196,9 @@ void main() {
         ),
       ).thenReturn(left(const CycleDetected()));
 
-      when(() => chainRepo.deleteChain(any()))
-          .thenAnswer((_) async {});
+      when(() => chainRepo.deleteChain(any())).thenAnswer((_) async {});
 
-      final result =
-          await service.apply(pack: kBloodPressurePack);
+      final result = await service.apply(pack: kBloodPressurePack);
 
       expect(result.isLeft(), isTrue);
       result.match(
@@ -243,14 +242,12 @@ void main() {
 
         expect(result.isLeft(), isTrue);
         result.match(
-          (error) =>
-              expect(error, isA<TemplateInvalidEdgeIndex>()),
+          (error) => expect(error, isA<TemplateInvalidEdgeIndex>()),
           (_) => fail('Expected Left'),
         );
 
         verifyNever(
-          () =>
-              chainRepo.createChain(name: any(named: 'name')),
+          () => chainRepo.createChain(name: any(named: 'name')),
         );
       },
     );

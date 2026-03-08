@@ -33,15 +33,13 @@ const List<_ConditionOption> _conditions = [
   _ConditionOption(
     key: 'blood_pressure',
     name: 'Blood Pressure',
-    description:
-        'Morning and evening blood pressure medication',
+    description: 'Morning and evening blood pressure medication',
     icon: Icons.monitor_heart,
   ),
   _ConditionOption(
     key: 'school_morning',
     name: 'School Morning',
-    description:
-        "Child's morning routine with medication",
+    description: "Child's morning routine with medication",
     icon: Icons.school,
   ),
   _ConditionOption(
@@ -64,8 +62,7 @@ class ConditionStep extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final notifier =
-        ref.read(onboardingNotifierProvider.notifier);
+    final notifier = ref.read(onboardingNotifierProvider.notifier);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -109,27 +106,21 @@ class ConditionStep extends ConsumerWidget {
                           Icon(
                             condition.icon,
                             size: 40,
-                            color:
-                                theme.colorScheme.primary,
+                            color: theme.colorScheme.primary,
                           ),
                           const SizedBox(width: 16),
                           Expanded(
                             child: Column(
-                              crossAxisAlignment:
-                                  CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   condition.name,
-                                  style: theme
-                                      .textTheme
-                                      .titleSmall,
+                                  style: theme.textTheme.titleSmall,
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
                                   condition.description,
-                                  style: theme
-                                      .textTheme
-                                      .bodyMedium,
+                                  style: theme.textTheme.bodyMedium,
                                 ),
                               ],
                             ),
@@ -137,9 +128,7 @@ class ConditionStep extends ConsumerWidget {
                           Icon(
                             Icons.chevron_right,
                             size: 28,
-                            color: theme
-                                .colorScheme
-                                .onSurfaceVariant,
+                            color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ],
                       ),

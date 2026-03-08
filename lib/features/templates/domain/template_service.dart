@@ -102,10 +102,10 @@ class TemplateService {
     required ReminderRepository reminderRepository,
     required ChainValidator chainValidator,
     required AlarmScheduler alarmScheduler,
-  })  : _chainRepo = chainRepository,
-        _reminderRepo = reminderRepository,
-        _chainValidator = chainValidator,
-        _alarmScheduler = alarmScheduler;
+  }) : _chainRepo = chainRepository,
+       _reminderRepo = reminderRepository,
+       _chainValidator = chainValidator,
+       _alarmScheduler = alarmScheduler;
 
   final ChainRepository _chainRepo;
   final ReminderRepository _reminderRepo;
@@ -124,8 +124,7 @@ class TemplateService {
   ///
   /// Returns `Right(TemplateInstantiationResult)` on success,
   /// or `Left(TemplateError)` on failure.
-  Future<Either<TemplateError, TemplateInstantiationResult>>
-      apply({
+  Future<Either<TemplateError, TemplateInstantiationResult>> apply({
     required TemplatePack pack,
     Map<int, CustomMedicineEntry> userOverrides = const {},
     Map<String, int> mealAnchorTimes = const {},
@@ -148,8 +147,7 @@ class TemplateService {
 
     try {
       // Step 2: Create the chain.
-      final chainId =
-          await _chainRepo.createChain(name: pack.name);
+      final chainId = await _chainRepo.createChain(name: pack.name);
 
       // Step 3: Create reminders, building index → ID map.
       final indexToId = <int, int>{};
@@ -161,8 +159,7 @@ class TemplateService {
 
         final name = override?.name ?? med.name;
         final dosage = override?.dosage ?? med.defaultDosage;
-        final type =
-            override?.medicineType ?? med.medicineType;
+        final type = override?.medicineType ?? med.medicineType;
         final scheduledAt = _computeScheduledAt(
           templateMed: med,
           override: override,
@@ -175,6 +172,7 @@ class TemplateService {
           medicineType: type,
           dosage: dosage,
           scheduledAt: scheduledAt,
+          isActive: true,
           gapHours: med.gapHours,
         );
 
@@ -212,8 +210,7 @@ class TemplateService {
       }
 
       // Step 6: Schedule alarms for reminders with times.
-      final schedulable =
-          <({int reminderId, DateTime fireAt})>[];
+      final schedulable = <({int reminderId, DateTime fireAt})>[];
       for (final entry in indexToId.entries) {
         final med = pack.medicines[entry.key];
         final override = userOverrides[med.chainPosition];
@@ -264,8 +261,7 @@ class TemplateService {
 
     // Fixed-time medicines use their default time.
     if (templateMed.defaultTimeMinutes != null) {
-      return today
-          .add(Duration(minutes: templateMed.defaultTimeMinutes!));
+      return today.add(Duration(minutes: templateMed.defaultTimeMinutes!));
     }
 
     // Meal-linked: compute from anchor time + offset.
@@ -273,13 +269,12 @@ class TemplateService {
       final mealKey = templateMed.anchorMeal!.name;
       final anchorMinutes = mealAnchorTimes[mealKey];
       if (anchorMinutes != null) {
-        final anchorTime =
-            today.add(Duration(minutes: anchorMinutes));
+        final anchorTime = today.add(Duration(minutes: anchorMinutes));
         return switch (templateMed.medicineType) {
-          MedicineType.beforeMeal => anchorTime
-              .subtract(const Duration(minutes: 30)),
-          MedicineType.afterMeal =>
-            anchorTime.add(const Duration(minutes: 30)),
+          MedicineType.beforeMeal => anchorTime.subtract(
+            const Duration(minutes: 30),
+          ),
+          MedicineType.afterMeal => anchorTime.add(const Duration(minutes: 30)),
           _ => anchorTime,
         };
       }

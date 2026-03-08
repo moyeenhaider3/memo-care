@@ -61,11 +61,9 @@ class _AnchorStepState extends ConsumerState<AnchorStep> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final state = ref.read(onboardingNotifierProvider);
-      final notifier =
-          ref.read(onboardingNotifierProvider.notifier);
+      final notifier = ref.read(onboardingNotifierProvider.notifier);
       for (final entry in _defaultAnchors.entries) {
-        if (!state.mealAnchorDefaults
-            .containsKey(entry.key)) {
+        if (!state.mealAnchorDefaults.containsKey(entry.key)) {
           notifier.setMealAnchor(entry.key, entry.value);
         }
       }
@@ -76,9 +74,7 @@ class _AnchorStepState extends ConsumerState<AnchorStep> {
     final hours = minutesFromMidnight ~/ 60;
     final minutes = minutesFromMidnight % 60;
     final period = hours >= 12 ? 'PM' : 'AM';
-    final displayHours = hours == 0
-        ? 12
-        : (hours > 12 ? hours - 12 : hours);
+    final displayHours = hours == 0 ? 12 : (hours > 12 ? hours - 12 : hours);
     return '${displayHours.toString().padLeft(2, '0')}:'
         '${minutes.toString().padLeft(2, '0')} $period';
   }
@@ -94,7 +90,8 @@ class _AnchorStepState extends ConsumerState<AnchorStep> {
     final picked = await showTimePicker(
       context: context,
       initialTime: initialTime,
-      helpText: 'Set '
+      helpText:
+          'Set '
           '${mealKey[0].toUpperCase()}'
           '${mealKey.substring(1)} time',
     );
@@ -133,10 +130,10 @@ class _AnchorStepState extends ConsumerState<AnchorStep> {
         for (final meal in _mealConfig) ...[
           Semantics(
             button: true,
-            label: '${meal.label} time: '
+            label:
+                '${meal.label} time: '
                 '${_formatTime(
-                  anchors[meal.key] ??
-                      _defaultAnchors[meal.key]!,
+                  anchors[meal.key] ?? _defaultAnchors[meal.key]!,
                 )}'
                 '. Tap to change.',
             child: Card(
@@ -144,8 +141,7 @@ class _AnchorStepState extends ConsumerState<AnchorStep> {
                 borderRadius: BorderRadius.circular(16),
                 onTap: () => _pickTime(
                   meal.key,
-                  anchors[meal.key] ??
-                      _defaultAnchors[meal.key]!,
+                  anchors[meal.key] ?? _defaultAnchors[meal.key]!,
                 ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -163,36 +159,24 @@ class _AnchorStepState extends ConsumerState<AnchorStep> {
                       Expanded(
                         child: Text(
                           meal.label,
-                          style:
-                              theme.textTheme.titleSmall,
+                          style: theme.textTheme.titleSmall,
                         ),
                       ),
                       Container(
-                        padding:
-                            const EdgeInsets.symmetric(
+                        padding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 10,
                         ),
                         decoration: BoxDecoration(
-                          color: theme
-                              .colorScheme
-                              .primaryContainer,
-                          borderRadius:
-                              BorderRadius.circular(8),
+                          color: theme.colorScheme.primaryContainer,
+                          borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
                           _formatTime(
-                            anchors[meal.key] ??
-                                _defaultAnchors[
-                                    meal.key]!,
+                            anchors[meal.key] ?? _defaultAnchors[meal.key]!,
                           ),
-                          style: theme
-                              .textTheme
-                              .titleSmall
-                              ?.copyWith(
-                            color: theme
-                                .colorScheme
-                                .onPrimaryContainer,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            color: theme.colorScheme.onPrimaryContainer,
                           ),
                         ),
                       ),
