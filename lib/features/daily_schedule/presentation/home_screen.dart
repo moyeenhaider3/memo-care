@@ -116,9 +116,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             data: (schedule) {
               final confirmedCount = schedule.todayReminders
                   .where(
-                    (r) => !schedule.missedReminders.any(
-                      (m) => m.id == r.id,
-                    ),
+                    (r) => schedule.confirmedIds.contains(r.id),
                   )
                   .length;
 

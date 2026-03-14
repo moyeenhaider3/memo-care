@@ -10,13 +10,7 @@ import 'package:memo_care/features/kids_mode/presentation/kids_dashboard_screen.
 import 'package:memo_care/features/kids_mode/presentation/kids_reward_screen.dart';
 import 'package:memo_care/features/kids_mode/presentation/kids_reward_sound_screen.dart';
 import 'package:memo_care/features/settings/application/settings_providers.dart';
-import 'package:memo_care/features/onboarding/presentation/anchor_step.dart';
-import 'package:memo_care/features/onboarding/presentation/condition_step.dart';
-import 'package:memo_care/features/onboarding/presentation/medicine_step.dart';
-import 'package:memo_care/features/onboarding/presentation/onboarding_flow.dart';
 import 'package:memo_care/features/onboarding/presentation/onboarding_page_view.dart';
-import 'package:memo_care/features/onboarding/presentation/permission_step.dart';
-import 'package:memo_care/features/onboarding/presentation/review_step.dart';
 import 'package:memo_care/features/reminders/presentation/add_reminder_screen.dart';
 import 'package:memo_care/features/settings/presentation/settings_screen.dart';
 import 'package:memo_care/features/templates/presentation/template_library_screen.dart';
@@ -177,37 +171,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.onboarding,
         name: 'onboarding',
         builder: (context, state) => const OnboardingPageView(),
-      ),
-
-      // --- Legacy onboarding sub-routes (kept for backward compat) ---
-      ShellRoute(
-        builder: (context, state, child) => OnboardingFlow(child: child),
-        routes: [
-          GoRoute(
-            path: '${AppRoutes.onboarding}/${AppRoutes.condition}',
-            builder: (context, state) => const ConditionStep(),
-          ),
-          GoRoute(
-            path: '${AppRoutes.onboarding}/${AppRoutes.template}',
-            builder: (context, state) => const TemplatePickerScreen(),
-          ),
-          GoRoute(
-            path: '${AppRoutes.onboarding}/${AppRoutes.anchors}',
-            builder: (context, state) => const AnchorStep(),
-          ),
-          GoRoute(
-            path: '${AppRoutes.onboarding}/${AppRoutes.medicines}',
-            builder: (context, state) => const MedicineStep(),
-          ),
-          GoRoute(
-            path: '${AppRoutes.onboarding}/${AppRoutes.review}',
-            builder: (context, state) => const ReviewStep(),
-          ),
-          GoRoute(
-            path: '${AppRoutes.onboarding}/${AppRoutes.permissions}',
-            builder: (context, state) => const PermissionStep(),
-          ),
-        ],
       ),
 
       // --- Kids Mode (standalone, no main bottom nav) ---

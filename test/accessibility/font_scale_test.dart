@@ -4,11 +4,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:memo_care/features/confirmation/application/confirmation_notifier.dart';
 import 'package:memo_care/features/confirmation/domain/models/confirmation_state.dart';
 import 'package:memo_care/features/daily_schedule/application/daily_schedule_notifier.dart';
+import 'package:memo_care/features/daily_schedule/application/daily_schedule_providers.dart';
+import 'package:memo_care/features/daily_schedule/application/hydration_notifier.dart';
 import 'package:memo_care/features/daily_schedule/presentation/home_screen.dart';
 import 'package:memo_care/features/daily_schedule/presentation/widgets/next_pending_hero_card.dart';
 import 'package:memo_care/features/daily_schedule/presentation/widgets/reminder_list_tile.dart';
 import 'package:memo_care/features/daily_schedule/presentation/widgets/status_badge.dart';
 import 'package:memo_care/features/escalation/presentation/fullscreen_alarm_screen.dart';
+import 'package:memo_care/features/fasting/application/fasting_notifier.dart';
+import 'package:memo_care/features/fasting/application/fasting_state.dart';
 import 'package:memo_care/features/reminders/domain/models/medicine_type.dart';
 import 'package:memo_care/features/reminders/domain/models/reminder.dart';
 import 'package:mocktail/mocktail.dart';
@@ -33,6 +37,20 @@ class _MockConfirmationNotifier extends AsyncNotifier<void>
     implements ConfirmationNotifier {
   @override
   Future<void> build() async {}
+}
+
+class _MockFastingNotifier extends Notifier<FastingState>
+        with Mock // ignore: prefer_mixin
+    implements FastingNotifier {
+  @override
+  FastingState build() => const FastingState();
+}
+
+class _MockHydrationNotifier extends Notifier<HydrationState>
+        with Mock // ignore: prefer_mixin
+    implements HydrationNotifier {
+  @override
+  HydrationState build() => HydrationState(lastUpdated: DateTime.now());
 }
 
 // ── Helpers ────────────────────────────────────────────
@@ -209,6 +227,13 @@ void main() {
               confirmationNotifierProvider.overrideWith(
                 () => confNotifier,
               ),
+              fastingNotifierProvider.overrideWith(
+                _MockFastingNotifier.new,
+              ),
+              hydrationNotifierProvider.overrideWith(
+                _MockHydrationNotifier.new,
+              ),
+              hasMissedRemindersProvider.overrideWithValue(false),
             ],
             child: _scaled(const HomeScreen()),
           ),

@@ -88,9 +88,11 @@ class AnchorNotifier extends AsyncNotifier<List<MealAnchor>> {
 
         // 4 & 5. Update Drift + reschedule alarms.
         for (final update in updates) {
-          final reminder = dependents.firstWhere(
-            (r) => r.id == update.reminderId,
+          final reminder = dependents.cast<Reminder?>().firstWhere(
+            (r) => r!.id == update.reminderId,
+            orElse: () => null,
           );
+          if (reminder == null) continue;
           final updated = reminder.copyWith(
             scheduledAt: update.scheduledAt,
           );
@@ -178,9 +180,11 @@ class AnchorNotifier extends AsyncNotifier<List<MealAnchor>> {
         );
 
         for (final update in updates) {
-          final reminder = dependents.firstWhere(
-            (r) => r.id == update.reminderId,
+          final reminder = dependents.cast<Reminder?>().firstWhere(
+            (r) => r!.id == update.reminderId,
+            orElse: () => null,
           );
+          if (reminder == null) continue;
           final updated = reminder.copyWith(
             scheduledAt: update.scheduledAt,
           );

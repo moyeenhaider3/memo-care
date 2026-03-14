@@ -1,8 +1,11 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memo_care/core/platform/caregiver_service.dart';
 import 'package:memo_care/features/reminders/application/providers.dart';
 import 'package:memo_care/features/reminders/domain/models/reminder.dart';
+import 'package:memo_care/features/settings/application/settings_providers.dart';
 
 /// State for today's schedule view (VIEW-01, VIEW-02, VIEW-04).
 class DailyScheduleState {
@@ -11,6 +14,7 @@ class DailyScheduleState {
     required this.todayReminders,
     required this.missedReminders,
     this.nextPending,
+    this.confirmedIds = const {},
   });
 
   /// All of today's reminders in chronological order.
@@ -23,6 +27,9 @@ class DailyScheduleState {
   /// Reminders scheduled in the past with no terminal
   /// confirmation (VIEW-04).
   final List<Reminder> missedReminders;
+
+  /// IDs of reminders confirmed today (DONE or SKIPPED).
+  final Set<int> confirmedIds;
 }
 
 /// Manages the daily schedule state by watching today's
@@ -62,6 +69,7 @@ class DailyScheduleNotifier extends AsyncNotifier<DailyScheduleState> {
 
     unawaited(_missedSub?.cancel());
     _missedSub = missedStream.listen((missed) {
+      _notifyCaregiverForNewMissed(missed);
       _missed = missed;
       _emitState();
     });
@@ -102,7 +110,35 @@ class DailyScheduleNotifier extends AsyncNotifier<DailyScheduleState> {
       todayReminders: _today,
       nextPending: pendingFuture.isNotEmpty ? pendingFuture.first : null,
       missedReminders: _missed,
+      confirmedIds: _confirmedIds,
     );
+  }
+
+  /// Sends a WhatsApp caregiver alert for newly missed reminders.
+  void _notifyCaregiverForNewMissed(List<Reminder> newMissed) {
+    final previousIds = _missed.map((r) => r.id).toSet();
+    final freshlyMissed = newMissed.where(
+      (r) => !previousIds.contains(r.id),
+    );
+    if (freshlyMissed.isEmpty) return;
+
+    final settingsRepo = ref.read(settingsRepositoryProvider);
+    final phone = settingsRepo.getCaregiverPhone();
+    if (phone == null || phone.isEmpty) return;
+
+    for (final reminder in freshlyMissed) {
+      unawaited(
+        CaregiverService.sendMissedReminderAlert(
+          phoneNumber: phone,
+          medicineName: reminder.medicineName,
+          dosage: reminder.dosage,
+          scheduledAt: reminder.scheduledAt ?? DateTime.now(),
+        ).catchError((Object e) {
+          debugPrint('MemoCare: Caregiver alert failed: $e');
+          return false;
+        }),
+      );
+    }
   }
 }
 

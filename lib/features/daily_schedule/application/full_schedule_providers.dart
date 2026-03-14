@@ -56,7 +56,12 @@ final scheduleStatsProvider = Provider<ScheduleStats>((ref) {
 
   final missed = schedule.missedReminders.length;
   final total = schedule.todayReminders.length;
-  // For now, done = 0 (will be accurate when confirmation state is tracked)
-  // pending = total - missed
-  return ScheduleStats(done: 0, pending: total - missed, missed: missed);
+  final done = schedule.todayReminders
+      .where((r) => schedule.confirmedIds.contains(r.id))
+      .length;
+  return ScheduleStats(
+    done: done,
+    pending: total - missed - done,
+    missed: missed,
+  );
 });
