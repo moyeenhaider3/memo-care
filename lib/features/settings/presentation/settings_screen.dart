@@ -2,45 +2,38 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memo_care/core/theme/app_colors.dart';
+import 'package:memo_care/core/theme/app_spacing.dart';
+import 'package:memo_care/core/theme/app_typography.dart';
+import 'package:memo_care/features/fasting/application/fasting_notifier.dart';
 import 'package:memo_care/features/settings/application/settings_providers.dart';
 import 'package:memo_care/features/settings/domain/models/app_settings.dart';
+import 'package:memo_care/features/settings/presentation/widgets/caregiver_section.dart';
+import 'package:memo_care/features/settings/presentation/widgets/data_export_section.dart';
+import 'package:memo_care/features/settings/presentation/widgets/display_settings_section.dart';
+import 'package:memo_care/features/settings/presentation/widgets/fasting_toggle_tile.dart';
+import 'package:memo_care/features/settings/presentation/widgets/profile_header.dart';
 
-/// Settings screen for notification, snooze, and escalation
-/// preferences (VIEW-05).
+/// Revamped Settings & Profile screen (VIEW-05, 10-04).
 ///
 /// Sections:
-/// 1. Notification Preferences — toggles
-/// 2. Snooze & Escalation — sliders
-///
-/// All changes are immediately persisted to
-/// `SharedPreferences` via `SettingsRepository`.
-///
-/// Accessibility:
-/// - All text >= 18 pt
-/// - Slider thumb >= 20 dp
-/// - Switch touch targets >= 56 dp
-/// - Semantics labels on all controls
+/// 1. Profile Header — avatar, name, badge
+/// 2. Display Settings — text size, high contrast, dark mode
+/// 3. Notification Preferences — toggles
+/// 4. Snooze & Escalation — sliders
+/// 5. Fasting Mode — gold accent toggle
+/// 6. Caregiver — linked phone management
+/// 7. Data Export — PDF/CSV
+/// 8. App Info
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settingsAsync = ref.watch(appSettingsProvider);
-    final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Semantics(
-          header: true,
-          child: Text(
-            'Settings',
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        centerTitle: false,
-      ),
+      backgroundColor: AppColors.background,
       body: settingsAsync.when(
         loading: () => const Center(
           child: CircularProgressIndicator(),
@@ -48,7 +41,7 @@ class SettingsScreen extends ConsumerWidget {
         error: (err, stack) => Center(
           child: Text(
             'Failed to load settings',
-            style: theme.textTheme.bodyLarge,
+            style: AppTypography.bodyLarge,
           ),
         ),
         data: (settings) => _SettingsBody(settings: settings),
@@ -64,15 +57,33 @@ class _SettingsBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final repo = ref.read(settingsRepositoryProvider);
-    final theme = Theme.of(context);
+    final fastingState = ref.watch(fastingNotifierProvider);
 
     return ListView(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: EdgeInsets.zero,
       children: [
-        // ─── NOTIFICATION PREFERENCES ───
-        const _SectionHeader(
-          title: 'Notification Preferences',
+        // ─── PROFILE HEADER ───
+        const ProfileHeader(
+          name: 'User',
+          badge: 'Adult',
         ),
+
+        const SizedBox(height: AppSpacing.sectionGap),
+
+        // ─── DISPLAY SETTINGS ───
+        DisplaySettingsSection(
+          textScale: 1,
+          highContrast: false,
+          darkMode: false,
+          onTextScaleChanged: (_) {},
+          onHighContrastChanged: (_) {},
+          onDarkModeChanged: (_) {},
+        ),
+
+        const Divider(height: 32, indent: 16, endIndent: 16),
+
+        // ─── NOTIFICATION PREFERENCES ───
+        const _SectionHeader(title: 'Notifications'),
         const SizedBox(height: 8),
 
         _SettingsSwitch(
@@ -82,9 +93,6 @@ class _SettingsBody extends ConsumerWidget {
           onChanged: (v) => unawaited(
             repo.setNotificationsEnabled(enabled: v),
           ),
-          semanticsLabel:
-              'Notifications: '
-              '${settings.notificationsEnabled ? "enabled" : "disabled"}',
         ),
         _SettingsSwitch(
           title: 'Sound',
@@ -93,8 +101,6 @@ class _SettingsBody extends ConsumerWidget {
           onChanged: (v) => unawaited(
             repo.setSoundEnabled(enabled: v),
           ),
-          semanticsLabel:
-              'Sound: ${settings.soundEnabled ? "enabled" : "disabled"}',
         ),
         _SettingsSwitch(
           title: 'Vibration',
@@ -103,22 +109,17 @@ class _SettingsBody extends ConsumerWidget {
           onChanged: (v) => unawaited(
             repo.setVibrationEnabled(enabled: v),
           ),
-          semanticsLabel:
-              'Vibration: '
-              '${settings.vibrationEnabled ? "enabled" : "disabled"}',
         ),
 
-        const SizedBox(height: 24),
+        const Divider(height: 32, indent: 16, endIndent: 16),
 
         // ─── SNOOZE & ESCALATION ───
-        const _SectionHeader(
-          title: 'Snooze & Escalation',
-        ),
+        const _SectionHeader(title: 'Snooze & Escalation'),
         const SizedBox(height: 8),
 
         _SettingsSlider(
           title: 'Snooze Duration',
-          subtitle: '${settings.snoozeDurationMinutes} minutes',
+          subtitle: '${settings.snoozeDurationMinutes} min',
           value: settings.snoozeDurationMinutes.toDouble(),
           min: 1,
           max: 15,
@@ -126,16 +127,10 @@ class _SettingsBody extends ConsumerWidget {
           onChanged: (v) => unawaited(
             repo.setSnoozeDuration(v.round()),
           ),
-          semanticsLabel:
-              'Snooze duration: '
-              '${settings.snoozeDurationMinutes} minutes. '
-              'Drag to adjust between 1 and '
-              '15 minutes.',
         ),
-
         _SettingsSlider(
-          title: 'Silent → Audible Timeout',
-          subtitle: '${settings.silentTimeoutMinutes} minutes',
+          title: 'Silent → Audible',
+          subtitle: '${settings.silentTimeoutMinutes} min',
           value: settings.silentTimeoutMinutes.toDouble(),
           min: 1,
           max: 10,
@@ -143,18 +138,10 @@ class _SettingsBody extends ConsumerWidget {
           onChanged: (v) => unawaited(
             repo.setSilentTimeout(v.round()),
           ),
-          semanticsLabel:
-              'Silent to audible escalation '
-              'timeout: '
-              '${settings.silentTimeoutMinutes} '
-              'minutes. '
-              'Drag to adjust between 1 and '
-              '10 minutes.',
         ),
-
         _SettingsSlider(
-          title: 'Audible → Full-Screen Timeout',
-          subtitle: '${settings.audibleTimeoutMinutes} minutes',
+          title: 'Audible → Full-Screen',
+          subtitle: '${settings.audibleTimeoutMinutes} min',
           value: settings.audibleTimeoutMinutes.toDouble(),
           min: 1,
           max: 10,
@@ -162,23 +149,50 @@ class _SettingsBody extends ConsumerWidget {
           onChanged: (v) => unawaited(
             repo.setAudibleTimeout(v.round()),
           ),
-          semanticsLabel:
-              'Audible to full-screen escalation '
-              'timeout: '
-              '${settings.audibleTimeoutMinutes} '
-              'minutes. '
-              'Drag to adjust between 1 and '
-              '10 minutes.',
+        ),
+
+        const Divider(height: 32, indent: 16, endIndent: 16),
+
+        // ─── FASTING MODE ───
+        FastingToggleTile(
+          enabled: fastingState.isActive,
+          onChanged: (value) {
+            ref.read(fastingNotifierProvider.notifier).setActive(active: value);
+          },
+        ),
+
+        const Divider(height: 32, indent: 16, endIndent: 16),
+
+        // ─── CAREGIVER ───
+        CaregiverSection(
+          caregiverPhone: null,
+          onAddCaregiver: () {
+            // TODO: show phone input dialog
+          },
+          onRemoveCaregiver: () {},
+          onSendTestAlert: () {},
+        ),
+
+        const Divider(height: 32, indent: 16, endIndent: 16),
+
+        // ─── DATA EXPORT ───
+        DataExportSection(
+          onExportPdf: () {
+            // TODO: generate & share PDF
+          },
+          onExportCsv: () {
+            // TODO: generate & share CSV
+          },
         ),
 
         const SizedBox(height: 32),
 
-        // App version
+        // ─── APP INFO ───
         Center(
           child: Text(
             'MemoCare v1.0',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+            style: AppTypography.bodySmall.copyWith(
+              color: AppColors.textSecondary,
             ),
           ),
         ),
@@ -198,18 +212,13 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Semantics(
-        header: true,
-        child: Text(
-          title.toUpperCase(),
-          style: theme.textTheme.labelLarge?.copyWith(
-            color: theme.colorScheme.primary,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 1,
-          ),
+      child: Text(
+        title.toUpperCase(),
+        style: AppTypography.labelLarge.copyWith(
+          color: AppColors.primary,
+          letterSpacing: 1,
         ),
       ),
     );
@@ -222,36 +231,34 @@ class _SettingsSwitch extends StatelessWidget {
     required this.subtitle,
     required this.value,
     required this.onChanged,
-    required this.semanticsLabel,
   });
 
   final String title;
   final String subtitle;
   final bool value;
   final ValueChanged<bool> onChanged;
-  final String semanticsLabel;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Semantics(
-      label: semanticsLabel,
-      toggled: value,
-      child: SwitchListTile(
-        title: Text(
-          title,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+    return SwitchListTile(
+      title: Text(
+        title,
+        style: AppTypography.bodyLarge.copyWith(
+          fontWeight: FontWeight.w600,
+          color: AppColors.textPrimary,
         ),
-        subtitle: Text(subtitle),
-        value: value,
-        onChanged: onChanged,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 4,
+      ),
+      subtitle: Text(
+        subtitle,
+        style: AppTypography.bodySmall.copyWith(
+          color: AppColors.textSecondary,
         ),
+      ),
+      value: value,
+      onChanged: onChanged,
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 4,
       ),
     );
   }
@@ -266,7 +273,6 @@ class _SettingsSlider extends StatelessWidget {
     required this.max,
     required this.divisions,
     required this.onChanged,
-    required this.semanticsLabel,
   });
 
   final String title;
@@ -276,12 +282,9 @@ class _SettingsSlider extends StatelessWidget {
   final double max;
   final int divisions;
   final ValueChanged<double> onChanged;
-  final String semanticsLabel;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: 16,
@@ -295,38 +298,36 @@ class _SettingsSlider extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: theme.textTheme.bodyLarge?.copyWith(
+                style: AppTypography.bodyLarge.copyWith(
                   fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
                 ),
               ),
               Text(
                 subtitle,
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme.colorScheme.primary,
-                  fontWeight: FontWeight.w700,
+                style: AppTypography.labelLarge.copyWith(
+                  color: AppColors.accent,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 4),
-          Semantics(
-            label: semanticsLabel,
-            slider: true,
-            child: SliderTheme(
-              data: SliderTheme.of(context).copyWith(
-                thumbShape: const RoundSliderThumbShape(
-                  enabledThumbRadius: 12,
-                ),
-                trackHeight: 6,
+          SliderTheme(
+            data: SliderTheme.of(context).copyWith(
+              thumbShape: const RoundSliderThumbShape(
+                enabledThumbRadius: 12,
               ),
-              child: Slider(
-                value: value,
-                min: min,
-                max: max,
-                divisions: divisions,
-                label: '${value.round()} min',
-                onChanged: onChanged,
-              ),
+              trackHeight: 6,
+              activeTrackColor: AppColors.accent,
+              thumbColor: AppColors.accent,
+            ),
+            child: Slider(
+              value: value,
+              min: min,
+              max: max,
+              divisions: divisions,
+              label: '${value.round()} min',
+              onChanged: onChanged,
             ),
           ),
         ],

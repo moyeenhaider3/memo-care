@@ -90,6 +90,16 @@ class OnboardingNotifier extends Notifier<OnboardingState> {
     state = state.copyWith(permissionsGranted: granted);
   }
 
+  /// Set user profile type ('elderly', 'adult', 'parent').
+  void setProfileType(String type) {
+    state = state.copyWith(profileType: type);
+  }
+
+  /// Set caregiver phone number.
+  void setCaregiverPhone(String phone) {
+    state = state.copyWith(caregiverPhone: phone);
+  }
+
   /// Mark onboarding as complete.
   void completeOnboarding() {
     state = state.copyWith(

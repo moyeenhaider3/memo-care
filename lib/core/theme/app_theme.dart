@@ -1,61 +1,58 @@
 import 'package:flutter/material.dart';
+import 'package:memo_care/core/theme/app_colors.dart' show AppColors;
+import 'package:memo_care/core/theme/app_theme.dart' show AppColors;
 
-/// WCAG AAA-compliant (7:1 minimum) color constants.
+// Re-export new design-system tokens so existing
+// `import 'app_theme.dart'` statements pick them up.
+export 'app_colors.dart';
+export 'app_shadows.dart';
+export 'app_spacing.dart';
+export 'app_typography.dart';
+
+/// Legacy WCAG AAA colour aliases.
 ///
-/// All foreground/background combinations below have been
-/// verified against a WCAG contrast checker.
-///
-/// These override the default Material 3 teal seed colours
-/// where needed to meet the AAA standard required by A11Y-03.
-abstract final class AppColors {
+/// All properties are **@Deprecated** and forward to the new
+/// [AppColors] constants from `app_colors.dart`. Existing screens
+/// continue to compile while each is migrated in plans 10-02 → 10-08.
+@Deprecated('Import app_colors.dart and use AppColors directly')
+abstract final class LegacyAppColors {
   // ── Primary palette ───────────────────────────────────
-  /// Dark teal primary used for buttons and icons.
-  /// Contrast on white (#FFFFFF): ≈ 8.9:1 ✓
+  @Deprecated('Use AppColors.primary from app_colors.dart')
   static const Color primary = Color(0xFF004D40);
 
-  /// On-primary (text/icon on primary surface).
+  @Deprecated('Use AppColors.onPrimary from app_colors.dart')
   static const Color onPrimary = Colors.white;
 
   // ── Status badge colours ──────────────────────────────
-  /// Done / confirmed — dark green.
-  /// On white: ≈ 9.4:1 ✓
+  @Deprecated('Use AppColors.success from app_colors.dart')
   static const Color doneGreen = Color(0xFF1B5E20);
 
-  /// Missed — dark red.
-  /// On white: ≈ 7.8:1 ✓
+  @Deprecated('Use AppColors.danger from app_colors.dart')
   static const Color missedRed = Color(0xFFB71C1C);
 
-  /// Pending / upcoming — deep orange.
-  /// On white: ≈ 7.0:1 ✓
+  @Deprecated('Use AppColors.warning from app_colors.dart')
   static const Color pendingOrange = Color(0xFFE65100);
 
-  /// Skipped — dark grey.
-  /// On white: ≈ 9.7:1 ✓
+  @Deprecated('Use AppColors.skippedGrey from app_colors.dart')
   static const Color skippedGrey = Color(0xFF424242);
 
   // ── Action button colours ─────────────────────────────
-  /// "I Took It" / "Mark Done" button background.
-  /// White text on this: ≈ 9.4:1 ✓
+  @Deprecated('Use AppColors.success from app_colors.dart')
   static const Color doneButtonBackground = Color(0xFF1B5E20);
 
-  /// "Skip" button foreground/border.
-  /// On white: ≈ 7.8:1 ✓
+  @Deprecated('Use AppColors.danger from app_colors.dart')
   static const Color skipButtonForeground = Color(0xFFB71C1C);
 
-  /// Warning icon colour (amber for missed reminders).
-  /// On white: ≈ 7.1:1 ✓
+  @Deprecated('Use AppColors.warning from app_colors.dart')
   static const Color warningAmber = Color(0xFFE65100);
 
   // ── Banner / SnackBar backgrounds (white text) ────────
-  /// Warning banner background (dark burnt-orange).
-  /// White text on this: ≈ 10.4:1 ✓
+  @Deprecated('Use AppColors.danger from app_colors.dart')
   static const Color warningBackground = Color(0xFF7B1F00);
 
-  /// Warning banner button background (darker).
-  /// White text on this: ≈ 13.5:1 ✓
+  @Deprecated('Use AppColors.danger from app_colors.dart')
   static const Color warningBackgroundDark = Color(0xFF5D1700);
 
-  /// Error SnackBar background (dark red).
-  /// White text on this: ≈ 10.1:1 ✓
+  @Deprecated('Use AppColors.danger from app_colors.dart')
   static const Color errorBackground = Color(0xFF7F0000);
 }

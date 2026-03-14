@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:memo_care/core/router/app_router.dart';
+import 'package:memo_care/core/theme/app_colors.dart';
+import 'package:memo_care/core/theme/app_shadows.dart';
+import 'package:memo_care/core/theme/app_spacing.dart';
+import 'package:memo_care/core/theme/app_typography.dart';
 
 /// Root application widget.
 ///
 /// Configures:
 /// - `GoRouter` for declarative navigation
-/// - Teal-seeded Material 3 theme
-/// - Noto Sans font for Hindi compatibility
-/// - Minimum 18 pt body text (ONBD-05)
-/// - High-contrast colours and 56 dp touch targets (P-07)
+/// - Navy-primary Material 3 theme with Inter font
+/// - Design-token-based colour, typography, and component system
 class MemoCareApp extends ConsumerWidget {
   /// Creates the root [MemoCareApp].
   const MemoCareApp({super.key});
@@ -28,105 +30,174 @@ class MemoCareApp extends ConsumerWidget {
   }
 
   static ThemeData _buildTheme() {
-    final colorScheme = ColorScheme.fromSeed(
-      seedColor: Colors.teal,
+    final colorScheme = ColorScheme(
+      brightness: Brightness.light,
+      primary: AppColors.primary,
+      onPrimary: AppColors.onPrimary,
+      primaryContainer: AppColors.primaryLight,
+      onPrimaryContainer: AppColors.primary,
+      secondary: AppColors.accent,
+      onSecondary: Colors.white,
+      secondaryContainer: AppColors.accent.withValues(alpha: 0.12),
+      onSecondaryContainer: AppColors.accent,
+      tertiary: AppColors.accentTeal,
+      onTertiary: Colors.white,
+      error: AppColors.danger,
+      onError: Colors.white,
+      surface: AppColors.cardBg,
+      onSurface: AppColors.textPrimary,
+      onSurfaceVariant: AppColors.textSecondary,
+      outline: AppColors.border,
+      outlineVariant: AppColors.border,
+      shadow: Colors.black,
     );
 
-    final textTheme = GoogleFonts.notoSansTextTheme().copyWith(
-      bodyLarge: GoogleFonts.notoSans(fontSize: 20, height: 1.5),
-      bodyMedium: GoogleFonts.notoSans(
-        fontSize: 18,
-        height: 1.4,
-      ),
-      bodySmall: GoogleFonts.notoSans(
-        fontSize: 18,
-        height: 1.4,
-      ),
-      titleLarge: GoogleFonts.notoSans(
-        fontSize: 28,
-        fontWeight: FontWeight.bold,
-      ),
-      titleMedium: GoogleFonts.notoSans(
-        fontSize: 24,
-        fontWeight: FontWeight.w600,
-      ),
-      titleSmall: GoogleFonts.notoSans(
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-      ),
-      labelLarge: GoogleFonts.notoSans(
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-      ),
-      labelMedium: GoogleFonts.notoSans(
-        fontSize: 18,
-        fontWeight: FontWeight.w500,
-      ),
-      labelSmall: GoogleFonts.notoSans(
-        fontSize: 18,
-        fontWeight: FontWeight.w500,
-      ),
-    );
+    final textTheme = AppTypography.textTheme;
 
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
       textTheme: textTheme,
+      scaffoldBackgroundColor: AppColors.background,
+
+      // ── App bar ─────────────────────────────────────────
+      appBarTheme: AppBarTheme(
+        centerTitle: true,
+        backgroundColor: AppColors.cardBg,
+        foregroundColor: AppColors.textPrimary,
+        elevation: 0,
+        scrolledUnderElevation: 1,
+        titleTextStyle: AppTypography.titleLarge.copyWith(
+          color: AppColors.textPrimary,
+        ),
+      ),
+
+      // ── Cards ───────────────────────────────────────────
+      cardTheme: CardThemeData(
+        elevation: 0,
+        color: AppColors.cardBg,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
+        ),
+        shadowColor: AppShadows.card.first.color,
+        margin: const EdgeInsets.symmetric(vertical: AppSpacing.cardGap / 2),
+      ),
+
+      // ── Elevated buttons ────────────────────────────────
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          minimumSize: const Size(double.infinity, 56),
-          textStyle: GoogleFonts.notoSans(
-            fontSize: 20,
+          minimumSize: const Size(double.infinity, AppSpacing.buttonHeight),
+          backgroundColor: AppColors.primary,
+          foregroundColor: AppColors.onPrimary,
+          textStyle: GoogleFonts.inter(
+            fontSize: 17,
             fontWeight: FontWeight.w600,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppSpacing.buttonRadius),
           ),
         ),
       ),
+
+      // ── Outlined buttons ────────────────────────────────
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          minimumSize: const Size(double.infinity, 56),
-          textStyle: GoogleFonts.notoSans(
-            fontSize: 20,
+          minimumSize: const Size(double.infinity, AppSpacing.buttonHeight),
+          foregroundColor: AppColors.primary,
+          textStyle: GoogleFonts.inter(
+            fontSize: 17,
             fontWeight: FontWeight.w600,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppSpacing.buttonRadius),
           ),
+          side: const BorderSide(color: AppColors.primary),
         ),
       ),
+
+      // ── Text buttons ───────────────────────────────────
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          minimumSize: const Size(48, 56),
-          textStyle: GoogleFonts.notoSans(fontSize: 18),
+          minimumSize: const Size(48, AppSpacing.buttonHeight),
+          foregroundColor: AppColors.accent,
+          textStyle: GoogleFonts.inter(fontSize: 15),
         ),
       ),
-      cardTheme: CardThemeData(
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        margin: const EdgeInsets.symmetric(vertical: 8),
-      ),
+
+      // ── Input decoration ────────────────────────────────
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppSpacing.inputRadius),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.inputRadius),
+          borderSide: const BorderSide(color: AppColors.border),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.inputRadius),
+          borderSide: const BorderSide(color: AppColors.accent, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 16,
         ),
-        labelStyle: GoogleFonts.notoSans(fontSize: 18),
-        hintStyle: GoogleFonts.notoSans(fontSize: 18),
-      ),
-      appBarTheme: AppBarTheme(
-        centerTitle: true,
-        titleTextStyle: GoogleFonts.notoSans(
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-          color: colorScheme.onSurface,
+        labelStyle: AppTypography.bodyMedium,
+        hintStyle: AppTypography.bodyMedium.copyWith(
+          color: AppColors.skippedGrey,
         ),
+      ),
+
+      // ── Bottom navigation bar ───────────────────────────
+      navigationBarTheme: NavigationBarThemeData(
+        height: AppSpacing.navBarHeight,
+        backgroundColor: AppColors.cardBg,
+        indicatorColor: AppColors.primaryLight,
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return AppTypography.labelSmall.copyWith(
+              color: AppColors.primary,
+              fontWeight: FontWeight.w600,
+            );
+          }
+          return AppTypography.labelSmall.copyWith(
+            color: AppColors.skippedGrey,
+          );
+        }),
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const IconThemeData(
+              color: AppColors.primary,
+              size: AppSpacing.navIconSize,
+            );
+          }
+          return const IconThemeData(
+            color: AppColors.skippedGrey,
+            size: AppSpacing.navIconSize,
+          );
+        }),
+      ),
+
+      // ── FAB ─────────────────────────────────────────────
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: AppColors.accent,
+        foregroundColor: Colors.white,
+        elevation: 4,
+        shape: CircleBorder(),
+      ),
+
+      // ── Chips ───────────────────────────────────────────
+      chipTheme: ChipThemeData(
+        shape: const StadiumBorder(),
+        backgroundColor: AppColors.primaryLight,
+        selectedColor: AppColors.primary,
+        labelStyle: AppTypography.labelMedium,
+      ),
+
+      // ── Divider ─────────────────────────────────────────
+      dividerTheme: const DividerThemeData(
+        color: AppColors.border,
+        thickness: 1,
+        space: 0,
       ),
     );
   }

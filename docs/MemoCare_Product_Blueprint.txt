@@ -1,0 +1,261 @@
+MemoCare
+Smart Reminder App for Everyone
+Product Vision & Feature Blueprint
+Version 1.0  |  March 2026
+
+Executive Summary
+MemoCare is a context-aware, chain-triggered smart reminder app designed primarily for elderly users, but adaptable for young professionals, students, and children. Unlike generic alarm apps, MemoCare understands the relationship between tasks — so reminding someone to take a pill is linked to whether they have eaten, and an Iftar reminder cascades into a medicine reminder chain.
+The core innovation is the concept of Linked Reminder Chains: once the user confirms one step is done, the next in the sequence is automatically scheduled. This creates a guided daily care flow rather than a pile of disconnected alarms.
+
+1. The Problem We Are Solving
+1.1 Who Forgets & Why
+Feature
+Description
+Elderly Users
+Cognitive load, multiple medications, no caregiver nearby, confusion about timing gaps between doses
+Young Professionals
+Busy schedules, skipping meals, forgetting hydration, irregular routines
+School-Age Children
+Morning routines, homework slots, activity schedules managed by parents
+Religious Observers
+Fasting schedules like Ramadan that affect medication timing and meal windows
+
+1.2 Why Existing Apps Fail
+	•	Generic alarm apps fire at a fixed time with no context about whether a prior step was completed
+	•	No understanding of medication sequencing (before meal vs. after meal)
+	•	No chain logic — missing one reminder breaks the entire day's plan
+	•	Not accessible for elderly users — too many settings, too small text
+	•	No caregiver loop — family members cannot monitor or receive alerts remotely
+
+2. Core Concept: Linked Reminder Chains
+A Linked Reminder Chain is a group of reminders where the firing of Reminder N depends on the user confirming Reminder N-1 is complete. The user sets one 'anchor event' (e.g., meal time) and the app calculates all satellite reminders automatically.
+
+EXAMPLE
+User says: 'I eat lunch at 1:00 PM. I need to take Paracetamol 500mg 5 minutes before, and Dolo 650 exactly 30 minutes after.' — App schedules: 12:55 PM alert (Paracetamol). User taps DONE. App then locks in 1:30 PM alert (Dolo). If user never taps DONE, app re-alerts at 1:00 PM and again at 1:05 PM with escalation.
+
+2.1 Chain Trigger Logic
+Feature
+Description
+Anchor Event
+A fixed or estimated time (meal, prayer, wakeup, sleep, school bell)
+Pre-Trigger
+Fires X minutes BEFORE anchor (e.g., take tablet 5 min before eating)
+Post-Trigger
+Fires X minutes AFTER anchor confirmation (e.g., take syrup 30 min after meal)
+Conditional Trigger
+Fires ONLY if user confirmed a prior step (e.g., only remind about Dolo if they confirmed they ate)
+Escalation Trigger
+Fires again after a snooze window if no confirmation received
+Skip Trigger
+If user marks 'skipped meal', all meal-linked medicine reminders are suspended for that slot
+
+2.2 Confirmation States
+	•	DONE — Confirmed complete, next in chain fires as scheduled
+	•	SNOOZED — Re-fire in 5 / 10 / 15 min (user picks snooze window)
+	•	SKIPPED — Mark this reminder done without triggering the downstream chain
+	•	MISSED — No response detected within window; caregiver notification sent
+
+3. Reminder Types & Templates
+3.1 Medical Reminders
+Medical reminders are the most critical category and support the most complex chain logic.
+Feature
+Description
+Before Meal Medicine
+Fire X min before anchor meal. Requires explicit confirmation before downstream fires.
+After Meal Medicine
+Fire X min after anchor meal confirmation. Works even if meal time drifts.
+Empty Stomach Medicine
+Fire Y min after wakeup, only if no meal logged in prior 8 hours.
+Fixed Time Medicine
+Fires at a hard time regardless of meals (e.g., blood pressure pill at 8 AM always).
+Dose Gap Medicine
+Fires only if minimum gap since last confirmation has elapsed (e.g., Paracetamol every 6h).
+Course Tracker
+Multi-day medicine with progress bar (e.g., Day 3 of 7 antibiotic course).
+
+3.2 Meal & Hydration Reminders
+	•	Fixed meal reminders: Breakfast / Lunch / Dinner at user-set times
+	•	Hydration reminders: Customisable interval (e.g., every 45 min) with daily count target (e.g., 8 glasses)
+	•	Snack reminders for diabetics or children at regular intervals
+	•	Appetite prompt for elderly users who skip meals unintentionally
+
+3.3 Ramadan / Fasting Reminders
+MemoCare has a dedicated Fasting Mode that completely rewires the medicine and meal chain around Sehri and Iftar times, which are auto-calculated based on location and date.
+Feature
+Description
+Sehri Wake-up Alert
+30 min and 10 min before Sehri ends. Vibration + loud audio.
+Sehri Medicine Chain
+Medicines tagged 'with Sehri' fire in chain linked to Sehri anchor.
+Sehri End Warning
+5 min countdown before Fajr Azan — last chance for medicines.
+Iftar Countdown
+15 min, 5 min, 1 min alerts before Iftar time.
+Iftar Medicine Chain
+Medicines tagged 'with Iftar' fire in chain: some before Iftar (1 min prior), some after (30 min after Iftar).
+Post-Iftar Meal Chain
+Full meal-linked medicine chains restart after Iftar anchor confirmation.
+Fasting Day Suspend
+All daytime meal-linked reminders are suppressed during fast hours.
+
+3.4 Lifestyle & Wellness Reminders
+	•	Exercise / physiotherapy session reminders with duration timer
+	•	Eye drop reminders with one-eye / two-eye sequencing
+	•	Wound dressing or bandage change with photo log option
+	•	Blood pressure / blood sugar measurement prompts
+	•	Daily vitals logging prompt (weight, temperature, oxygen)
+
+3.5 Social & Communication Reminders
+	•	Call a relative: 'Call son every Sunday 11 AM' — one-tap dial from notification
+	•	Birthday / anniversary greeting reminders with pre-drafted message
+	•	Doctor appointment reminders with address, time, and 1-day prior alert
+	•	Follow-up reminders: 'Call pharmacy if medicine not collected by Friday'
+
+3.6 Kids & School Reminders
+	•	Morning routine chain: Wake up → Brush → Breakfast → Pack bag → Leave time
+	•	Homework slot reminders at fixed after-school time
+	•	Activity reminders: swimming class, tuition, sports practice
+	•	Bedtime chain: Dinner done → 30 min → Brush → Sleep
+	•	Parent-visible dashboard showing child's completion status
+
+4. Advanced Yet Easy Setup Mechanism
+The biggest challenge is making a powerful scheduling system accessible to elderly users. MemoCare uses three input methods that all produce the same structured reminder behind the scenes.
+4.1 Conversational Setup (Voice / Text)
+User speaks or types in plain language. The app's NLP layer parses intent and builds the chain automatically.
+
+USER SAYS
+"I take Paracetamol 500mg five minutes before lunch and Dolo 650 half an hour after lunch. Lunch is around 1 PM."
+
+APP CREATES
+Anchor: Lunch ~ 1:00 PM | Chain 1: 12:55 PM — Paracetamol 500mg (pre-meal) | Chain 2: 1:30 PM after DONE confirmation — Dolo 650 (post-meal)
+
+4.2 Template-Based Quick Setup
+Pre-built templates for common patterns that users can activate in one tap and then fill in medicine names / times:
+Feature
+Description
+Diabetic Daily Pack
+Blood sugar check + Metformin before breakfast + Insulin dose 30 min after + evening check
+Blood Pressure Pack
+Morning BP pill on empty stomach + evening pill + BP measurement twice daily
+Ramadan Medicine Pack
+All medicines redistributed to Sehri and Iftar chains automatically
+Heart Patient Pack
+Aspirin with food + Clopidogrel spacing rules + daily weight check
+School Morning Pack
+Wake-up chain + breakfast + vitamin tablet + departure alert
+Hydration Booster
+8 water reminders spread across waking hours with daily tracker
+
+4.3 Visual Timeline Builder
+For more technical users or caregivers setting up the app on behalf of an elderly person. A drag-and-drop day timeline where reminder blocks can be placed and linked with arrows showing chain dependencies. Chain links can be adjusted, medicine names typed in, and a 'test run' simulates the day's notification flow.
+4.4 Smart Pattern Detection
+	•	If user confirms 'Lunch done' at 1:15 PM three days in a row, app suggests shifting the anchor from 1:00 to 1:15 PM
+	•	If medicine is consistently snoozed by 10 minutes, app offers to adjust the trigger time
+	•	If user skips Breakfast often on Mondays, app asks if Monday schedule should differ
+
+5. Notification & Alert Design
+5.1 Alert Layers (Escalation Stack)
+Feature
+Description
+Layer 1 — Soft Alert
+Silent notification banner with medicine name, dose, and context ('5 min before your lunch')
+Layer 2 — Audio Alert
+Sound + vibration after 2 minutes of no response
+Layer 3 — Loud Alert
+Full-screen takeover with large text, high-contrast colors, loud ringtone
+Layer 4 — Caregiver SMS
+Text sent to designated contact: 'Dad has not confirmed his 1 PM Paracetamol dose'
+Layer 5 — Auto-call
+App places a voice call with a recorded or text-to-speech reminder message
+
+5.2 Notification Content Design
+	•	Large font size — always 18pt minimum on notification cards
+	•	Medicine name, dose, and instruction all visible without opening app
+	•	DONE / SNOOZE / SKIP action buttons directly on notification
+	•	Context line: 'This is your BEFORE LUNCH dose — eat within 5 minutes of taking this'
+	•	Countdown shown for time-sensitive reminders (e.g., 'Iftar in 4 min')
+
+5.3 Caregiver & Family Loop
+	•	Caregiver account linked to elderly user — read-only daily schedule view
+	•	End-of-day summary report sent to caregiver: doses taken, missed, or skipped
+	•	Real-time missed-dose alert within configurable window (e.g., if not confirmed in 30 min)
+	•	Caregiver can add or edit reminders remotely
+	•	Emergency contact call shortcut on main screen
+
+6. User Personas & Daily Flows
+6.1 Persona: Abdul — Retired 68-Year-Old
+Abdul has diabetes, hypertension, and is fasting in Ramadan. He takes 6 medicines daily. His son set up MemoCare for him remotely.
+HIS DAY
+4:00 AM Sehri wake-up → 4:10 AM Metformin chain → 4:28 AM last-chance warning → Fast starts. 7:25 PM Iftar countdown → 7:30 PM Iftar confirmation → Insulin + Amlodipine chain fires → 8:10 PM Dolo reminder. Son receives end-of-day report.
+
+6.2 Persona: Priya — 32-Year-Old Software Engineer
+Priya skips lunch often and forgets to hydrate. She wants reminders for water, lunch, vitamins, and weekly calls to her parents.
+HER DAY
+9:00 AM Vitamin D with breakfast → Water every 45 min → 1:00 PM lunch nudge (if no lunch logged by 1:30 PM, escalation) → 3:00 PM Omega-3 post-lunch → Sunday 11 AM: 'Call Mom' with one-tap dial.
+
+6.3 Persona: Aryan — 9-Year-Old Student
+Aryan's mother set up school-day chains. App uses child-friendly audio cues and emoji-rich screens.
+HIS DAY
+7:00 AM Wake up (cartoon sound) → Morning routine chain → 7:40 AM Bag check → 8:00 AM Leave alert → 4:00 PM Homework slot → 9:00 PM Bedtime chain begins. Mom dashboard shows green ticks.
+
+7. Accessibility-First Design Principles
+Feature
+Description
+Large Text Mode
+All UI text min 18pt, all notification text 22pt+. Scalable via one setting.
+High Contrast Mode
+Dark backgrounds with white text for low-vision users
+Voice Command Support
+Mark reminders done, set new ones, ask 'what is next' — all via voice
+One-Tap Confirmation
+Single large button on full-screen alert — no complex navigation required
+Language & Script
+Multilingual support including Urdu, Hindi, Tamil, Arabic with native script
+Text-to-Speech Alerts
+App reads the reminder aloud: 'Time to take Paracetamol, one tablet, before your meal'
+No Internet Required
+All reminders fire locally — no dependency on network for core function
+
+8. Technical Architecture Overview
+8.1 Core Engine Components
+	•	Reminder Chain Engine: DAG-based task graph where each node has trigger conditions, confirmation states, and escalation rules
+	•	Anchor Time Resolver: Converts fuzzy user input ('around 1 PM', 'after Iftar') into precise scheduled times
+	•	Adaptive Scheduler: Learns from user confirmation patterns and suggests time adjustments
+	•	Caregiver Sync Layer: Lightweight cloud sync of confirmation states and missed-dose events
+	•	Offline-First Storage: All reminder data lives on device; cloud is optional backup
+8.2 NLP Intent Parser (Conversational Setup)
+The parser extracts: Medicine name, dose, timing keyword (before / after / with), anchor event (meal / Iftar / wakeup / sleep), time offset in minutes, and recurrence (daily / weekly / every 6 hours / course duration). Output is a structured JSON reminder chain that feeds directly into the engine.
+8.3 Notification Strategy
+	•	Android: WorkManager + AlarmManager for reliable offline scheduling
+	•	iOS: UNUserNotificationCenter with background fetch for chain updates
+	•	Escalation is handled locally — no push server required for base function
+	•	Caregiver alerts use SMS gateway (low-cost, no app install on caregiver's side)
+
+9. Master Product Prompt
+The following is the canonical product prompt to be used for development, design, and AI-assisted feature expansion:
+
+PRODUCT PROMPT — MEMOCARE
+Build a smart reminder app called MemoCare for elderly users (primary), young professionals, and school-age children (secondary). The app's core innovation is Linked Reminder Chains — groups of reminders where each step fires only after the user confirms the prior step is done.
+KEY REQUIREMENTS:
+	•	Reminder chains with before-meal, after-meal, empty-stomach, and fixed-time trigger types. User sets an anchor time (meal / prayer / wakeup) and the app auto-calculates all linked reminders.
+	•	Conversational setup: user describes their routine in plain language (e.g., 'take Paracetamol 5 min before lunch and Dolo 30 min after') and the app parses it into a structured chain.
+	•	Ramadan / fasting mode: all medicine and meal reminders rewire around Sehri and Iftar anchors with auto-calculated prayer times based on location.
+	•	Three confirmation states: DONE (fires next in chain), SNOOZED (re-fires in N min), SKIPPED (suspends downstream chain for that slot).
+	•	Escalation stack: soft notification -> audio alert -> full-screen takeover -> caregiver SMS -> auto voice call, each tier firing after a configurable missed-response window.
+	•	Caregiver / family portal: remote view of elderly user's daily schedule, real-time missed-dose alerts, end-of-day summary, and ability to add or edit reminders remotely.
+	•	Accessibility-first: large text, high contrast, voice command support, text-to-speech alerts, single large confirmation button, offline-first operation.
+	•	Social reminders: weekly call to relatives (one-tap dial from notification), doctor appointments, follow-up tasks.
+	•	Pre-built templates for common medical conditions (diabetic pack, BP pack, heart pack) and life phases (school child pack, Ramadan pack).
+	•	Adaptive scheduling: learns from user behaviour and suggests time adjustments when reminders are consistently snoozed or patterns shift.
+
+10. Suggested MVP Scope (Phase 1)
+	•	Before / after meal medicine chains (manual anchor time)
+	•	Fixed-time reminders with escalation (soft → loud → caregiver SMS)
+	•	Three confirmation states: DONE / SNOOZED / SKIPPED
+	•	Caregiver link (read-only view + missed-dose SMS)
+	•	Hydration reminder with daily counter
+	•	Large-text, high-contrast UI with voice-read notifications
+	•	3 built-in templates: Diabetic Pack, BP Pack, School Morning Pack
+Phase 2 adds: conversational NLP setup, Ramadan fasting mode, adaptive scheduling, caregiver remote edit, social call reminders, and kids dashboard.
+
+MemoCare — Never Miss What Matters

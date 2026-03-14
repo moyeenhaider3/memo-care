@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MemoCare - New Reminder</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1a3c5b", // Dark Navy
+                        "accent": "#4A90D9",  // Light Blue
+                        "background-light": "#f7f9fc",
+                        "background-dark": "#13191f",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .filled-icon { font-variation-settings: 'FILL' 1; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+<div class="relative flex min-h-screen flex-col max-w-md mx-auto bg-background-light dark:bg-background-dark pb-24">
+<!-- Header -->
+<header class="sticky top-0 z-10 flex items-center justify-between px-4 py-4 bg-background-light/80 backdrop-blur-md">
+<button class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors">
+<span class="material-symbols-outlined text-slate-900 dark:text-slate-100">arrow_back</span>
+</button>
+<h1 class="text-[22px] font-bold tracking-tight">New Reminder</h1>
+<button class="text-accent font-semibold text-base px-2">Templates</button>
+</header>
+<main class="flex-1 px-4 py-2 space-y-6">
+<!-- Input Mode Toggle -->
+<div class="flex p-1 bg-slate-200/50 dark:bg-slate-800/50 rounded-xl h-12">
+<button class="flex items-center justify-center flex-1 gap-2 rounded-lg text-slate-500 font-medium">
+<span class="material-symbols-outlined text-xl">mic</span>
+<span>Say It</span>
+</button>
+<button class="flex items-center justify-center flex-1 gap-2 rounded-lg bg-primary text-white font-medium shadow-sm">
+<span class="material-symbols-outlined text-xl">tune</span>
+<span>Build It</span>
+</button>
+</div>
+<!-- Reminder Name -->
+<div class="space-y-2">
+<label class="text-sm font-semibold text-slate-500 uppercase tracking-wider ml-1">Reminder Name</label>
+<input class="w-full h-14 px-4 bg-white dark:bg-slate-900 border-none rounded-xl shadow-sm focus:ring-2 focus:ring-primary text-lg font-medium" placeholder="Enter name" type="text" value="Vitamin D"/>
+</div>
+<!-- Reminder Type -->
+<div class="space-y-2">
+<label class="text-sm font-semibold text-slate-500 uppercase tracking-wider ml-1">Reminder Type</label>
+<div class="grid grid-cols-2 gap-3">
+<!-- Medicine Selected -->
+<button class="flex flex-col items-center justify-center p-4 rounded-xl bg-accent text-white shadow-md transition-all">
+<span class="material-symbols-outlined text-3xl filled-icon">pill</span>
+<span class="mt-2 font-bold">Medicine</span>
+</button>
+<button class="flex flex-col items-center justify-center p-4 rounded-xl bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-transparent shadow-sm">
+<span class="material-symbols-outlined text-3xl">restaurant</span>
+<span class="mt-2 font-bold">Meal</span>
+</button>
+<button class="flex flex-col items-center justify-center p-4 rounded-xl bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-transparent shadow-sm">
+<span class="material-symbols-outlined text-3xl">directions_run</span>
+<span class="mt-2 font-bold">Activity</span>
+</button>
+<button class="flex flex-col items-center justify-center p-4 rounded-xl bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-transparent shadow-sm">
+<span class="material-symbols-outlined text-3xl">phone_in_talk</span>
+<span class="mt-2 font-bold">Call</span>
+</button>
+</div>
+</div>
+<!-- Anchor Time -->
+<div class="space-y-3">
+<label class="text-sm font-semibold text-slate-500 uppercase tracking-wider ml-1">Time Setting</label>
+<div class="flex p-1 bg-slate-200/50 dark:bg-slate-800/50 rounded-xl h-11">
+<button class="flex items-center justify-center flex-1 gap-2 rounded-lg text-slate-500 font-medium">
+<span class="material-symbols-outlined text-lg">schedule</span>
+<span>Fixed Time</span>
+</button>
+<button class="flex items-center justify-center flex-1 gap-2 rounded-lg bg-white dark:bg-slate-700 text-primary dark:text-white font-semibold shadow-sm">
+<span class="material-symbols-outlined text-lg filled-icon">calendar_today</span>
+<span>Linked to Event</span>
+</button>
+</div>
+<!-- Event Dropdown -->
+<div class="flex items-center justify-between p-4 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400">event_note</span>
+<span class="font-medium">Lunch</span>
+</div>
+<span class="material-symbols-outlined text-slate-400">expand_more</span>
+</div>
+<!-- Offset Pills -->
+<div class="flex items-center gap-3 pt-1">
+<div class="flex p-1 bg-slate-200/50 dark:bg-slate-800/50 rounded-full h-10 w-44">
+<button class="flex-1 bg-primary text-white rounded-full text-sm font-bold">Before</button>
+<button class="flex-1 text-slate-500 text-sm font-bold">After</button>
+</div>
+<div class="flex-1 flex items-center bg-white dark:bg-slate-900 rounded-xl px-4 h-12 shadow-sm">
+<input class="w-full bg-transparent border-none focus:ring-0 text-center font-bold text-lg" type="number" value="5"/>
+<span class="text-slate-400 text-sm font-medium ml-1">min</span>
+</div>
+</div>
+</div>
+<!-- Notes Field -->
+<div class="space-y-2">
+<label class="text-sm font-semibold text-slate-500 uppercase tracking-wider ml-1">Notes</label>
+<textarea class="w-full h-20 p-4 bg-white dark:bg-slate-900 border-none rounded-xl shadow-sm focus:ring-2 focus:ring-primary resize-none placeholder:text-slate-400 font-medium" placeholder="e.g. 1 tablet with water"></textarea>
+</div>
+<!-- Repeat Section -->
+<div class="space-y-4 p-4 bg-white dark:bg-slate-900 rounded-2xl shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-slate-400">repeat</span>
+<span class="font-bold">Daily Repeat</span>
+</div>
+<!-- Toggle Switch -->
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Day Pills -->
+<div class="flex justify-between items-center gap-1">
+<div class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xs">M</div>
+<div class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xs">T</div>
+<div class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xs">W</div>
+<div class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xs">T</div>
+<div class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xs">F</div>
+<div class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xs">S</div>
+<div class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-bold text-xs">S</div>
+</div>
+</div>
+</main>
+<!-- Sticky Bottom Button -->
+<div class="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-4 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md">
+<button class="w-full h-14 bg-primary text-white font-bold text-lg rounded-[14px] shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all flex items-center justify-center gap-2">
+<span>Add to My Day</span>
+</button>
+</div>
+</div>
+</body></html>

@@ -11,6 +11,8 @@ import 'package:memo_care/features/confirmation/domain/confirmation_service.dart
 import 'package:memo_care/features/confirmation/domain/models/confirmation.dart';
 import 'package:memo_care/features/confirmation/domain/snooze_limiter.dart';
 import 'package:memo_care/features/confirmation/domain/undo_confirmation_service.dart';
+import 'package:memo_care/features/fasting/application/fasting_notifier.dart';
+import 'package:memo_care/features/reminders/domain/models/medicine_type.dart';
 import 'package:memo_care/features/reminders/application/providers.dart'
     as reminder_providers;
 
@@ -55,11 +57,24 @@ final latestConfirmationProvider = StreamProvider.autoDispose
 final undoConfirmationServiceProvider = Provider<UndoConfirmationService>((
   ref,
 ) {
+  final fastingState = ref.watch(fastingNotifierProvider);
+  final fastingNotifier = ref.watch(fastingNotifierProvider.notifier);
+
   return UndoConfirmationService(
     confirmationRepository: ref.watch(confirmationRepositoryProvider),
     reminderRepository: ref.watch(
       reminder_providers.reminderRepositoryProvider,
     ),
     alarmScheduler: ref.watch(alarmSchedulerProvider),
+    shouldSuppressSchedule: (reminder, scheduledAt) {
+      final isMealLinked = reminder.medicineType == MedicineType.beforeMeal ||
+          reminder.medicineType == MedicineType.afterMeal ||
+          reminder.medicineType == MedicineType.emptyStomach;
+      return fastingState.isActive &&
+          fastingNotifier.isSuppressedDuringFast(
+            scheduledAt: scheduledAt,
+            isMealLinked: isMealLinked,
+          );
+    },
   );
 });

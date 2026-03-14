@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$HistoryEntry {
 
- int get reminderId; String get medicineName; String? get dosage; DateTime get scheduledAt; ConfirmationState? get status; DateTime? get confirmedAt;
+ int get reminderId; String get medicineName; DateTime get scheduledAt; String? get dosage; ConfirmationState? get status; DateTime? get confirmedAt;
 /// Create a copy of HistoryEntry
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $HistoryEntryCopyWith<HistoryEntry> get copyWith => _$HistoryEntryCopyWithImpl<H
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is HistoryEntry&&(identical(other.reminderId, reminderId) || other.reminderId == reminderId)&&(identical(other.medicineName, medicineName) || other.medicineName == medicineName)&&(identical(other.dosage, dosage) || other.dosage == dosage)&&(identical(other.scheduledAt, scheduledAt) || other.scheduledAt == scheduledAt)&&(identical(other.status, status) || other.status == status)&&(identical(other.confirmedAt, confirmedAt) || other.confirmedAt == confirmedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is HistoryEntry&&(identical(other.reminderId, reminderId) || other.reminderId == reminderId)&&(identical(other.medicineName, medicineName) || other.medicineName == medicineName)&&(identical(other.scheduledAt, scheduledAt) || other.scheduledAt == scheduledAt)&&(identical(other.dosage, dosage) || other.dosage == dosage)&&(identical(other.status, status) || other.status == status)&&(identical(other.confirmedAt, confirmedAt) || other.confirmedAt == confirmedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,reminderId,medicineName,dosage,scheduledAt,status,confirmedAt);
+int get hashCode => Object.hash(runtimeType,reminderId,medicineName,scheduledAt,dosage,status,confirmedAt);
 
 @override
 String toString() {
-  return 'HistoryEntry(reminderId: $reminderId, medicineName: $medicineName, dosage: $dosage, scheduledAt: $scheduledAt, status: $status, confirmedAt: $confirmedAt)';
+  return 'HistoryEntry(reminderId: $reminderId, medicineName: $medicineName, scheduledAt: $scheduledAt, dosage: $dosage, status: $status, confirmedAt: $confirmedAt)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $HistoryEntryCopyWith<$Res>  {
   factory $HistoryEntryCopyWith(HistoryEntry value, $Res Function(HistoryEntry) _then) = _$HistoryEntryCopyWithImpl;
 @useResult
 $Res call({
- int reminderId, String medicineName, String? dosage, DateTime scheduledAt, ConfirmationState? status, DateTime? confirmedAt
+ int reminderId, String medicineName, DateTime scheduledAt, String? dosage, ConfirmationState? status, DateTime? confirmedAt
 });
 
 
@@ -65,13 +65,13 @@ class _$HistoryEntryCopyWithImpl<$Res>
 
 /// Create a copy of HistoryEntry
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? reminderId = null,Object? medicineName = null,Object? dosage = freezed,Object? scheduledAt = null,Object? status = freezed,Object? confirmedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? reminderId = null,Object? medicineName = null,Object? scheduledAt = null,Object? dosage = freezed,Object? status = freezed,Object? confirmedAt = freezed,}) {
   return _then(_self.copyWith(
 reminderId: null == reminderId ? _self.reminderId : reminderId // ignore: cast_nullable_to_non_nullable
 as int,medicineName: null == medicineName ? _self.medicineName : medicineName // ignore: cast_nullable_to_non_nullable
-as String,dosage: freezed == dosage ? _self.dosage : dosage // ignore: cast_nullable_to_non_nullable
-as String?,scheduledAt: null == scheduledAt ? _self.scheduledAt : scheduledAt // ignore: cast_nullable_to_non_nullable
-as DateTime,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String,scheduledAt: null == scheduledAt ? _self.scheduledAt : scheduledAt // ignore: cast_nullable_to_non_nullable
+as DateTime,dosage: freezed == dosage ? _self.dosage : dosage // ignore: cast_nullable_to_non_nullable
+as String?,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as ConfirmationState?,confirmedAt: freezed == confirmedAt ? _self.confirmedAt : confirmedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
@@ -158,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int reminderId,  String medicineName,  String? dosage,  DateTime scheduledAt,  ConfirmationState? status,  DateTime? confirmedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int reminderId,  String medicineName,  DateTime scheduledAt,  String? dosage,  ConfirmationState? status,  DateTime? confirmedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _HistoryEntry() when $default != null:
-return $default(_that.reminderId,_that.medicineName,_that.dosage,_that.scheduledAt,_that.status,_that.confirmedAt);case _:
+return $default(_that.reminderId,_that.medicineName,_that.scheduledAt,_that.dosage,_that.status,_that.confirmedAt);case _:
   return orElse();
 
 }
@@ -179,10 +179,10 @@ return $default(_that.reminderId,_that.medicineName,_that.dosage,_that.scheduled
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int reminderId,  String medicineName,  String? dosage,  DateTime scheduledAt,  ConfirmationState? status,  DateTime? confirmedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int reminderId,  String medicineName,  DateTime scheduledAt,  String? dosage,  ConfirmationState? status,  DateTime? confirmedAt)  $default,) {final _that = this;
 switch (_that) {
 case _HistoryEntry():
-return $default(_that.reminderId,_that.medicineName,_that.dosage,_that.scheduledAt,_that.status,_that.confirmedAt);case _:
+return $default(_that.reminderId,_that.medicineName,_that.scheduledAt,_that.dosage,_that.status,_that.confirmedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +199,10 @@ return $default(_that.reminderId,_that.medicineName,_that.dosage,_that.scheduled
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int reminderId,  String medicineName,  String? dosage,  DateTime scheduledAt,  ConfirmationState? status,  DateTime? confirmedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int reminderId,  String medicineName,  DateTime scheduledAt,  String? dosage,  ConfirmationState? status,  DateTime? confirmedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _HistoryEntry() when $default != null:
-return $default(_that.reminderId,_that.medicineName,_that.dosage,_that.scheduledAt,_that.status,_that.confirmedAt);case _:
+return $default(_that.reminderId,_that.medicineName,_that.scheduledAt,_that.dosage,_that.status,_that.confirmedAt);case _:
   return null;
 
 }
@@ -214,13 +214,13 @@ return $default(_that.reminderId,_that.medicineName,_that.dosage,_that.scheduled
 @JsonSerializable()
 
 class _HistoryEntry extends HistoryEntry {
-  const _HistoryEntry({required this.reminderId, required this.medicineName, this.dosage, required this.scheduledAt, this.status, this.confirmedAt}): super._();
+  const _HistoryEntry({required this.reminderId, required this.medicineName, required this.scheduledAt, this.dosage, this.status, this.confirmedAt}): super._();
   factory _HistoryEntry.fromJson(Map<String, dynamic> json) => _$HistoryEntryFromJson(json);
 
 @override final  int reminderId;
 @override final  String medicineName;
-@override final  String? dosage;
 @override final  DateTime scheduledAt;
+@override final  String? dosage;
 @override final  ConfirmationState? status;
 @override final  DateTime? confirmedAt;
 
@@ -237,16 +237,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HistoryEntry&&(identical(other.reminderId, reminderId) || other.reminderId == reminderId)&&(identical(other.medicineName, medicineName) || other.medicineName == medicineName)&&(identical(other.dosage, dosage) || other.dosage == dosage)&&(identical(other.scheduledAt, scheduledAt) || other.scheduledAt == scheduledAt)&&(identical(other.status, status) || other.status == status)&&(identical(other.confirmedAt, confirmedAt) || other.confirmedAt == confirmedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HistoryEntry&&(identical(other.reminderId, reminderId) || other.reminderId == reminderId)&&(identical(other.medicineName, medicineName) || other.medicineName == medicineName)&&(identical(other.scheduledAt, scheduledAt) || other.scheduledAt == scheduledAt)&&(identical(other.dosage, dosage) || other.dosage == dosage)&&(identical(other.status, status) || other.status == status)&&(identical(other.confirmedAt, confirmedAt) || other.confirmedAt == confirmedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,reminderId,medicineName,dosage,scheduledAt,status,confirmedAt);
+int get hashCode => Object.hash(runtimeType,reminderId,medicineName,scheduledAt,dosage,status,confirmedAt);
 
 @override
 String toString() {
-  return 'HistoryEntry(reminderId: $reminderId, medicineName: $medicineName, dosage: $dosage, scheduledAt: $scheduledAt, status: $status, confirmedAt: $confirmedAt)';
+  return 'HistoryEntry(reminderId: $reminderId, medicineName: $medicineName, scheduledAt: $scheduledAt, dosage: $dosage, status: $status, confirmedAt: $confirmedAt)';
 }
 
 
@@ -257,7 +257,7 @@ abstract mixin class _$HistoryEntryCopyWith<$Res> implements $HistoryEntryCopyWi
   factory _$HistoryEntryCopyWith(_HistoryEntry value, $Res Function(_HistoryEntry) _then) = __$HistoryEntryCopyWithImpl;
 @override @useResult
 $Res call({
- int reminderId, String medicineName, String? dosage, DateTime scheduledAt, ConfirmationState? status, DateTime? confirmedAt
+ int reminderId, String medicineName, DateTime scheduledAt, String? dosage, ConfirmationState? status, DateTime? confirmedAt
 });
 
 
@@ -274,13 +274,13 @@ class __$HistoryEntryCopyWithImpl<$Res>
 
 /// Create a copy of HistoryEntry
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? reminderId = null,Object? medicineName = null,Object? dosage = freezed,Object? scheduledAt = null,Object? status = freezed,Object? confirmedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? reminderId = null,Object? medicineName = null,Object? scheduledAt = null,Object? dosage = freezed,Object? status = freezed,Object? confirmedAt = freezed,}) {
   return _then(_HistoryEntry(
 reminderId: null == reminderId ? _self.reminderId : reminderId // ignore: cast_nullable_to_non_nullable
 as int,medicineName: null == medicineName ? _self.medicineName : medicineName // ignore: cast_nullable_to_non_nullable
-as String,dosage: freezed == dosage ? _self.dosage : dosage // ignore: cast_nullable_to_non_nullable
-as String?,scheduledAt: null == scheduledAt ? _self.scheduledAt : scheduledAt // ignore: cast_nullable_to_non_nullable
-as DateTime,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String,scheduledAt: null == scheduledAt ? _self.scheduledAt : scheduledAt // ignore: cast_nullable_to_non_nullable
+as DateTime,dosage: freezed == dosage ? _self.dosage : dosage // ignore: cast_nullable_to_non_nullable
+as String?,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as ConfirmationState?,confirmedAt: freezed == confirmedAt ? _self.confirmedAt : confirmedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));

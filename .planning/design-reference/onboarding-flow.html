@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MemoCare Onboarding</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1a3c5b",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#13191f",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .custom-gradient {
+            background: linear-gradient(180deg, #1a3c5b 0%, #7db9e8 100%);
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+<div class="flex flex-nowrap overflow-x-auto snap-x snap-mandatory hide-scrollbar w-full min-h-screen">
+<!-- SLIDE 1: Welcome -->
+<section class="min-w-full h-screen snap-center flex flex-col custom-gradient relative text-white">
+<div class="flex items-center p-4 pb-2 justify-center">
+<h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">MemoCare</h2>
+</div>
+<div class="flex-1 flex flex-col items-center justify-center px-8 text-center">
+<div class="w-64 h-64 bg-white/10 rounded-full flex items-center justify-center mb-12 backdrop-blur-sm border border-white/20">
+<span class="material-symbols-outlined text-white !text-[120px]">schedule</span>
+</div>
+<h1 class="text-4xl font-bold leading-tight mb-4">Never miss what matters</h1>
+<p class="text-white/80 text-lg mb-12 max-w-xs">The simple way to manage medications and appointments.</p>
+<div class="w-full max-w-sm">
+<button class="w-full bg-white text-primary rounded-xl h-14 font-bold text-lg shadow-lg">Get Started</button>
+</div>
+</div>
+<div class="flex w-full flex-row items-center justify-center gap-3 py-10">
+<div class="h-2 w-8 rounded-full bg-white"></div>
+<div class="h-2 w-2 rounded-full bg-white/30"></div>
+<div class="h-2 w-2 rounded-full bg-white/30"></div>
+<div class="h-2 w-2 rounded-full bg-white/30"></div>
+<div class="h-2 w-2 rounded-full bg-white/30"></div>
+</div>
+</section>
+<!-- SLIDE 2: Profile Selection -->
+<section class="min-w-full h-screen snap-center flex flex-col bg-background-light dark:bg-background-dark">
+<div class="flex items-center p-4 pb-2 justify-center">
+<h2 class="text-primary dark:text-slate-100 text-lg font-bold leading-tight">Step 1 of 4</h2>
+</div>
+<div class="flex-1 px-6 pt-10">
+<h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">Set up for you</h1>
+<p class="text-slate-600 dark:text-slate-400 mb-8">Choose the profile that best fits your needs.</p>
+<div class="space-y-4">
+<div class="flex items-center p-5 bg-white dark:bg-slate-800 rounded-xl border-2 border-primary shadow-sm">
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mr-4">
+<span class="material-symbols-outlined text-primary">elderly</span>
+</div>
+<div class="flex-1">
+<h3 class="font-bold text-lg">Elderly</h3>
+<p class="text-sm text-slate-500">Optimized for ease of use</p>
+</div>
+<span class="material-symbols-outlined text-primary">check_circle</span>
+</div>
+<div class="flex items-center p-5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+<div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center mr-4">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-300">person</span>
+</div>
+<div class="flex-1">
+<h3 class="font-bold text-lg">Adult</h3>
+<p class="text-sm text-slate-500">Manage your daily routine</p>
+</div>
+</div>
+<div class="flex items-center p-5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+<div class="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center mr-4">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-300">family_restroom</span>
+</div>
+<div class="flex-1">
+<h3 class="font-bold text-lg">Parent</h3>
+<p class="text-sm text-slate-500">Track for the whole family</p>
+</div>
+</div>
+</div>
+</div>
+<div class="p-6">
+<button class="w-full bg-primary text-white rounded-xl h-14 font-bold text-lg">Continue</button>
+</div>
+</section>
+<!-- SLIDE 3: Accessibility -->
+<section class="min-w-full h-screen snap-center flex flex-col bg-background-light dark:bg-background-dark">
+<div class="flex items-center p-4 pb-2 justify-center">
+<h2 class="text-primary dark:text-slate-100 text-lg font-bold leading-tight">Step 2 of 4</h2>
+</div>
+<div class="flex-1 px-6 pt-10">
+<h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">Accessibility</h1>
+<p class="text-slate-600 dark:text-slate-400 mb-12">Make MemoCare easier for you to see and read.</p>
+<div class="bg-white dark:bg-slate-800 rounded-xl overflow-hidden shadow-sm">
+<div class="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-700">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-400">format_size</span>
+<span class="font-semibold text-lg">Large Text</span>
+</div>
+<div class="w-12 h-6 bg-primary rounded-full relative">
+<div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center justify-between p-6">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-400">contrast</span>
+<span class="font-semibold text-lg">High Contrast</span>
+</div>
+<div class="w-12 h-6 bg-slate-200 dark:bg-slate-700 rounded-full relative">
+<div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full"></div>
+</div>
+</div>
+</div>
+<div class="mt-8 p-6 bg-primary/5 rounded-xl border border-primary/10">
+<p class="text-primary dark:text-blue-300 text-center font-medium italic">"This is how your text will look with Large Text enabled."</p>
+</div>
+</div>
+<div class="p-6">
+<button class="w-full bg-primary text-white rounded-xl h-14 font-bold text-lg">Apply Settings</button>
+</div>
+</section>
+<!-- SLIDE 4: Caregiver Link -->
+<section class="min-w-full h-screen snap-center flex flex-col bg-background-light dark:bg-background-dark">
+<div class="flex items-center p-4 pb-2 justify-center">
+<h2 class="text-primary dark:text-slate-100 text-lg font-bold leading-tight">Step 3 of 4</h2>
+</div>
+<div class="flex-1 px-6 pt-10 text-center">
+<div class="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-8">
+<span class="material-symbols-outlined text-primary !text-4xl">volunteer_activism</span>
+</div>
+<h1 class="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">Caregiver Link</h1>
+<p class="text-slate-600 dark:text-slate-400 mb-10">Add a family member or nurse to help track your medications.</p>
+<div class="text-left">
+<label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Caregiver's Phone Number</label>
+<div class="relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400">call</span>
+<input class="w-full pl-12 pr-4 h-14 rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 focus:ring-primary focus:border-primary" placeholder="(555) 000-0000" type="tel"/>
+</div>
+</div>
+<p class="mt-6 text-sm text-slate-500">They will receive an invitation link via SMS. You can skip this and add it later in settings.</p>
+</div>
+<div class="p-6 flex flex-col gap-3">
+<button class="w-full bg-primary text-white rounded-xl h-14 font-bold text-lg">Send Invitation</button>
+<button class="w-full bg-transparent text-slate-500 font-bold h-12">Maybe Later</button>
+</div>
+</section>
+<!-- SLIDE 5: Celebration -->
+<section class="min-w-full h-screen snap-center flex flex-col bg-background-light dark:bg-background-dark">
+<div class="flex items-center p-4 pb-2 justify-center">
+<h2 class="text-primary dark:text-slate-100 text-lg font-bold leading-tight">Success</h2>
+</div>
+<div class="flex-1 flex flex-col items-center justify-center px-6 text-center">
+<div class="relative mb-8">
+<div class="w-32 h-32 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-green-500 !text-6xl">check_circle</span>
+</div>
+<div class="absolute -top-4 -right-4 w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-yellow-500">celebration</span>
+</div>
+</div>
+<h1 class="text-4xl font-bold text-slate-900 dark:text-slate-100 mb-4">All set!</h1>
+<p class="text-slate-600 dark:text-slate-400 text-lg mb-8 max-w-xs">Your profile is ready. Let's head to your dashboard and add your first reminder.</p>
+<div class="w-full max-w-sm bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm text-left mb-10">
+<div class="flex items-center gap-3 mb-4">
+<div class="w-2 h-2 rounded-full bg-green-500"></div>
+<span class="text-sm font-medium">Setup Summary</span>
+</div>
+<ul class="space-y-3">
+<li class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined text-sm text-primary">done</span>
+                            Profile: Elderly
+                        </li>
+<li class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined text-sm text-primary">done</span>
+                            Accessibility: Enabled
+                        </li>
+<li class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined text-sm text-primary">done</span>
+                            Caregiver: Invited
+                        </li>
+</ul>
+</div>
+</div>
+<div class="p-6">
+<button class="w-full bg-primary text-white rounded-xl h-14 font-bold text-lg shadow-lg">Go to Dashboard</button>
+</div>
+</section>
+</div>
+<!-- Scroll Indicator (Fixed) -->
+<div class="fixed bottom-32 left-0 right-0 flex justify-center gap-2 pointer-events-none opacity-20">
+<div class="h-1 w-4 rounded-full bg-slate-400"></div>
+<div class="h-1 w-1 rounded-full bg-slate-400"></div>
+<div class="h-1 w-1 rounded-full bg-slate-400"></div>
+<div class="h-1 w-1 rounded-full bg-slate-400"></div>
+<div class="h-1 w-1 rounded-full bg-slate-400"></div>
+</div>
+</body></html>

@@ -1,4 +1,5 @@
 import 'package:memo_care/features/reminders/domain/models/medicine_type.dart';
+import 'package:memo_care/features/fasting/data/ramadan_template_pack.dart';
 import 'package:memo_care/features/templates/domain/models/template_pack.dart';
 
 /// All available template packs.
@@ -6,6 +7,11 @@ const List<TemplatePack> kTemplatePacks = [
   kDiabeticPack,
   kBloodPressurePack,
   kSchoolMorningPack,
+  kHydrationBoosterPack,
+  kHeartPatientPack,
+  kElderlyWellnessPack,
+  kEyeCarePack,
+  kRamadanMedicinePack,
 ];
 
 /// TMPL-01: Diabetic Pack.
@@ -154,5 +160,161 @@ const kSchoolMorningPack = TemplatePack(
     TemplateEdge(sourceIndex: 0, targetIndex: 1),
     TemplateEdge(sourceIndex: 1, targetIndex: 2),
     TemplateEdge(sourceIndex: 2, targetIndex: 3),
+  ],
+);
+
+/// TMPL-04: Hydration Booster Pack.
+///
+/// 4 water/electrolyte reminders spread across the day.
+const kHydrationBoosterPack = TemplatePack(
+  id: 'hydration_booster_pack',
+  name: 'Hydration Booster',
+  description: 'Stay hydrated with water and electrolyte reminders throughout the day',
+  condition: 'hydration',
+  medicines: [
+    TemplateMedicine(
+      name: 'Morning Water',
+      medicineType: MedicineType.fixedTime,
+      chainPosition: 0,
+      defaultDosage: '500ml',
+      defaultTimeMinutes: 420, // 07:00
+    ),
+    TemplateMedicine(
+      name: 'Midday Electrolytes',
+      medicineType: MedicineType.fixedTime,
+      chainPosition: 1,
+      defaultDosage: '1 sachet',
+      defaultTimeMinutes: 720, // 12:00
+    ),
+    TemplateMedicine(
+      name: 'Afternoon Water',
+      medicineType: MedicineType.fixedTime,
+      chainPosition: 2,
+      defaultDosage: '500ml',
+      defaultTimeMinutes: 960, // 16:00
+    ),
+    TemplateMedicine(
+      name: 'Evening Water',
+      medicineType: MedicineType.fixedTime,
+      chainPosition: 3,
+      defaultDosage: '500ml',
+      defaultTimeMinutes: 1200, // 20:00
+    ),
+  ],
+  edges: [
+    TemplateEdge(sourceIndex: 0, targetIndex: 1),
+    TemplateEdge(sourceIndex: 1, targetIndex: 2),
+    TemplateEdge(sourceIndex: 2, targetIndex: 3),
+  ],
+);
+
+/// TMPL-05: Heart Patient Pack.
+///
+/// Morning anticoagulant + beta blocker, evening statin.
+const kHeartPatientPack = TemplatePack(
+  id: 'heart_patient_pack',
+  name: 'Heart Patient Pack',
+  description: 'Anticoagulant, beta blocker, and statin regimen for heart care',
+  condition: 'heart',
+  medicines: [
+    TemplateMedicine(
+      name: 'Anticoagulant',
+      medicineType: MedicineType.beforeMeal,
+      chainPosition: 0,
+      defaultDosage: '5mg',
+      anchorMeal: TemplateMealType.breakfast,
+    ),
+    TemplateMedicine(
+      name: 'Beta Blocker',
+      medicineType: MedicineType.afterMeal,
+      chainPosition: 1,
+      defaultDosage: '25mg',
+      anchorMeal: TemplateMealType.breakfast,
+    ),
+    TemplateMedicine(
+      name: 'Statin',
+      medicineType: MedicineType.fixedTime,
+      chainPosition: 2,
+      defaultDosage: '20mg',
+      defaultTimeMinutes: 1260, // 21:00
+    ),
+  ],
+  edges: [
+    TemplateEdge(sourceIndex: 0, targetIndex: 1),
+    TemplateEdge(sourceIndex: 1, targetIndex: 2),
+  ],
+);
+
+/// TMPL-06: Elderly Wellness Pack.
+///
+/// Morning multivitamin + calcium, evening magnesium.
+const kElderlyWellnessPack = TemplatePack(
+  id: 'elderly_wellness_pack',
+  name: 'Elderly Wellness',
+  description: 'Daily vitamins and mineral supplements for senior wellness',
+  condition: 'elderly_wellness',
+  medicines: [
+    TemplateMedicine(
+      name: 'Multivitamin',
+      medicineType: MedicineType.afterMeal,
+      chainPosition: 0,
+      defaultDosage: '1 tablet',
+      anchorMeal: TemplateMealType.breakfast,
+    ),
+    TemplateMedicine(
+      name: 'Calcium + D3',
+      medicineType: MedicineType.afterMeal,
+      chainPosition: 1,
+      defaultDosage: '1 tablet',
+      anchorMeal: TemplateMealType.lunch,
+    ),
+    TemplateMedicine(
+      name: 'Magnesium',
+      medicineType: MedicineType.fixedTime,
+      chainPosition: 2,
+      defaultDosage: '400mg',
+      defaultTimeMinutes: 1260, // 21:00
+    ),
+  ],
+  edges: [
+    TemplateEdge(sourceIndex: 0, targetIndex: 1),
+    TemplateEdge(sourceIndex: 1, targetIndex: 2),
+  ],
+);
+
+/// TMPL-07: Eye Care Pack.
+///
+/// Morning + evening eye drops, with afternoon supplement.
+const kEyeCarePack = TemplatePack(
+  id: 'eye_care_pack',
+  name: 'Eye Care Pack',
+  description: 'Eye drop schedule with lutein supplement for eye health',
+  condition: 'eye_care',
+  medicines: [
+    TemplateMedicine(
+      name: 'Morning Eye Drops',
+      medicineType: MedicineType.fixedTime,
+      chainPosition: 0,
+      defaultDosage: '2 drops',
+      defaultTimeMinutes: 480, // 08:00
+    ),
+    TemplateMedicine(
+      name: 'Lutein Supplement',
+      medicineType: MedicineType.afterMeal,
+      chainPosition: 1,
+      defaultDosage: '20mg',
+      anchorMeal: TemplateMealType.lunch,
+    ),
+    TemplateMedicine(
+      name: 'Evening Eye Drops',
+      medicineType: MedicineType.fixedTime,
+      chainPosition: 2,
+      defaultDosage: '2 drops',
+      defaultTimeMinutes: 1260, // 21:00
+    ),
+  ],
+  edges: [
+    TemplateEdge(sourceIndex: 0, targetIndex: 1),
+    TemplateEdge(sourceIndex: 1, targetIndex: 2),
   ],
 );

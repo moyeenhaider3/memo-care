@@ -26,7 +26,7 @@ class ChannelDisabledBanner extends ConsumerWidget {
         if (status.isHealthy) return const SizedBox.shrink();
 
         return MaterialBanner(
-          backgroundColor: AppColors.warningBackground,
+          backgroundColor: LegacyAppColors.warningBackground,
           padding: const EdgeInsets.symmetric(
             horizontal: 16,
             vertical: 12,
@@ -67,7 +67,7 @@ class ChannelDisabledBanner extends ConsumerWidget {
               onPressed: openAppSettings,
               style: TextButton.styleFrom(
                 foregroundColor: Colors.white,
-                backgroundColor: AppColors.warningBackgroundDark,
+                backgroundColor: LegacyAppColors.warningBackgroundDark,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 8,

@@ -109,5 +109,11 @@ abstract class OnboardingState with _$OnboardingState {
 
     /// Whether onboarding is complete.
     @Default(false) bool isComplete,
+
+    /// User profile type: 'elderly', 'adult', or 'parent'.
+    String? profileType,
+
+    /// Phone number for caregiver invitation (empty = skipped).
+    @Default('') String caregiverPhone,
   }) = _OnboardingState;
 }

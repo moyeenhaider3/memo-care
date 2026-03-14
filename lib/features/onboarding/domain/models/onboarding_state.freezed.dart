@@ -23,7 +23,9 @@ mixin _$OnboardingState {
  Map<String, int> get mealAnchorDefaults;/// Custom/edited medicine entries.
  List<CustomMedicineEntry> get customMedicines;/// Whether required permissions have been granted.
  bool get permissionsGranted;/// Whether onboarding is complete.
- bool get isComplete;
+ bool get isComplete;/// User profile type: 'elderly', 'adult', or 'parent'.
+ String? get profileType;/// Phone number for caregiver invitation (empty = skipped).
+ String get caregiverPhone;
 /// Create a copy of OnboardingState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -34,16 +36,16 @@ $OnboardingStateCopyWith<OnboardingState> get copyWith => _$OnboardingStateCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OnboardingState&&(identical(other.currentStep, currentStep) || other.currentStep == currentStep)&&(identical(other.selectedCondition, selectedCondition) || other.selectedCondition == selectedCondition)&&(identical(other.selectedTemplateId, selectedTemplateId) || other.selectedTemplateId == selectedTemplateId)&&(identical(other.useTemplate, useTemplate) || other.useTemplate == useTemplate)&&const DeepCollectionEquality().equals(other.mealAnchorDefaults, mealAnchorDefaults)&&const DeepCollectionEquality().equals(other.customMedicines, customMedicines)&&(identical(other.permissionsGranted, permissionsGranted) || other.permissionsGranted == permissionsGranted)&&(identical(other.isComplete, isComplete) || other.isComplete == isComplete));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OnboardingState&&(identical(other.currentStep, currentStep) || other.currentStep == currentStep)&&(identical(other.selectedCondition, selectedCondition) || other.selectedCondition == selectedCondition)&&(identical(other.selectedTemplateId, selectedTemplateId) || other.selectedTemplateId == selectedTemplateId)&&(identical(other.useTemplate, useTemplate) || other.useTemplate == useTemplate)&&const DeepCollectionEquality().equals(other.mealAnchorDefaults, mealAnchorDefaults)&&const DeepCollectionEquality().equals(other.customMedicines, customMedicines)&&(identical(other.permissionsGranted, permissionsGranted) || other.permissionsGranted == permissionsGranted)&&(identical(other.isComplete, isComplete) || other.isComplete == isComplete)&&(identical(other.profileType, profileType) || other.profileType == profileType)&&(identical(other.caregiverPhone, caregiverPhone) || other.caregiverPhone == caregiverPhone));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,currentStep,selectedCondition,selectedTemplateId,useTemplate,const DeepCollectionEquality().hash(mealAnchorDefaults),const DeepCollectionEquality().hash(customMedicines),permissionsGranted,isComplete);
+int get hashCode => Object.hash(runtimeType,currentStep,selectedCondition,selectedTemplateId,useTemplate,const DeepCollectionEquality().hash(mealAnchorDefaults),const DeepCollectionEquality().hash(customMedicines),permissionsGranted,isComplete,profileType,caregiverPhone);
 
 @override
 String toString() {
-  return 'OnboardingState(currentStep: $currentStep, selectedCondition: $selectedCondition, selectedTemplateId: $selectedTemplateId, useTemplate: $useTemplate, mealAnchorDefaults: $mealAnchorDefaults, customMedicines: $customMedicines, permissionsGranted: $permissionsGranted, isComplete: $isComplete)';
+  return 'OnboardingState(currentStep: $currentStep, selectedCondition: $selectedCondition, selectedTemplateId: $selectedTemplateId, useTemplate: $useTemplate, mealAnchorDefaults: $mealAnchorDefaults, customMedicines: $customMedicines, permissionsGranted: $permissionsGranted, isComplete: $isComplete, profileType: $profileType, caregiverPhone: $caregiverPhone)';
 }
 
 
@@ -54,7 +56,7 @@ abstract mixin class $OnboardingStateCopyWith<$Res>  {
   factory $OnboardingStateCopyWith(OnboardingState value, $Res Function(OnboardingState) _then) = _$OnboardingStateCopyWithImpl;
 @useResult
 $Res call({
- OnboardingStep currentStep, String? selectedCondition, String? selectedTemplateId, bool useTemplate, Map<String, int> mealAnchorDefaults, List<CustomMedicineEntry> customMedicines, bool permissionsGranted, bool isComplete
+ OnboardingStep currentStep, String? selectedCondition, String? selectedTemplateId, bool useTemplate, Map<String, int> mealAnchorDefaults, List<CustomMedicineEntry> customMedicines, bool permissionsGranted, bool isComplete, String? profileType, String caregiverPhone
 });
 
 
@@ -71,7 +73,7 @@ class _$OnboardingStateCopyWithImpl<$Res>
 
 /// Create a copy of OnboardingState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? currentStep = null,Object? selectedCondition = freezed,Object? selectedTemplateId = freezed,Object? useTemplate = null,Object? mealAnchorDefaults = null,Object? customMedicines = null,Object? permissionsGranted = null,Object? isComplete = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? currentStep = null,Object? selectedCondition = freezed,Object? selectedTemplateId = freezed,Object? useTemplate = null,Object? mealAnchorDefaults = null,Object? customMedicines = null,Object? permissionsGranted = null,Object? isComplete = null,Object? profileType = freezed,Object? caregiverPhone = null,}) {
   return _then(_self.copyWith(
 currentStep: null == currentStep ? _self.currentStep : currentStep // ignore: cast_nullable_to_non_nullable
 as OnboardingStep,selectedCondition: freezed == selectedCondition ? _self.selectedCondition : selectedCondition // ignore: cast_nullable_to_non_nullable
@@ -81,7 +83,9 @@ as bool,mealAnchorDefaults: null == mealAnchorDefaults ? _self.mealAnchorDefault
 as Map<String, int>,customMedicines: null == customMedicines ? _self.customMedicines : customMedicines // ignore: cast_nullable_to_non_nullable
 as List<CustomMedicineEntry>,permissionsGranted: null == permissionsGranted ? _self.permissionsGranted : permissionsGranted // ignore: cast_nullable_to_non_nullable
 as bool,isComplete: null == isComplete ? _self.isComplete : isComplete // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,profileType: freezed == profileType ? _self.profileType : profileType // ignore: cast_nullable_to_non_nullable
+as String?,caregiverPhone: null == caregiverPhone ? _self.caregiverPhone : caregiverPhone // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
@@ -166,10 +170,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( OnboardingStep currentStep,  String? selectedCondition,  String? selectedTemplateId,  bool useTemplate,  Map<String, int> mealAnchorDefaults,  List<CustomMedicineEntry> customMedicines,  bool permissionsGranted,  bool isComplete)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( OnboardingStep currentStep,  String? selectedCondition,  String? selectedTemplateId,  bool useTemplate,  Map<String, int> mealAnchorDefaults,  List<CustomMedicineEntry> customMedicines,  bool permissionsGranted,  bool isComplete,  String? profileType,  String caregiverPhone)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _OnboardingState() when $default != null:
-return $default(_that.currentStep,_that.selectedCondition,_that.selectedTemplateId,_that.useTemplate,_that.mealAnchorDefaults,_that.customMedicines,_that.permissionsGranted,_that.isComplete);case _:
+return $default(_that.currentStep,_that.selectedCondition,_that.selectedTemplateId,_that.useTemplate,_that.mealAnchorDefaults,_that.customMedicines,_that.permissionsGranted,_that.isComplete,_that.profileType,_that.caregiverPhone);case _:
   return orElse();
 
 }
@@ -187,10 +191,10 @@ return $default(_that.currentStep,_that.selectedCondition,_that.selectedTemplate
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( OnboardingStep currentStep,  String? selectedCondition,  String? selectedTemplateId,  bool useTemplate,  Map<String, int> mealAnchorDefaults,  List<CustomMedicineEntry> customMedicines,  bool permissionsGranted,  bool isComplete)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( OnboardingStep currentStep,  String? selectedCondition,  String? selectedTemplateId,  bool useTemplate,  Map<String, int> mealAnchorDefaults,  List<CustomMedicineEntry> customMedicines,  bool permissionsGranted,  bool isComplete,  String? profileType,  String caregiverPhone)  $default,) {final _that = this;
 switch (_that) {
 case _OnboardingState():
-return $default(_that.currentStep,_that.selectedCondition,_that.selectedTemplateId,_that.useTemplate,_that.mealAnchorDefaults,_that.customMedicines,_that.permissionsGranted,_that.isComplete);case _:
+return $default(_that.currentStep,_that.selectedCondition,_that.selectedTemplateId,_that.useTemplate,_that.mealAnchorDefaults,_that.customMedicines,_that.permissionsGranted,_that.isComplete,_that.profileType,_that.caregiverPhone);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -207,10 +211,10 @@ return $default(_that.currentStep,_that.selectedCondition,_that.selectedTemplate
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( OnboardingStep currentStep,  String? selectedCondition,  String? selectedTemplateId,  bool useTemplate,  Map<String, int> mealAnchorDefaults,  List<CustomMedicineEntry> customMedicines,  bool permissionsGranted,  bool isComplete)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( OnboardingStep currentStep,  String? selectedCondition,  String? selectedTemplateId,  bool useTemplate,  Map<String, int> mealAnchorDefaults,  List<CustomMedicineEntry> customMedicines,  bool permissionsGranted,  bool isComplete,  String? profileType,  String caregiverPhone)?  $default,) {final _that = this;
 switch (_that) {
 case _OnboardingState() when $default != null:
-return $default(_that.currentStep,_that.selectedCondition,_that.selectedTemplateId,_that.useTemplate,_that.mealAnchorDefaults,_that.customMedicines,_that.permissionsGranted,_that.isComplete);case _:
+return $default(_that.currentStep,_that.selectedCondition,_that.selectedTemplateId,_that.useTemplate,_that.mealAnchorDefaults,_that.customMedicines,_that.permissionsGranted,_that.isComplete,_that.profileType,_that.caregiverPhone);case _:
   return null;
 
 }
@@ -222,7 +226,7 @@ return $default(_that.currentStep,_that.selectedCondition,_that.selectedTemplate
 
 
 class _OnboardingState implements OnboardingState {
-  const _OnboardingState({this.currentStep = OnboardingStep.condition, this.selectedCondition, this.selectedTemplateId, this.useTemplate = false, final  Map<String, int> mealAnchorDefaults = const {}, final  List<CustomMedicineEntry> customMedicines = const [], this.permissionsGranted = false, this.isComplete = false}): _mealAnchorDefaults = mealAnchorDefaults,_customMedicines = customMedicines;
+  const _OnboardingState({this.currentStep = OnboardingStep.condition, this.selectedCondition, this.selectedTemplateId, this.useTemplate = false, final  Map<String, int> mealAnchorDefaults = const {}, final  List<CustomMedicineEntry> customMedicines = const [], this.permissionsGranted = false, this.isComplete = false, this.profileType, this.caregiverPhone = ''}): _mealAnchorDefaults = mealAnchorDefaults,_customMedicines = customMedicines;
   
 
 /// Current wizard step.
@@ -257,6 +261,10 @@ class _OnboardingState implements OnboardingState {
 @override@JsonKey() final  bool permissionsGranted;
 /// Whether onboarding is complete.
 @override@JsonKey() final  bool isComplete;
+/// User profile type: 'elderly', 'adult', or 'parent'.
+@override final  String? profileType;
+/// Phone number for caregiver invitation (empty = skipped).
+@override@JsonKey() final  String caregiverPhone;
 
 /// Create a copy of OnboardingState
 /// with the given fields replaced by the non-null parameter values.
@@ -268,16 +276,16 @@ _$OnboardingStateCopyWith<_OnboardingState> get copyWith => __$OnboardingStateCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OnboardingState&&(identical(other.currentStep, currentStep) || other.currentStep == currentStep)&&(identical(other.selectedCondition, selectedCondition) || other.selectedCondition == selectedCondition)&&(identical(other.selectedTemplateId, selectedTemplateId) || other.selectedTemplateId == selectedTemplateId)&&(identical(other.useTemplate, useTemplate) || other.useTemplate == useTemplate)&&const DeepCollectionEquality().equals(other._mealAnchorDefaults, _mealAnchorDefaults)&&const DeepCollectionEquality().equals(other._customMedicines, _customMedicines)&&(identical(other.permissionsGranted, permissionsGranted) || other.permissionsGranted == permissionsGranted)&&(identical(other.isComplete, isComplete) || other.isComplete == isComplete));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OnboardingState&&(identical(other.currentStep, currentStep) || other.currentStep == currentStep)&&(identical(other.selectedCondition, selectedCondition) || other.selectedCondition == selectedCondition)&&(identical(other.selectedTemplateId, selectedTemplateId) || other.selectedTemplateId == selectedTemplateId)&&(identical(other.useTemplate, useTemplate) || other.useTemplate == useTemplate)&&const DeepCollectionEquality().equals(other._mealAnchorDefaults, _mealAnchorDefaults)&&const DeepCollectionEquality().equals(other._customMedicines, _customMedicines)&&(identical(other.permissionsGranted, permissionsGranted) || other.permissionsGranted == permissionsGranted)&&(identical(other.isComplete, isComplete) || other.isComplete == isComplete)&&(identical(other.profileType, profileType) || other.profileType == profileType)&&(identical(other.caregiverPhone, caregiverPhone) || other.caregiverPhone == caregiverPhone));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,currentStep,selectedCondition,selectedTemplateId,useTemplate,const DeepCollectionEquality().hash(_mealAnchorDefaults),const DeepCollectionEquality().hash(_customMedicines),permissionsGranted,isComplete);
+int get hashCode => Object.hash(runtimeType,currentStep,selectedCondition,selectedTemplateId,useTemplate,const DeepCollectionEquality().hash(_mealAnchorDefaults),const DeepCollectionEquality().hash(_customMedicines),permissionsGranted,isComplete,profileType,caregiverPhone);
 
 @override
 String toString() {
-  return 'OnboardingState(currentStep: $currentStep, selectedCondition: $selectedCondition, selectedTemplateId: $selectedTemplateId, useTemplate: $useTemplate, mealAnchorDefaults: $mealAnchorDefaults, customMedicines: $customMedicines, permissionsGranted: $permissionsGranted, isComplete: $isComplete)';
+  return 'OnboardingState(currentStep: $currentStep, selectedCondition: $selectedCondition, selectedTemplateId: $selectedTemplateId, useTemplate: $useTemplate, mealAnchorDefaults: $mealAnchorDefaults, customMedicines: $customMedicines, permissionsGranted: $permissionsGranted, isComplete: $isComplete, profileType: $profileType, caregiverPhone: $caregiverPhone)';
 }
 
 
@@ -288,7 +296,7 @@ abstract mixin class _$OnboardingStateCopyWith<$Res> implements $OnboardingState
   factory _$OnboardingStateCopyWith(_OnboardingState value, $Res Function(_OnboardingState) _then) = __$OnboardingStateCopyWithImpl;
 @override @useResult
 $Res call({
- OnboardingStep currentStep, String? selectedCondition, String? selectedTemplateId, bool useTemplate, Map<String, int> mealAnchorDefaults, List<CustomMedicineEntry> customMedicines, bool permissionsGranted, bool isComplete
+ OnboardingStep currentStep, String? selectedCondition, String? selectedTemplateId, bool useTemplate, Map<String, int> mealAnchorDefaults, List<CustomMedicineEntry> customMedicines, bool permissionsGranted, bool isComplete, String? profileType, String caregiverPhone
 });
 
 
@@ -305,7 +313,7 @@ class __$OnboardingStateCopyWithImpl<$Res>
 
 /// Create a copy of OnboardingState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? currentStep = null,Object? selectedCondition = freezed,Object? selectedTemplateId = freezed,Object? useTemplate = null,Object? mealAnchorDefaults = null,Object? customMedicines = null,Object? permissionsGranted = null,Object? isComplete = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? currentStep = null,Object? selectedCondition = freezed,Object? selectedTemplateId = freezed,Object? useTemplate = null,Object? mealAnchorDefaults = null,Object? customMedicines = null,Object? permissionsGranted = null,Object? isComplete = null,Object? profileType = freezed,Object? caregiverPhone = null,}) {
   return _then(_OnboardingState(
 currentStep: null == currentStep ? _self.currentStep : currentStep // ignore: cast_nullable_to_non_nullable
 as OnboardingStep,selectedCondition: freezed == selectedCondition ? _self.selectedCondition : selectedCondition // ignore: cast_nullable_to_non_nullable
@@ -315,7 +323,9 @@ as bool,mealAnchorDefaults: null == mealAnchorDefaults ? _self._mealAnchorDefaul
 as Map<String, int>,customMedicines: null == customMedicines ? _self._customMedicines : customMedicines // ignore: cast_nullable_to_non_nullable
 as List<CustomMedicineEntry>,permissionsGranted: null == permissionsGranted ? _self.permissionsGranted : permissionsGranted // ignore: cast_nullable_to_non_nullable
 as bool,isComplete: null == isComplete ? _self.isComplete : isComplete // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,profileType: freezed == profileType ? _self.profileType : profileType // ignore: cast_nullable_to_non_nullable
+as String?,caregiverPhone: null == caregiverPhone ? _self.caregiverPhone : caregiverPhone // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 

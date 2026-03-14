@@ -128,6 +128,9 @@ class TemplateService {
     required TemplatePack pack,
     Map<int, CustomMedicineEntry> userOverrides = const {},
     Map<String, int> mealAnchorTimes = const {},
+    bool fastingModeActive = false,
+    DateTime? sehriTime,
+    DateTime? iftarTime,
   }) async {
     // Step 1: Validate edge indices.
     for (final edge in pack.edges) {
@@ -151,6 +154,7 @@ class TemplateService {
 
       // Step 3: Create reminders, building index → ID map.
       final indexToId = <int, int>{};
+      final indexToScheduledAt = <int, DateTime?>{};
       final reminderIds = <int>[];
 
       for (var i = 0; i < pack.medicines.length; i++) {
@@ -164,6 +168,9 @@ class TemplateService {
           templateMed: med,
           override: override,
           mealAnchorTimes: mealAnchorTimes,
+          fastingModeActive: fastingModeActive,
+          sehriTime: sehriTime,
+          iftarTime: iftarTime,
         );
 
         final id = await _reminderRepo.createReminder(
@@ -177,6 +184,7 @@ class TemplateService {
         );
 
         indexToId[i] = id;
+        indexToScheduledAt[i] = scheduledAt;
         reminderIds.add(id);
       }
 
@@ -212,13 +220,7 @@ class TemplateService {
       // Step 6: Schedule alarms for reminders with times.
       final schedulable = <({int reminderId, DateTime fireAt})>[];
       for (final entry in indexToId.entries) {
-        final med = pack.medicines[entry.key];
-        final override = userOverrides[med.chainPosition];
-        final scheduledAt = _computeScheduledAt(
-          templateMed: med,
-          override: override,
-          mealAnchorTimes: mealAnchorTimes,
-        );
+        final scheduledAt = indexToScheduledAt[entry.key];
         if (scheduledAt != null) {
           schedulable.add(
             (reminderId: entry.value, fireAt: scheduledAt),
@@ -250,36 +252,117 @@ class TemplateService {
     required TemplateMedicine templateMed,
     required Map<String, int> mealAnchorTimes,
     CustomMedicineEntry? override,
+    bool fastingModeActive = false,
+    DateTime? sehriTime,
+    DateTime? iftarTime,
   }) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
 
     // Check for override time first.
     if (override?.timeMinutes != null) {
-      return today.add(Duration(minutes: override!.timeMinutes!));
+      final scheduled = today.add(Duration(minutes: override!.timeMinutes!));
+      final isMealLinked = _isMealLinked(templateMed.medicineType);
+      if (_isSuppressedDuringFast(
+        fastingModeActive: fastingModeActive,
+        scheduledAt: scheduled,
+        isMealLinked: isMealLinked,
+        sehriTime: sehriTime,
+        iftarTime: iftarTime,
+      )) {
+        return null;
+      }
+      return scheduled;
     }
 
     // Fixed-time medicines use their default time.
     if (templateMed.defaultTimeMinutes != null) {
-      return today.add(Duration(minutes: templateMed.defaultTimeMinutes!));
+      final scheduled = today.add(
+        Duration(minutes: templateMed.defaultTimeMinutes!),
+      );
+      final isMealLinked = _isMealLinked(templateMed.medicineType);
+      if (_isSuppressedDuringFast(
+        fastingModeActive: fastingModeActive,
+        scheduledAt: scheduled,
+        isMealLinked: isMealLinked,
+        sehriTime: sehriTime,
+        iftarTime: iftarTime,
+      )) {
+        return null;
+      }
+      return scheduled;
     }
 
     // Meal-linked: compute from anchor time + offset.
     if (templateMed.anchorMeal != null) {
       final mealKey = templateMed.anchorMeal!.name;
-      final anchorMinutes = mealAnchorTimes[mealKey];
-      if (anchorMinutes != null) {
-        final anchorTime = today.add(Duration(minutes: anchorMinutes));
-        return switch (templateMed.medicineType) {
+      DateTime? anchorTime;
+
+      // During fasting mode, remap meal anchors to Sehri/Iftar anchors.
+      if (fastingModeActive) {
+        switch (mealKey) {
+          case 'breakfast':
+            anchorTime = sehriTime;
+          case 'dinner':
+            anchorTime = iftarTime;
+          case 'lunch':
+            // Daytime meal-linked reminders are intentionally suppressed.
+            return null;
+        }
+      }
+
+      anchorTime ??= _anchorTimeFromMinutes(
+        mealAnchorTimes[mealKey],
+        today,
+      );
+      if (anchorTime != null) {
+        final scheduled = switch (templateMed.medicineType) {
           MedicineType.beforeMeal => anchorTime.subtract(
             const Duration(minutes: 30),
           ),
-          MedicineType.afterMeal => anchorTime.add(const Duration(minutes: 30)),
+          MedicineType.afterMeal => anchorTime.add(
+            const Duration(minutes: 30),
+          ),
           _ => anchorTime,
         };
+
+        if (_isSuppressedDuringFast(
+          fastingModeActive: fastingModeActive,
+          scheduledAt: scheduled,
+          isMealLinked: _isMealLinked(templateMed.medicineType),
+          sehriTime: sehriTime,
+          iftarTime: iftarTime,
+        )) {
+          return null;
+        }
+
+        return scheduled;
       }
     }
 
     return null;
+  }
+
+  DateTime? _anchorTimeFromMinutes(int? minutes, DateTime today) {
+    if (minutes == null) return null;
+    return today.add(Duration(minutes: minutes));
+  }
+
+  bool _isMealLinked(MedicineType type) {
+    return type == MedicineType.beforeMeal ||
+        type == MedicineType.afterMeal ||
+        type == MedicineType.emptyStomach;
+  }
+
+  bool _isSuppressedDuringFast({
+    required bool fastingModeActive,
+    required DateTime scheduledAt,
+    required bool isMealLinked,
+    required DateTime? sehriTime,
+    required DateTime? iftarTime,
+  }) {
+    if (!fastingModeActive || !isMealLinked) return false;
+    if (sehriTime == null || iftarTime == null) return false;
+    return scheduledAt.isAfter(sehriTime) && scheduledAt.isBefore(iftarTime);
   }
 }

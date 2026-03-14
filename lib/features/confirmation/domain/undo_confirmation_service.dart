@@ -43,6 +43,7 @@ class UndoConfirmationService {
     required this.confirmationRepository,
     required this.reminderRepository,
     required this.alarmScheduler,
+    this.shouldSuppressSchedule,
   });
 
   /// Repository for deleting the confirmation record.
@@ -54,6 +55,10 @@ class UndoConfirmationService {
 
   /// Scheduler for cancelling/rescheduling alarms.
   final AlarmScheduler alarmScheduler;
+
+  /// Optional predicate used to suppress scheduling for specific reminders.
+  final bool Function(Reminder reminder, DateTime scheduledAt)?
+      shouldSuppressSchedule;
 
   /// Attempts to undo the given [undoable] confirmation.
   ///
@@ -119,6 +124,9 @@ class UndoConfirmationService {
   Future<void> _scheduleAlarms(List<Reminder> reminders) async {
     for (final r in reminders) {
       if (r.scheduledAt != null) {
+        if (shouldSuppressSchedule?.call(r, r.scheduledAt!) ?? false) {
+          continue;
+        }
         await alarmScheduler.schedule(
           reminderId: r.id,
           fireAt: r.scheduledAt!,

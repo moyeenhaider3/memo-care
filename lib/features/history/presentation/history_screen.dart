@@ -2,16 +2,19 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memo_care/core/theme/app_colors.dart';
+import 'package:memo_care/core/theme/app_typography.dart';
 import 'package:memo_care/features/history/application/history_notifier.dart';
-import 'package:memo_care/features/history/presentation/widgets/history_card.dart';
-import 'package:memo_care/features/history/presentation/widgets/medication_filter_bar.dart';
+import 'package:memo_care/features/history/presentation/widgets/compliance_donut_chart.dart';
+import 'package:memo_care/features/history/presentation/widgets/day_grouped_log.dart';
+import 'package:memo_care/features/history/presentation/widgets/export_pdf_button.dart';
+import 'package:memo_care/features/history/presentation/widgets/history_empty_state.dart';
+import 'package:memo_care/features/history/presentation/widgets/week_selector_strip.dart';
 
-/// Paginated medication history screen
-/// (HIST-01, HIST-02, HIST-03).
+/// Revamped History & Compliance screen (HIST-01, 10-05).
 ///
-/// Uses infinite scroll with [ScrollController] to load pages
-/// of 20 entries. [MedicationFilterBar] at top for filtering
-/// by medicine name. [RefreshIndicator] for pull-to-refresh.
+/// Layout: AppBar → WeekSelectorStrip → ComplianceDonutChart →
+/// DayGroupedLog list.
 class HistoryScreen extends ConsumerStatefulWidget {
   const HistoryScreen({super.key});
 
@@ -20,157 +23,149 @@ class HistoryScreen extends ConsumerStatefulWidget {
 }
 
 class _HistoryScreenState extends ConsumerState<HistoryScreen> {
-  final _scrollController = ScrollController();
+  late DateTime _weekStart;
+  DateTime? _selectedDay;
 
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(_onScroll);
+    final now = DateTime.now();
+    // Start on Monday of current week
+    _weekStart = now.subtract(Duration(days: now.weekday - 1));
+    _weekStart = DateTime(_weekStart.year, _weekStart.month, _weekStart.day);
   }
 
-  @override
-  void dispose() {
-    _scrollController
-      ..removeListener(_onScroll)
-      ..dispose();
-    super.dispose();
+  void _previousWeek() {
+    setState(() {
+      _weekStart = _weekStart.subtract(const Duration(days: 7));
+      _selectedDay = null;
+    });
   }
 
-  void _onScroll() {
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 200) {
-      unawaited(
-        ref.read(historyNotifierProvider.notifier).loadNextPage(),
-      );
-    }
+  void _nextWeek() {
+    setState(() {
+      _weekStart = _weekStart.add(const Duration(days: 7));
+      _selectedDay = null;
+    });
+  }
+
+  void _selectDay(DateTime day) {
+    setState(() {
+      _selectedDay = day;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final historyAsync = ref.watch(historyNotifierProvider);
-    final theme = Theme.of(context);
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Semantics(
-          header: true,
-          child: Text(
-            'Medication History',
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+        backgroundColor: AppColors.background,
+        elevation: 0,
+        title: Text(
+          'History',
+          style: AppTypography.titleLarge.copyWith(
+            color: AppColors.textPrimary,
           ),
         ),
         centerTitle: false,
+        actions: [
+          ExportPdfButton(
+            onPressed: () {
+              // TODO: export PDF
+            },
+          ),
+        ],
       ),
       body: historyAsync.when(
         loading: () => const Center(
           child: CircularProgressIndicator(),
         ),
         error: (err, stack) => Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Failed to load history.',
-                  style: theme.textTheme.bodyLarge,
-                ),
-                const SizedBox(height: 16),
-                FilledButton(
-                  onPressed: () => ref.invalidate(
-                    historyNotifierProvider,
-                  ),
-                  child: const Text('Retry'),
-                ),
-              ],
-            ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Failed to load history',
+                style: AppTypography.bodyLarge,
+              ),
+              const SizedBox(height: 16),
+              FilledButton(
+                onPressed: () => ref.invalidate(historyNotifierProvider),
+                child: const Text('Retry'),
+              ),
+            ],
           ),
         ),
-        data: (state) => Column(
-          children: [
-            // Filter bar
-            if (state.availableFilters.isNotEmpty)
-              MedicationFilterBar(
-                availableFilters: state.availableFilters,
-                activeFilter: state.activeFilter,
-                onFilterChanged: (filter) {
-                  unawaited(
-                    ref
-                        .read(
-                          historyNotifierProvider.notifier,
-                        )
-                        .setFilter(filter),
-                  );
-                },
+        data: (state) {
+          // Compute compliance stats from items
+          final items = state.items;
+          var done = 0;
+          var missed = 0;
+          var skipped = 0;
+          var pending = 0;
+          for (final item in items) {
+            switch (item.status) {
+              case null:
+                missed++;
+              case _:
+                switch (item.status!.name) {
+                  case 'done':
+                    done++;
+                  case 'skipped':
+                    skipped++;
+                  case 'snoozed':
+                    pending++;
+                  default:
+                    pending++;
+                }
+            }
+          }
+
+          return CustomScrollView(
+            slivers: [
+              // Week selector
+              SliverToBoxAdapter(
+                child: WeekSelectorStrip(
+                  weekStart: _weekStart,
+                  selectedDay: _selectedDay,
+                  onDaySelected: _selectDay,
+                  onPreviousWeek: _previousWeek,
+                  onNextWeek: _nextWeek,
+                ),
               ),
 
-            // History list
-            Expanded(
-              child: state.items.isEmpty
-                  ? Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(32),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.history,
-                              size: 64,
-                              color: theme.colorScheme.onSurfaceVariant
-                                  .withValues(
-                                    alpha: 0.4,
-                                  ),
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              state.activeFilter != null
-                                  ? 'No history for '
-                                        '"${state.activeFilter}"'
-                                  : 'No medication '
-                                        'history yet',
-                              style: theme.textTheme.bodyLarge?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                  : RefreshIndicator(
-                      onRefresh: () => ref
-                          .read(
-                            historyNotifierProvider.notifier,
-                          )
-                          .refresh(),
-                      child: ListView.builder(
-                        controller: _scrollController,
-                        padding: const EdgeInsets.only(
-                          top: 8,
-                          bottom: 80,
-                        ),
-                        itemCount:
-                            state.items.length + (state.isLoadingMore ? 1 : 0),
-                        itemBuilder: (context, index) {
-                          if (index >= state.items.length) {
-                            return const Padding(
-                              padding: EdgeInsets.all(24),
-                              child: Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                            );
-                          }
-                          return HistoryCard(
-                            entry: state.items[index],
-                          );
-                        },
-                      ),
-                    ),
-            ),
-          ],
-        ),
+              // Compliance donut
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  child: ComplianceDonutChart(
+                    done: done,
+                    missed: missed,
+                    skipped: skipped,
+                    pending: pending,
+                  ),
+                ),
+              ),
+
+              // Day-grouped logs or empty state
+              if (items.isEmpty)
+                const SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: HistoryEmptyState(),
+                )
+              else
+                DayGroupedLog(entries: items),
+
+              // Bottom padding
+              const SliverToBoxAdapter(
+                child: SizedBox(height: 80),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

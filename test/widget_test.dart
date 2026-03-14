@@ -7,7 +7,7 @@ void main() {
     await tester.pumpWidget(
       const ProviderScope(child: MemoCareApp()),
     );
-    // The app should render the first onboarding step.
-    expect(find.textContaining('Step 1'), findsOneWidget);
+    // The app should render the welcome onboarding page.
+    expect(find.textContaining('Get Started'), findsOneWidget);
   });
 }

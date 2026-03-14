@@ -86,7 +86,7 @@ class _UndoConfirmationBarState extends ConsumerState<UndoConfirmationBar>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Undo failed: $reason'),
-            backgroundColor: AppColors.errorBackground,
+            backgroundColor: LegacyAppColors.errorBackground,
           ),
         );
     }

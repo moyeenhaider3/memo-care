@@ -10,8 +10,8 @@ _HistoryEntry _$HistoryEntryFromJson(Map<String, dynamic> json) =>
     _HistoryEntry(
       reminderId: (json['reminderId'] as num).toInt(),
       medicineName: json['medicineName'] as String,
-      dosage: json['dosage'] as String?,
       scheduledAt: DateTime.parse(json['scheduledAt'] as String),
+      dosage: json['dosage'] as String?,
       status: $enumDecodeNullable(_$ConfirmationStateEnumMap, json['status']),
       confirmedAt: json['confirmedAt'] == null
           ? null
@@ -22,8 +22,8 @@ Map<String, dynamic> _$HistoryEntryToJson(_HistoryEntry instance) =>
     <String, dynamic>{
       'reminderId': instance.reminderId,
       'medicineName': instance.medicineName,
-      'dosage': instance.dosage,
       'scheduledAt': instance.scheduledAt.toIso8601String(),
+      'dosage': instance.dosage,
       'status': _$ConfirmationStateEnumMap[instance.status],
       'confirmedAt': instance.confirmedAt?.toIso8601String(),
     };

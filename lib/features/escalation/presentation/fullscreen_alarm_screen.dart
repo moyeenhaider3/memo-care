@@ -1,24 +1,22 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
-import 'package:memo_care/core/theme/app_theme.dart';
+import 'package:memo_care/features/escalation/presentation/widgets/alarm_action_buttons.dart';
+import 'package:memo_care/features/escalation/presentation/widgets/alarm_content_card.dart';
+import 'package:memo_care/features/escalation/presentation/widgets/alarm_time_hero.dart';
+import 'package:memo_care/features/escalation/presentation/widgets/caregiver_warning.dart';
+import 'package:memo_care/features/escalation/presentation/widgets/pulsing_gradient_background.dart';
 
-/// Full-screen alarm screen launched by the critical
-/// notification's full-screen intent at the FULLSCREEN
-/// escalation tier.
+/// Full-screen alarm screen with pulsing background (10-07).
 ///
 /// Features:
-/// - Dark background (reduces glare at night)
-/// - HUGE medication name text (36pt)
-/// - GIANT "I TOOK IT" button (green, 80dp height)
-/// - GIANT "SKIP" button (red, 80dp height)
-/// - No SNOOZE at this point — user must decide
-/// - Screen stays on (wakelock managed by
-///   `EscalationController`)
+/// - Pulsing radial gradient background (2s breathing cycle)
+/// - 64px time hero + 32px medicine name
+/// - White content card with chain step indicator
+/// - 88px DONE/SNOOZE buttons with spring bounce
+/// - Caregiver escalation warning
 class FullScreenAlarmScreen extends StatelessWidget {
-  /// Creates a [FullScreenAlarmScreen].
   const FullScreenAlarmScreen({
     required this.reminderId,
     required this.medicineName,
@@ -26,26 +24,23 @@ class FullScreenAlarmScreen extends StatelessWidget {
     required this.scheduledTime,
     required this.onDone,
     required this.onSkip,
+    this.chainStep,
+    this.chainTotal,
+    this.showCaregiverWarning = false,
+    this.caregiverMinutesRemaining = 5,
     super.key,
   });
 
-  /// The reminder ID (for action routing).
   final int reminderId;
-
-  /// Medicine name to display prominently.
   final String medicineName;
-
-  /// Dosage text (e.g., "500mg, 1 tablet").
   final String dosage;
-
-  /// When the medication was due.
   final String scheduledTime;
-
-  /// Called when user taps DONE.
   final VoidCallback onDone;
-
-  /// Called when user taps SKIP.
   final VoidCallback onSkip;
+  final int? chainStep;
+  final int? chainTotal;
+  final bool showCaregiverWarning;
+  final int caregiverMinutesRemaining;
 
   @override
   Widget build(BuildContext context) {
@@ -56,179 +51,66 @@ class FullScreenAlarmScreen extends StatelessWidget {
     );
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 32,
-            vertical: 48,
+      body: Stack(
+        children: [
+          // Pulsing background
+          const Positioned.fill(
+            child: PulsingGradientBackground(),
           ),
-          child: CustomScrollView(
-            slivers: [
-              SliverFillRemaining(
-                hasScrollBody: false,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Alert icon — decorative
-                    const ExcludeSemantics(
-                      child: Icon(
-                        Icons.medication_rounded,
-                        color: Colors.white,
-                        size: 80,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    // "Time to take" label
-                    Semantics(
-                      header: true,
-                      sortKey: const OrdinalSortKey(0),
-                      child: const Text(
-                        'Time to take your medicine',
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 20,
+          // Content
+          SafeArea(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(vertical: 32),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const SizedBox(height: 8),
+                        // Time hero
+                        AlarmTimeHero(
+                          time: scheduledTime,
+                          medicineName: medicineName,
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Medicine name — HUGE text
-                    Semantics(
-                      sortKey: const OrdinalSortKey(1),
-                      label:
-                          'Alarm: $medicineName, '
-                          '$dosage, due at '
-                          '$scheduledTime',
-                      child: Text(
-                        medicineName,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 36,
-                          fontWeight: FontWeight.bold,
+                        const SizedBox(height: 24),
+                        // Content card
+                        AlarmContentCard(
+                          medicineName: medicineName,
+                          dosage: dosage,
+                          chainStep: chainStep,
+                          chainTotal: chainTotal,
                         ),
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-
-                    // Dosage — included in name Semantics
-                    ExcludeSemantics(
-                      child: Text(
-                        dosage,
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 22,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-
-                    // Scheduled time — included above
-                    ExcludeSemantics(
-                      child: Text(
-                        'Due at $scheduledTime',
-                        style: const TextStyle(
-                          color: Colors.white54,
-                          fontSize: 18,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-
-                    const Spacer(),
-
-                    // DONE button — GIANT green
-                    Semantics(
-                      sortKey: const OrdinalSortKey(2),
-                      label:
-                          'Confirm taking '
-                          '$medicineName',
-                      button: true,
-                      child: SizedBox(
-                        width: double.infinity,
-                        height: 80,
-                        child: FilledButton.icon(
-                          onPressed: () {
+                        const SizedBox(height: 24),
+                        // Caregiver warning
+                        if (showCaregiverWarning) ...[
+                          CaregiverWarning(
+                            minutesRemaining: caregiverMinutesRemaining,
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                        // Action buttons
+                        AlarmActionButtons(
+                          medicineName: medicineName,
+                          onDone: () {
                             _restoreSystemUI();
                             onDone();
                           },
-                          icon: const Icon(
-                            Icons.check_circle,
-                            size: 36,
-                          ),
-                          label: const Text(
-                            'I TOOK IT',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          style: FilledButton.styleFrom(
-                            backgroundColor: AppColors.doneButtonBackground,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                16,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    // SKIP button — GIANT red
-                    Semantics(
-                      sortKey: const OrdinalSortKey(3),
-                      label: 'Skip $medicineName',
-                      button: true,
-                      child: SizedBox(
-                        width: double.infinity,
-                        height: 80,
-                        child: OutlinedButton.icon(
-                          onPressed: () {
+                          onSnooze: () {
                             _restoreSystemUI();
                             onSkip();
                           },
-                          icon: const Icon(
-                            Icons.cancel,
-                            size: 36,
-                          ),
-                          label: const Text(
-                            'SKIP',
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: const Color(0xFFFF8A80),
-                            side: const BorderSide(
-                              color: Color(0xFFFF8A80),
-                              width: 3,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                16,
-                              ),
-                            ),
-                          ),
                         ),
-                      ),
+                        const SizedBox(height: 16),
+                      ],
                     ),
-                    const SizedBox(height: 32),
-                  ],
-                ),
-              ),
-            ],
+                  ),
+                );
+              },
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

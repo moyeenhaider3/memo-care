@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#1a3c5b",
+              "background-light": "#f6f7f8",
+              "background-dark": "#13191f",
+              "neutral-blue": "#F0L4F8", // Adjusted for the prompt's #F0F4F8
+            },
+            fontFamily: {
+              "display": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.25rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<title>MemoCare - Quick Start Templates</title>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+<!-- Main Container -->
+<div class="relative flex min-h-screen w-full flex-col max-w-[390px] mx-auto bg-white dark:bg-background-dark shadow-xl overflow-x-hidden">
+<!-- Header Section -->
+<header class="pt-8 px-6 pb-2">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary dark:text-slate-100 cursor-pointer">arrow_back</span>
+</div>
+<h1 class="text-[22pt] font-bold leading-tight text-primary dark:text-white">Quick Start Templates</h1>
+<p class="text-[15pt] text-slate-500 dark:text-slate-400 mt-1">Pick a pack and we'll build your chain.</p>
+</header>
+<!-- Search Bar -->
+<div class="px-6 py-4">
+<div class="relative h-[48pt] w-full">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-slate-400">search</span>
+</div>
+<input class="block w-full h-full pl-12 pr-4 bg-[#F0F4F8] dark:bg-slate-800 border-none rounded-xl text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 text-base" placeholder="Search templates..." type="text"/>
+</div>
+</div>
+<!-- Category Filter Chips -->
+<div class="flex gap-3 px-6 py-2 overflow-x-auto no-scrollbar">
+<button class="flex h-10 shrink-0 items-center justify-center px-6 rounded-full bg-primary text-white text-sm font-medium">
+                All
+            </button>
+<button class="flex h-10 shrink-0 items-center justify-center px-6 rounded-full bg-[#F0F4F8] dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-sm font-medium">
+                Medical
+            </button>
+<button class="flex h-10 shrink-0 items-center justify-center px-6 rounded-full bg-[#F0F4F8] dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-sm font-medium">
+                Meals
+            </button>
+<button class="flex h-10 shrink-0 items-center justify-center px-6 rounded-full bg-[#F0F4F8] dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-sm font-medium">
+                Fasting
+            </button>
+<button class="flex h-10 shrink-0 items-center justify-center px-6 rounded-full bg-[#F0F4F8] dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-sm font-medium">
+                Kids
+            </button>
+<button class="flex h-10 shrink-0 items-center justify-center px-6 rounded-full bg-[#F0F4F8] dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-sm font-medium">
+                Fitness
+            </button>
+</div>
+<!-- Template Cards Grid -->
+<div class="flex-1 px-6 py-6 space-y-4 overflow-y-auto">
+<!-- Card 1: Diabetic Daily Pack -->
+<div class="bg-white dark:bg-slate-800 rounded-xl p-5 h-[120pt] shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between relative">
+<div class="flex items-start justify-between">
+<div class="flex flex-col gap-2">
+<div class="w-[40pt] h-[40pt] rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-blue-600 text-2xl">syringe</span>
+</div>
+<h3 class="text-[17pt] font-semibold text-primary dark:text-white leading-tight mt-1">Diabetic Daily Pack</h3>
+</div>
+</div>
+<div class="flex items-end justify-between mt-auto">
+<div class="flex flex-col gap-1">
+<p class="text-[13pt] text-slate-500 dark:text-slate-400 truncate max-w-[240px]">Manage insulin and glucose checks.</p>
+<div class="flex items-center gap-2">
+<span class="text-[11px] font-medium text-slate-400 bg-slate-50 dark:bg-slate-700/50 px-2 py-0.5 rounded-full">3 medicines</span>
+<span class="text-[11px] font-medium text-slate-400 bg-slate-50 dark:bg-slate-700/50 px-2 py-0.5 rounded-full">2 checks</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-[#4A90D9]">chevron_right</span>
+</div>
+</div>
+<!-- Card 2: Blood Pressure Pack -->
+<div class="bg-white dark:bg-slate-800 rounded-xl p-5 h-[120pt] shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between relative">
+<div class="flex items-start justify-between">
+<div class="flex flex-col gap-2">
+<div class="w-[40pt] h-[40pt] rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-red-600 text-2xl">favorite</span>
+</div>
+<h3 class="text-[17pt] font-semibold text-primary dark:text-white leading-tight mt-1">Blood Pressure Pack</h3>
+</div>
+</div>
+<div class="flex items-end justify-between mt-auto">
+<div class="flex flex-col gap-1">
+<p class="text-[13pt] text-slate-500 dark:text-slate-400 truncate max-w-[240px]">Morning and evening BP tracking.</p>
+<div class="flex items-center gap-2">
+<span class="text-[11px] font-medium text-slate-400 bg-slate-50 dark:bg-slate-700/50 px-2 py-0.5 rounded-full">2 medicines</span>
+<span class="text-[11px] font-medium text-slate-400 bg-slate-50 dark:bg-slate-700/50 px-2 py-0.5 rounded-full">1 measurement</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-[#4A90D9]">chevron_right</span>
+</div>
+</div>
+<!-- Card 3: Ramadan Medicine Pack -->
+<div class="bg-white dark:bg-slate-800 rounded-xl p-5 h-[120pt] shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between relative">
+<div class="flex items-start justify-between">
+<div class="flex flex-col gap-2">
+<div class="w-[40pt] h-[40pt] rounded-full bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-teal-600 text-2xl">dark_mode</span>
+</div>
+<h3 class="text-[17pt] font-semibold text-primary dark:text-white leading-tight mt-1">Ramadan Medicine Pack</h3>
+</div>
+</div>
+<div class="flex items-end justify-between mt-auto">
+<div class="flex flex-col gap-1">
+<p class="text-[13pt] text-slate-500 dark:text-slate-400 truncate max-w-[240px]">Adjusted timings for Suhoor &amp; Iftar.</p>
+<div class="flex items-center gap-2">
+<span class="text-[11px] font-medium text-slate-400 bg-slate-50 dark:bg-slate-700/50 px-2 py-0.5 rounded-full">2 medicines</span>
+<span class="text-[11px] font-medium text-slate-400 bg-slate-50 dark:bg-slate-700/50 px-2 py-0.5 rounded-full">2 meals</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-[#4A90D9]">chevron_right</span>
+</div>
+</div>
+<!-- Card 4: School Morning Routine -->
+<div class="bg-white dark:bg-slate-800 rounded-xl p-5 h-[120pt] shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between relative">
+<div class="flex items-start justify-between">
+<div class="flex flex-col gap-2">
+<div class="w-[40pt] h-[40pt] rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-purple-600 text-2xl">school</span>
+</div>
+<h3 class="text-[17pt] font-semibold text-primary dark:text-white leading-tight mt-1">School Morning Routine</h3>
+</div>
+</div>
+<div class="flex items-end justify-between mt-auto">
+<div class="flex flex-col gap-1">
+<p class="text-[13pt] text-slate-500 dark:text-slate-400 truncate max-w-[240px]">Vitamins and allergy meds before school.</p>
+<div class="flex items-center gap-2">
+<span class="text-[11px] font-medium text-slate-400 bg-slate-50 dark:bg-slate-700/50 px-2 py-0.5 rounded-full">3 medicines</span>
+<span class="text-[11px] font-medium text-slate-400 bg-slate-50 dark:bg-slate-700/50 px-2 py-0.5 rounded-full">1 meal</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-[#4A90D9]">chevron_right</span>
+</div>
+</div>
+<!-- Card 5: Hydration Booster -->
+<div class="bg-white dark:bg-slate-800 rounded-xl p-5 h-[120pt] shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between relative">
+<div class="flex items-start justify-between">
+<div class="flex flex-col gap-2">
+<div class="w-[40pt] h-[40pt] rounded-full bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-cyan-600 text-2xl">water_drop</span>
+</div>
+<h3 class="text-[17pt] font-semibold text-primary dark:text-white leading-tight mt-1">Hydration Booster</h3>
+</div>
+</div>
+<div class="flex items-end justify-between mt-auto">
+<div class="flex flex-col gap-1">
+<p class="text-[13pt] text-slate-500 dark:text-slate-400 truncate max-w-[240px]">Hourly water reminders all day.</p>
+<div class="flex items-center gap-2">
+<span class="text-[11px] font-medium text-slate-400 bg-slate-50 dark:bg-slate-700/50 px-2 py-0.5 rounded-full">8 reminders</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-[#4A90D9]">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- Bottom Navigation Bar -->
+<div class="flex gap-2 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-background-dark px-4 pb-6 pt-2">
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">home</span>
+</div>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Home</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-primary dark:text-white" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">auto_stories</span>
+</div>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Templates</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">history</span>
+</div>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">History</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400" href="#">
+<div class="flex h-8 items-center justify-center">
+<span class="material-symbols-outlined">person</span>
+</div>
+<p class="text-xs font-medium leading-normal tracking-[0.015em]">Profile</p>
+</a>
+</div>
+</div>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</body></html>

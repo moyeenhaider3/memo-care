@@ -1,155 +1,129 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:memo_care/core/theme/app_theme.dart';
+import 'package:memo_care/core/theme/app_colors.dart';
+import 'package:memo_care/core/theme/app_shadows.dart';
+import 'package:memo_care/core/theme/app_spacing.dart';
+import 'package:memo_care/core/theme/app_typography.dart';
 import 'package:memo_care/features/confirmation/domain/models/confirmation_state.dart';
 import 'package:memo_care/features/history/domain/models/history_entry.dart';
 
-/// A single entry card in the medication history list (HIST-01).
+/// History card with colored status dot (HIST-01, 10-05).
 ///
-/// Shows medicine name, dosage, scheduled date/time, status, and
-/// confirmation timestamp.
-/// Touch target >= 56 dp.
+/// Shows medicine name, scheduled time, confirmation time, dosage,
+/// and a colored status dot on the left.
 class HistoryCard extends StatelessWidget {
   const HistoryCard({
     required this.entry,
     super.key,
   });
 
-  /// The history entry to display.
   final HistoryEntry entry;
 
+  Color get _statusColor => switch (entry.status) {
+    ConfirmationState.done => AppColors.success,
+    ConfirmationState.skipped => AppColors.skippedGrey,
+    ConfirmationState.snoozed => AppColors.warning,
+    null => AppColors.danger,
+  };
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final dateFormat = DateFormat.yMMMd(); // "Mar 7, 2026"
-    final timeFormat = DateFormat.jm(); // "1:30 PM"
-
-    final dateText = dateFormat.format(entry.scheduledAt.toLocal());
+    final timeFormat = DateFormat.jm();
     final timeText = timeFormat.format(entry.scheduledAt.toLocal());
     final confirmedText = entry.confirmedAt != null
-        ? 'at ${timeFormat.format(entry.confirmedAt!.toLocal())}'
+        ? 'Confirmed ${timeFormat.format(entry.confirmedAt!.toLocal())}'
         : '';
-    final statusLabel = entry.statusLabel;
-
-    return Semantics(
-      label:
-          '${entry.medicineName}, '
-          '${entry.dosage ?? ""}, '
-          '$dateText at $timeText, '
-          'status: $statusLabel'
-          '${confirmedText.isNotEmpty ? ", confirmed $confirmedText" : ""}',
-      child: Card(
-        margin: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 4,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 56),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Medicine info
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        entry.medicineName,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '$dateText · $timeText'
-                        '${entry.dosage != null ? " · ${entry.dosage}" : ""}',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      if (confirmedText.isNotEmpty) ...[
-                        const SizedBox(height: 2),
-                        Text(
-                          'Confirmed $confirmedText',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-
-                // Status chip
-                _StatusChip(
-                  status: entry.status,
-                  label: statusLabel,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _StatusChip extends StatelessWidget {
-  const _StatusChip({
-    required this.status,
-    required this.label,
-  });
-
-  final ConfirmationState? status;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final (color, icon) = switch (status) {
-      ConfirmationState.done => (
-        AppColors.doneGreen,
-        Icons.check_circle,
-      ),
-      ConfirmationState.skipped => (
-        AppColors.skippedGrey,
-        Icons.cancel,
-      ),
-      ConfirmationState.snoozed => (
-        AppColors.pendingOrange,
-        Icons.snooze,
-      ),
-      null => (
-        AppColors.missedRed,
-        Icons.warning_amber,
-      ),
-    };
 
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 10,
-        vertical: 6,
-      ),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color),
+        color: AppColors.cardBg,
+        borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
+        boxShadow: AppShadows.card,
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16, color: color),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: color,
+      child: IntrinsicHeight(
+        child: Row(
+          children: [
+            // Colored status dot strip
+            Container(
+              width: 4,
+              decoration: BoxDecoration(
+                color: _statusColor,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(AppSpacing.cardRadius),
+                  bottomLeft: Radius.circular(AppSpacing.cardRadius),
+                ),
+              ),
             ),
-          ),
-        ],
+            const SizedBox(width: 12),
+            // Status dot
+            Container(
+              width: 12,
+              height: 12,
+              decoration: BoxDecoration(
+                color: _statusColor,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 12),
+            // Content
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      entry.medicineName,
+                      style: AppTypography.bodyLarge.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '$timeText'
+                      '${entry.dosage != null ? " · ${entry.dosage}" : ""}',
+                      style: AppTypography.bodySmall.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    if (confirmedText.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        confirmedText,
+                        style: AppTypography.labelSmall.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+            // Status label
+            Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: _statusColor.withAlpha(26),
+                  borderRadius: BorderRadius.circular(AppSpacing.chipRadius),
+                ),
+                child: Text(
+                  entry.statusLabel,
+                  style: AppTypography.labelMedium.copyWith(
+                    color: _statusColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

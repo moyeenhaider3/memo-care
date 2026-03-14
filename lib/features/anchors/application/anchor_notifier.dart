@@ -3,6 +3,8 @@ import 'package:memo_care/core/platform/alarm_callback.dart';
 import 'package:memo_care/core/providers/alarm_providers.dart';
 import 'package:memo_care/features/anchors/application/providers.dart';
 import 'package:memo_care/features/anchors/domain/models/meal_anchor.dart';
+import 'package:memo_care/features/fasting/application/fasting_notifier.dart';
+import 'package:memo_care/features/fasting/application/fasting_state.dart';
 import 'package:memo_care/features/reminders/application/providers.dart'
     as reminder_providers;
 import 'package:memo_care/features/reminders/domain/models/medicine_type.dart';
@@ -48,6 +50,8 @@ class AnchorNotifier extends AsyncNotifier<List<MealAnchor>> {
       );
       final resolver = ref.read(anchorResolverProvider);
       final scheduler = ref.read(alarmSchedulerProvider);
+      final fastingState = ref.read(fastingNotifierProvider);
+      final fastingNotifier = ref.read(fastingNotifierProvider.notifier);
 
       // 1. Get current anchor and update confirmedAt.
       final anchors = await anchorRepo.watchAll().first;
@@ -60,15 +64,25 @@ class AnchorNotifier extends AsyncNotifier<List<MealAnchor>> {
       );
       await anchorRepo.updateAnchor(updatedAnchor);
 
+      final effectiveConfirmedAt = _effectiveAnchorTime(
+        mealType: mealType,
+        fallback: confirmedAt,
+        fastingState: fastingState,
+      );
+
       // 2. Query active reminders, filter to meal-dependent.
       final allReminders = await reminderRepo.watchActive().first;
-      final dependents = allReminders.where(_isMealDependent).toList();
+      final dependents = _filteredDependentsForMeal(
+        reminders: allReminders,
+        mealType: mealType,
+        fastingActive: fastingState.isActive,
+      );
 
       if (dependents.isNotEmpty) {
         // 3. Resolve new fire times.
         final updates = resolver.resolve(
           anchor: updatedAnchor,
-          confirmedAt: confirmedAt,
+          confirmedAt: effectiveConfirmedAt,
           dependents: dependents,
         );
 
@@ -81,6 +95,13 @@ class AnchorNotifier extends AsyncNotifier<List<MealAnchor>> {
             scheduledAt: update.scheduledAt,
           );
           await reminderRepo.updateReminder(updated);
+          final shouldSuppress = fastingNotifier.isSuppressedDuringFast(
+            scheduledAt: update.scheduledAt,
+            isMealLinked: _isMealLinked(reminder),
+          );
+          if (fastingState.isActive && shouldSuppress) {
+            continue;
+          }
           await scheduler.schedule(
             reminderId: update.reminderId,
             fireAt: update.scheduledAt,
@@ -112,6 +133,8 @@ class AnchorNotifier extends AsyncNotifier<List<MealAnchor>> {
       );
       final resolver = ref.read(anchorResolverProvider);
       final scheduler = ref.read(alarmSchedulerProvider);
+      final fastingState = ref.read(fastingNotifierProvider);
+      final fastingNotifier = ref.read(fastingNotifierProvider.notifier);
 
       // 1. Get current anchor and update default time.
       final anchors = await anchorRepo.watchAll().first;
@@ -133,15 +156,24 @@ class AnchorNotifier extends AsyncNotifier<List<MealAnchor>> {
         minutesFromMidnight ~/ 60,
         minutesFromMidnight % 60,
       );
+      final effectiveReferenceTime = _effectiveAnchorTime(
+        mealType: mealType,
+        fallback: referenceTime,
+        fastingState: fastingState,
+      );
 
       // 3. Cascade recalculation to dependents.
       final allReminders = await reminderRepo.watchActive().first;
-      final dependents = allReminders.where(_isMealDependent).toList();
+      final dependents = _filteredDependentsForMeal(
+        reminders: allReminders,
+        mealType: mealType,
+        fastingActive: fastingState.isActive,
+      );
 
       if (dependents.isNotEmpty) {
         final updates = resolver.resolve(
           anchor: updatedAnchor,
-          confirmedAt: referenceTime,
+          confirmedAt: effectiveReferenceTime,
           dependents: dependents,
         );
 
@@ -153,6 +185,13 @@ class AnchorNotifier extends AsyncNotifier<List<MealAnchor>> {
             scheduledAt: update.scheduledAt,
           );
           await reminderRepo.updateReminder(updated);
+          final shouldSuppress = fastingNotifier.isSuppressedDuringFast(
+            scheduledAt: update.scheduledAt,
+            isMealLinked: _isMealLinked(reminder),
+          );
+          if (fastingState.isActive && shouldSuppress) {
+            continue;
+          }
           await scheduler.schedule(
             reminderId: update.reminderId,
             fireAt: update.scheduledAt,
@@ -174,4 +213,46 @@ class AnchorNotifier extends AsyncNotifier<List<MealAnchor>> {
     MedicineType.doseGap => true,
     MedicineType.fixedTime => false,
   };
+
+  static bool _isMealLinked(Reminder r) => switch (r.medicineType) {
+    MedicineType.beforeMeal => true,
+    MedicineType.afterMeal => true,
+    MedicineType.emptyStomach => true,
+    MedicineType.doseGap => false,
+    MedicineType.fixedTime => false,
+  };
+
+  static List<Reminder> _filteredDependentsForMeal({
+    required List<Reminder> reminders,
+    required String mealType,
+    required bool fastingActive,
+  }) {
+    final dependents = reminders.where(_isMealDependent).toList();
+    if (!fastingActive) return dependents;
+
+    // Lunch anchors are not used during fasting daytime.
+    if (mealType == 'lunch') {
+      return const <Reminder>[];
+    }
+
+    return dependents;
+  }
+
+  static DateTime _effectiveAnchorTime({
+    required String mealType,
+    required DateTime fallback,
+    required FastingState fastingState,
+  }) {
+    if (!fastingState.isActive) return fallback;
+
+    if (mealType == 'breakfast' && fastingState.sehriTime != null) {
+      return fastingState.sehriTime!;
+    }
+    if ((mealType == 'dinner' || mealType == 'lunch') &&
+        fastingState.iftarTime != null) {
+      return fastingState.iftarTime!;
+    }
+
+    return fallback;
+  }
 }

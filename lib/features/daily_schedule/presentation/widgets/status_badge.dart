@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:memo_care/core/theme/app_theme.dart';
+import 'package:memo_care/core/theme/app_colors.dart';
+import 'package:memo_care/core/theme/app_spacing.dart';
+import 'package:memo_care/core/theme/app_typography.dart';
 import 'package:memo_care/features/confirmation/domain/models/confirmation_state.dart';
 
-/// Status indicator chip for a reminder (VIEW-01).
+/// Status indicator pill for a reminder.
 ///
-/// Renders a colored badge:
+/// Renders a coloured pill badge:
 /// - Green "Done" for confirmed
-/// - Orange "Pending" for upcoming
+/// - Amber "Pending" for upcoming
 /// - Red "Missed" for past + unconfirmed
 /// - Grey "Skipped" for explicitly skipped
-///
-/// `status` is the confirmation state (null means no terminal
-/// confirmation). `isMissed` is true if scheduledAt < now AND no
-/// terminal confirmation.
 class StatusBadge extends StatelessWidget {
   const StatusBadge({
     required this.status,
@@ -20,10 +18,7 @@ class StatusBadge extends StatelessWidget {
     super.key,
   });
 
-  /// The confirmation state from the database (null = pending).
   final ConfirmationState? status;
-
-  /// Whether this reminder is past-due with no confirmation.
   final bool isMissed;
 
   @override
@@ -34,26 +29,22 @@ class StatusBadge extends StatelessWidget {
       label: 'Status: $label',
       child: Container(
         padding: const EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: 6,
+          horizontal: 10,
+          vertical: 4,
         ),
         decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.15),
-          borderRadius: BorderRadius.circular(16),
+          color: color.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(AppSpacing.chipRadius),
           border: Border.all(color: color, width: 1.5),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 16, color: color),
+            Icon(icon, size: 14, color: color),
             const SizedBox(width: 4),
             Text(
               label,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: color,
-              ),
+              style: AppTypography.labelMedium.copyWith(color: color),
             ),
           ],
         ),
@@ -63,26 +54,14 @@ class StatusBadge extends StatelessWidget {
 
   (String, Color, IconData) get _config {
     if (status == ConfirmationState.done) {
-      return ('Done', AppColors.doneGreen, Icons.check_circle);
+      return ('Done', AppColors.success, Icons.check_circle);
     }
     if (status == ConfirmationState.skipped) {
-      return (
-        'Skipped',
-        AppColors.skippedGrey,
-        Icons.cancel,
-      );
+      return ('Skipped', AppColors.skippedGrey, Icons.cancel);
     }
     if (isMissed) {
-      return (
-        'Missed',
-        AppColors.missedRed,
-        Icons.warning_amber,
-      );
+      return ('Missed', AppColors.danger, Icons.warning_amber);
     }
-    return (
-      'Pending',
-      AppColors.pendingOrange,
-      Icons.schedule,
-    );
+    return ('Pending', AppColors.warning, Icons.schedule);
   }
 }

@@ -1,0 +1,461 @@
+MemoCare
+UI / UX Design Prompt Handbook
+Ready-to-use prompts for every screen of the mobile app
+
+
+
+How to use this document
+Copy the DESIGN PROMPT box for each page directly into Figma AI, v0.dev, Framer AI, Uizard, or any design-to-code tool.
+Each prompt includes visual style, layout, component specs, interaction behaviour, and accessibility requirements.
+Global Design System (Apply to ALL Screens)
+Use this block as the foundation layer before applying any page-specific prompt. Every screen must conform to these tokens.
+
+App Name
+MemoCare
+Platform
+Mobile-first (iOS + Android). Design at 390 x 844 pt (iPhone 14 base). Scale up for Android.
+Design Style
+Calm Medical Minimal — clean white backgrounds, soft blue/teal accents, no sharp edges, generous whitespace. Think 'hospital clarity meets home warmth'.
+Primary Color
+#1A3A5C (Deep Navy) — used for headers, primary CTAs, and icons
+Accent Color
+#4A90D9 (Sky Blue) — used for active states, progress bars, selected tabs
+Success Color
+#27AE60 (Calm Green) — DONE states, completed reminders
+Warning Color
+#F39C12 (Amber) — SNOOZED states, upcoming critical reminders
+Danger Color
+#E74C3C (Soft Red) — MISSED states, escalation alerts
+Background
+#F7F9FC (Off-White) — base screen bg. Cards use #FFFFFF with subtle shadow.
+Typography
+Font: Inter (or SF Pro on iOS / Roboto on Android). H1: 28pt Bold. H2: 22pt SemiBold. Body: 17pt Regular. Caption: 14pt. MINIMUM body size 17pt for elderly mode.
+Elderly Mode
+Toggle in settings that bumps all text +4pt, increases tap targets to 64pt min height, and switches to Extra High Contrast palette.
+Border Radius
+Cards: 16px. Buttons: 14px. Chips/tags: 999px (pill shape). Input fields: 12px.
+Shadows
+Cards: 0px 2px 12px rgba(0,0,0,0.07). Modals: 0px 8px 32px rgba(0,0,0,0.14).
+Iconography
+Outlined icons (Phosphor Icons or Heroicons Outline). Stroke 1.5px. Size 24x24 standard, 32x32 in elderly mode.
+Spacing System
+Base unit 8px. Padding: Screen edges 20px. Card internal: 20px. Stack gap: 12px between related items, 24px between sections.
+Bottom Nav
+5-tab fixed bottom nav: Home | Today | Add | History | Profile. Active tab uses filled icon + accent color label.
+Motion
+Transitions max 300ms ease-in-out. Confirmation tap: spring micro-bounce on button. Chain fire: slide-in from right. Alert escalation: pulse ring animation.
+Accessibility
+WCAG AA minimum contrast. All interactive elements min 44x44pt tap target. VoiceOver / TalkBack labels on every element. No information conveyed by color alone.
+
+P1
+Onboarding — Welcome & Profile Setup
+
+Screen Purpose
+First-time user flow. Establishes user type, sets accessibility preferences, and links a caregiver. Must feel warm, simple, and reassuring — not clinical.
+
+Spec Reference
+Screens
+4 slides + completion screen (5 total)
+Navigation
+Progress dots at top. Back arrow top-left. Skip button top-right (only on slides 2–4). No skip on slide 1.
+CTA Button
+Full-width pill button at bottom. 64pt height in elderly mode, 52pt standard.
+Slide Transition
+Horizontal swipe or button. Smooth 280ms slide.
+
+DESIGN PROMPT
+Design a 5-screen mobile onboarding flow for MemoCare, a smart reminder app for elderly users, professionals, and children.
+
+SLIDE 1 — WELCOME:
+Full-screen calm illustration of a gentle clock with a soft glowing ring, warm color wash (navy to sky blue gradient background). Large centered text: 'Never miss what matters.' Subtitle: 'Your smart reminder companion.' CTA button: 'Get Started' in white on #1A3A5C. No clutter, generous whitespace.
+
+SLIDE 2 — WHO ARE YOU:
+Title: 'Set up for you.' Subtitle: 'Choose your profile.' Three large selectable cards in a vertical stack — each 80pt tall with icon left + label right: (1) Elderly / Senior — icon: person with walking cane, (2) Adult / Professional — icon: briefcase, (3) Parent setting up for child — icon: family. Selected card has #4A90D9 border and soft blue fill. Single selection only. Cards have 16px radius, subtle shadow.
+
+SLIDE 3 — ACCESSIBILITY CHECK:
+Title: 'Make it comfortable for you.' Two large toggle rows: (1) Large Text Mode — icon: Aa — toggle right. (2) High Contrast Mode — icon: eye — toggle right. Below that, a font size preview paragraph that updates live as user toggles. Soft instructional note: 'You can change these anytime in Settings.'
+
+SLIDE 4 — CAREGIVER LINK (optional):
+Title: 'Connect a family member.' Subtitle: 'They will receive alerts if you miss a reminder.' Input field: phone number with country code picker. Below: 'Skip for now' text link. If number entered, show green tick validation inline. Caregiver icon: two overlapping user silhouettes in teal.
+
+SLIDE 5 — ALL SET:
+Celebration micro-animation: gentle confetti burst (calm, not overwhelming — 5-6 soft colored dots). Large checkmark in #27AE60 circle. Text: 'You are all set!' Subtitle: 'Your first reminder chain is ready to build.' CTA: 'Go to Dashboard'. Background: white. Feeling: warm accomplishment.
+
+P2
+Home Dashboard
+
+Screen Purpose
+The emotional core of the app. User lands here every time they open MemoCare. Must answer: What do I need to do RIGHT NOW? What is coming next? Am I on track today?
+
+Header
+Greeting (Good Morning, Abdul) + current date + small avatar/initials circle
+Primary Zone
+Next upcoming reminder — large card, always first and most prominent
+Secondary Zone
+Scrollable timeline of today's remaining reminders below the primary card
+Status Ring
+Circular progress ring showing X of Y reminders completed today
+Bottom Nav
+Home tab active (filled house icon)
+
+DESIGN PROMPT
+Design the Home Dashboard screen for MemoCare mobile app.
+
+HEADER (top of screen):
+White background. Left: bold greeting 'Good Morning, Abdul' (22pt SemiBold, #1A3A5C). Below it: today's date in 14pt #888888. Right side: small circular avatar with user's initials (or photo). Below the avatar: a subtle circular progress ring (40x40pt) showing today's completion ratio (e.g., 3/8 done) with #4A90D9 stroke.
+
+NEXT REMINDER CARD (hero card, most prominent element):
+Large card (full width minus 20px edges, ~220pt tall). Background: deep navy #1A3A5C with subtle diagonal texture. White text throughout. Top-left: small pill label 'UP NEXT' in #4A90D9 on semi-transparent white bg. Medicine name in 28pt Bold white: 'Paracetamol 500mg'. Instruction below in 18pt: 'Take 5 minutes before your lunch'. Time display: large '12:55 PM' in 40pt Bold. Bottom row: two action buttons — DONE (filled green pill #27AE60) and SNOOZE (outlined white pill). Right side: a soft icon of the medicine type (tablet icon). Card has 20px radius and deep shadow.
+
+TODAY'S CHAIN TIMELINE (scrollable vertical list below hero card):
+Section title 'Today's Schedule' in 16pt SemiBold #1A3A5C. Each reminder shown as a horizontal card (full width, 72pt tall). Left: colored dot indicating state — green (done), amber (upcoming), grey (pending chain unlock), red (missed). Center: medicine/task name (17pt) + time (14pt #888888). Right: state chip label ('Done', 'In 30m', 'Waiting', 'Missed'). Cards have 12px radius, white bg, soft shadow. Chain-linked reminders connected by a vertical dotted line on the left edge, visually grouping them.
+
+BOTTOM QUICK-ADD FAB:
+Floating action button at bottom center (above bottom nav): circular 56x56pt, #4A90D9 fill, white plus icon. Tapping opens Add Reminder sheet.
+
+OVERALL FEEL:
+Clean, calm, immediately scannable. The user should understand their status within 1 second of opening the screen. No unnecessary decorations. Large enough for elderly eyes.
+
+P3
+Full-Screen Alert & Reminder Takeover
+
+Screen Purpose
+The most critical screen in the app. Fires when a reminder escalates to Layer 3 (no response after soft and audio alerts). Must be impossible to ignore, simple to act on, and readable from across a room.
+
+Trigger
+Auto-launches when escalation Layer 3 fires, even if phone is locked (with permission)
+Accessibility
+All text 24pt minimum. Buttons 72pt height. High contrast always — never dimmed.
+Audio
+Loud notification sound plays. Screen pulses softly (breathing animation on background).
+Dismissal
+Only 3 options: DONE, SNOOZE, SKIP. No X button or back gesture to close.
+
+DESIGN PROMPT
+Design the Full-Screen Alert / Reminder Takeover screen for MemoCare.
+
+BACKGROUND:
+Deep navy #1A3A5C with a very slow, subtle pulsing glow animation (the background slightly brightens and dims every 2 seconds, like breathing). This signals urgency without being aggressive.
+
+TOP SECTION:
+Small pill label at top center: 'REMINDER' in white on semi-transparent white/10 background. Below: large animated bell icon (28pt, white, gentle ring animation looping). Time in large white 48pt Bold: '12:55 PM'. Date in 16pt #AACCFF.
+
+CENTER CONTENT CARD:
+White card, 24px radius, centered on screen, 80% width. Padding 24px inside. Top of card: medicine/task icon (64x64pt) — for medicine, show a large pill icon in teal. Card title: medicine name in 28pt Bold #1A3A5C: 'Paracetamol 500mg'. Instruction line in 18pt #444444: 'Take before your lunch meal'. Context note in 16pt amber #F39C12: 'Your lunch window closes in 8 minutes.'. If this is part of a chain: small chain indicator below — 'Step 1 of 3 today' with 3 dots (first filled, others grey).
+
+BOTTOM ACTION ZONE (3 large buttons, vertically stacked, full width minus 32px margins):
+1. DONE button — 72pt height, #27AE60 fill, white text 22pt Bold 'I've Done It'. Rounded 14px.
+2. SNOOZE button — 72pt height, outlined white border on transparent, white text 22pt 'Remind me in 10 min'. Rounded 14px.
+3. SKIP THIS TIME — 48pt height, no border, #AAAAAA text 18pt 'Skip this reminder'.
+
+CAREGIVER NOTE (very bottom, small):
+14pt white/60: 'No response in 20 min will notify your caregiver.'
+
+FEEL: Impossible to miss, but not panic-inducing. A caring nudge, not a hospital alarm.
+
+P4
+Add Reminder — Conversational & Manual Entry
+
+Screen Purpose
+The primary setup flow. User can either speak/type a natural language description of their reminder or use guided manual fields. The screen intelligently builds a chain preview as the user fills details.
+
+Two Modes
+Voice/Text tab and Manual tab. Default to Voice/Text tab for elderly users.
+Chain Preview
+Live preview panel at bottom showing the chain as it is built
+Validation
+Inline — errors show under the field, not in a popup
+Save CTA
+Sticky at bottom of screen, disabled until minimum required fields are filled
+
+DESIGN PROMPT
+Design the Add Reminder screen for MemoCare with two input modes.
+
+HEADER:
+Back arrow top-left. Title 'New Reminder' 22pt Bold centered. Top-right: 'Templates' text button in #4A90D9.
+
+INPUT MODE TOGGLE:
+Two-tab segmented control just below header: 'Say It' (microphone icon) | 'Build It' (sliders icon). Active tab has #1A3A5C fill, white text. Inactive: outlined.
+
+SAY IT MODE (default tab):
+Large rounded input area (full width, 120pt tall, soft grey #F0F4F8 bg, 16px radius). Placeholder text in 17pt italic grey: 'e.g. Take Paracetamol 5 minutes before lunch and Dolo 30 minutes after lunch...'. Mic icon bottom-right of input area — tapping starts voice input with animated waveform visualizer. Below input: 'Example phrases' section with 3 horizontal scroll chips: 'Before meal medicine', 'After Iftar', 'Call my son weekly'. Tapping a chip fills a sample prompt.
+
+PARSED CHAIN PREVIEW PANEL (appears after user types/speaks):
+Below the input area, an animated slide-up panel. Title 'I'll remind you:' in 16pt SemiBold #1A3A5C. Each parsed reminder shown as a row: colored dot (type indicator) + time label + task description. Chain-linked items connected by a dotted vertical line. 'Looks right?' below with Edit and Confirm buttons.
+
+BUILD IT MODE (manual tab):
+Scrollable form. Sections separated by 24pt gaps:
+1. Reminder Name field — large text input, 56pt height.
+2. Reminder Type selector — 4 large icon chips in a 2x2 grid: Medicine (pill icon), Meal (fork icon), Activity (running icon), Call (phone icon). Selected chip fills with #4A90D9.
+3. Anchor Time — time picker with two options: Fixed Time (clock picker) or Linked to Event (dropdown: Breakfast / Lunch / Dinner / Sehri / Iftar / Wakeup / Sleep).
+4. Offset — appears if Linked to Event selected. Two pills: 'Before' / 'After'. Number input for minutes.
+5. Notes field — optional, 80pt tall, e.g. 'Dolo 650mg, 1 tablet with water'.
+6. Repeat — toggle. If on: day selector (M T W T F S S pills).
+
+SAVE BUTTON:
+Sticky bottom bar, white bg. Full-width 'Add to My Day' button, #1A3A5C fill, white 20pt Bold, 56pt height, 14px radius. Disabled (grey) until required fields complete.
+
+P5
+Today's Full Schedule View
+
+Screen Purpose
+A bird's-eye view of all reminders for today, organized in chronological order with chain groupings visible. The user or caregiver can scan the entire day at a glance.
+
+DESIGN PROMPT
+Design the Today's Full Schedule screen for MemoCare.
+
+HEADER:
+White bg. Left: 'Today' in 28pt Bold #1A3A5C. Right: date chip '8 Mar' in pill shape #EAF2FB + text #1A3A5C. Below header: 3 summary stat chips in a horizontal row — '5 Done' (green), '2 Upcoming' (blue), '1 Missed' (red). Each chip is a pill: icon + number + label, 36pt height.
+
+TIMELINE (main content, scrollable):
+Vertical timeline layout. On the left edge: a continuous vertical line in #E0E0E0. Time labels (8 AM, 9 AM, etc.) in 13pt grey anchored to the left line. Reminder cards float to the right of the line.
+
+REMINDER CARD DESIGN (standard):
+White card, 16px radius, soft shadow. Left: 8px wide color bar (state color). Content: task name 18pt SemiBold + time 14pt grey + instruction 14pt. Right: state icon — green tick (done), amber clock (upcoming), red X (missed), grey lock (chain-locked / waiting for prior step).
+
+CHAIN GROUPING:
+Reminders that are part of a chain are visually grouped: a light blue #EAF2FB background section spans behind all chain members, with a header label 'Lunch Chain' in 13pt SemiBold #4A90D9 at the top of the group. Chain members connected by a dotted vertical line inside the group.
+
+RAMADAN MODE (if active):
+Special divider lines for Sehri time and Iftar time — thicker gold #F0A500 horizontal rule with label 'Iftar — 7:30 PM' centered on the line.
+
+EMPTY STATE:
+If no reminders after a certain time: soft illustration of a tea cup with steam and text 'Rest of the day is free' in 17pt italic grey.
+
+BOTTOM FAB:
+Same circular '+' FAB as dashboard for quick add.
+
+P6
+Template Library
+
+Screen Purpose
+Pre-built reminder chain templates for common conditions, life stages, and routines. Tapping a template activates a quick setup wizard — just fill names and times.
+
+DESIGN PROMPT
+Design the Template Library screen for MemoCare.
+
+HEADER:
+Title 'Quick Start Templates' 22pt Bold. Subtitle 'Pick a pack and we'll build your chain.' in 15pt grey.
+
+SEARCH BAR:
+Full-width search input, 48pt height, #F0F4F8 bg, search icon left inside, 'Search templates...' placeholder.
+
+CATEGORY FILTER CHIPS (horizontal scroll):
+Pill chips: All | Medical | Meals | Fasting | Kids | Fitness. Active chip: #1A3A5C fill white text. Inactive: #F0F4F8 grey text.
+
+TEMPLATE CARDS (vertical scroll grid, 2-column on wider screens, 1-column on 390pt):
+Each card: white, 20px radius, soft shadow, 120pt tall. Top: large emoji or icon (40x40pt) in a soft colored circle (each category has its own color — medical: blue, meals: orange, fasting: teal, kids: purple, fitness: green). Below icon: template name 17pt SemiBold #1A3A5C. Below name: short description 13pt grey (one line). Bottom of card: small row of reminder count chips — e.g., '3 medicines · 2 meals'. Bottom-right: arrow chevron in #4A90D9.
+
+TEMPLATE CARDS TO DESIGN:
+1. Diabetic Daily Pack — blue circle, syringe icon
+2. Blood Pressure Pack — red circle, heart icon
+3. Ramadan Medicine Pack — teal crescent icon
+4. School Morning Routine — purple backpack icon
+5. Hydration Booster — cyan water drop icon
+6. Heart Patient Pack — warm red ECG icon
+7. Elderly Wellness Daily — navy senior icon
+8. Eye Care Routine — light blue eye icon
+
+TEMPLATE DETAIL SHEET (slides up on tap):
+Bottom sheet 80% screen height, drag handle top. Template name large at top. Below: expandable list of all reminders in the pack — each row showing time, name, type. 'Use This Template' sticky button at bottom of sheet, full width, #1A3A5C fill.
+
+P7
+Ramadan / Fasting Mode Screen
+
+Screen Purpose
+Dedicated mode screen that rewires the entire day around Sehri and Iftar. Auto-calculates prayer/fast times. Displays Sehri countdown, Iftar countdown, and fasting-adjusted medicine chains prominently.
+
+DESIGN PROMPT
+Design the Ramadan / Fasting Mode screen for MemoCare.
+
+OVERALL PALETTE FOR THIS SCREEN ONLY:
+Shift to a warm night-sky palette. Background: very dark navy #0D1B2A. Cards: #1A2E44. Accent: gold #F0A500 for Iftar elements, soft white-blue for Sehri. Stars or crescent subtle pattern in background (very low opacity, decorative only).
+
+TOP SECTION — COUNTDOWN HERO:
+Two countdown cards side by side (full width split 50/50). LEFT CARD (Sehri): label 'Sehri Ends' in 13pt white/70. Countdown in 32pt Bold white e.g. '4:28 AM'. Below: 'in 1h 12m' in amber. Small crescent icon. RIGHT CARD (Iftar): label 'Iftar Today' in 13pt white/70. Countdown in 32pt Bold white '7:30 PM'. Below: 'in 14h 3m' in gold. Small sunset icon. Both cards: #1A2E44 bg, 16px radius, thin gold top border on Iftar card, thin blue top border on Sehri card.
+
+MEDICINE CHAIN SECTION — SEHRI:
+Section header: 'Sehri Medicines' in 16pt SemiBold white with moon icon. Cards below: same chain card design as dashboard but on dark bg. White text. Chain connectors in soft gold.
+
+FAST STATUS BAR:
+Horizontal progress bar spanning full width, 12pt tall. Gold fill from left showing '44% of fast completed'. Labels at each end: 'Sehri 4:28 AM' and 'Iftar 7:30 PM'. Current time indicator: small white dot on the bar.
+
+MEDICINE CHAIN SECTION — IFTAR:
+Section header: 'Iftar Medicines' in 16pt SemiBold white with sunset icon. Chain cards below with Iftar-linked timing shown: '-1 min', '+30 min' relative to Iftar time.
+
+LOCATION PILL (for prayer time auto-calc):
+Top of screen below header: 'Delhi, India' pill with location pin — tapping allows city change.
+
+FEEL: Sacred, calm, and functional. Gold and dark navy honor the month without being garish.
+
+P8
+History & Compliance Log
+
+Screen Purpose
+Weekly and monthly view of reminder compliance. Shows which doses were taken, missed, or skipped. Can be shared with a doctor or caregiver as a PDF report.
+
+DESIGN PROMPT
+Design the History & Compliance Log screen for MemoCare.
+
+HEADER:
+'History' 28pt Bold. Right: 'Export PDF' button — outlined #4A90D9, pill shape, 36pt height.
+
+WEEK SELECTOR:
+Horizontal 7-day strip. Each day: abbreviation (Mon) above, date number below. Today's date circle is filled #1A3A5C white text. Days in the past with data: colored dot below the date — green (full compliance), amber (partial), red (missed doses). Tap a day to jump to that day's log.
+
+COMPLIANCE RING (visual summary):
+Large centered donut chart, 160x160pt. Inner label: '87% this week' in 22pt Bold #1A3A5C. Ring segments: green (taken), amber (snoozed/late), red (missed), grey (skipped). Legend below with colored squares + labels + counts.
+
+DAILY LOG ITEMS (scrollable, grouped by day):
+Day header: 'Monday, 6 Mar' in 15pt SemiBold with a horizontal line extending right. Below: each reminder as a compact row (48pt height). Left: color dot (state). Center: name + scheduled time. Right: actual action taken ('Taken at 1:02 PM' in green, 'Missed' in red, 'Skipped' in grey). If DONE was tapped: small green checkmark. If caregiver was alerted: small red bell icon.
+
+MEDICINE-SPECIFIC FILTER:
+Top of log: horizontal scroll chip strip for each medicine name. Tapping a chip filters the log to that medicine only.
+
+EMPTY STATE:
+Soft illustration of a calendar page with a small leaf. Text: 'No data yet for this week.'
+
+P9
+Caregiver / Family Portal
+
+Screen Purpose
+The view for a linked family member or caregiver. They see the elderly user's schedule, real-time status, missed-dose alerts, and can add/edit reminders remotely. This is a separate app view — not the main user's view.
+
+DESIGN PROMPT
+Design the Caregiver Portal screen for MemoCare (viewed by a family member on their phone).
+
+HEADER:
+Left: 'Caring for' label in 14pt grey. Below: patient name 'Abdul Rahman' in 22pt Bold #1A3A5C with a small green dot indicator ('Active now'). Right: Settings gear icon. This clearly signals whose schedule they are viewing.
+
+STATUS SUMMARY CARD (top, prominent):
+Wide card with light green bg (#EAF7EA) if all good, amber (#FEF9E7) if pending alerts. Inside: '5 of 8 reminders done today' in 18pt SemiBold. Progress bar full width, animated green fill. Below: 'Last activity: Paracetamol confirmed at 1:02 PM' in 14pt grey.
+
+ALERT SECTION (if missed doses):
+Red-tinted card #FEF0EF, 16px radius. Alert icon (bell with exclamation). Title 'Missed Reminder' 17pt Bold red. Body: 'Dolo 650 was scheduled at 1:30 PM. No confirmation received.' Action buttons: 'Call Abdul' (filled green pill with phone icon) and 'Mark Done for Him' (outlined grey pill).
+
+TODAY'S SCHEDULE (read-only version):
+Same timeline as user's Today view, but in a slightly desaturated palette to signal it's a read-only view. Each chain card shows completion state. Caregiver cannot tap DONE — but they can tap a card to see details and send a push reminder to Abdul's phone.
+
+SEND NUDGE:
+On long-press of any upcoming reminder: bottom sheet appears with 'Send a nudge to Abdul?' button. Sends a push notification to the user's phone.
+
+ADD REMINDER (remote):
+FAB bottom-right with '+' icon. Opens Add Reminder flow with a banner at top: 'Adding reminder for Abdul Rahman'. Reminder syncs to user's device.
+
+END-OF-DAY REPORT TAB:
+Second tab 'Reports': auto-generated daily PDF summary — compliance rate, missed doses, chain completion. Shareable to email for doctor visits.
+
+FEEL: Clinical clarity with a warm family tone. This person is caring, not controlling.
+
+P10
+Settings & Profile
+
+Screen Purpose
+Manages app-wide preferences, accessibility settings, Fasting Mode toggle, notification volume, caregiver link, data backup, and account details. Clean, scannable, no buried options.
+
+DESIGN PROMPT
+Design the Settings & Profile screen for MemoCare.
+
+HEADER:
+Profile section at top: circular avatar (80x80pt, #1A3A5C fill if no photo, white initials 32pt). Name in 22pt Bold below. Subtitle: user type chip ('Elderly Mode Active' in green, or 'Standard Mode' in grey). Edit profile button: outlined pill, small, to the right.
+
+SETTINGS GROUPS (scrollable, grouped by category with grey section labels):
+
+GROUP 1 — DISPLAY:
+Row: 'Text Size' — left label + current value 'Large' right + chevron. Opens text size slider sheet.
+Row: 'High Contrast Mode' — toggle.
+Row: 'Dark Mode' — toggle.
+
+GROUP 2 — NOTIFICATIONS:
+Row: 'Alert Volume' — slider row (show inline mini-slider).
+Row: 'Snooze Duration' — value pill '10 min' + chevron. Opens options: 5 / 10 / 15 / 30 min.
+Row: 'Escalation Delay' — '20 min' + chevron. Time after which caregiver is alerted.
+Row: 'Caregiver SMS Alerts' — toggle + phone number preview.
+
+GROUP 3 — FASTING MODE:
+Row: 'Ramadan / Fasting Mode' — large toggle, when on shows gold tint on the row. Below toggle (visible when on): 'Location for prayer times: Delhi, India' + update link.
+
+GROUP 4 — MY CAREGIVERS:
+Each linked caregiver as a card row: avatar circle + name + relationship label + 'Remove' danger link. 'Add Caregiver' row with + icon in teal.
+
+GROUP 5 — DATA:
+Row: 'Export My Data' — PDF/CSV.
+Row: 'Backup to Cloud' — toggle + last backup timestamp.
+Row: 'Delete All Reminders' — danger red text, no icon.
+
+ROW DESIGN:
+Each row 56pt height (64pt in elderly mode). Left: 20x20pt colored icon in soft colored square (8px radius). Center: label 17pt. Right: value or toggle or chevron. Rows separated by 0.5pt #EEEEEE dividers within a group. Groups separated by 16pt grey gap with 13pt uppercase section label.
+
+FEEL: Clean iOS-like settings but warmer. No overwhelming options. Priority on accessibility controls.
+
+P11
+Visual Chain Builder (Advanced Setup)
+
+Screen Purpose
+For caregivers or technical users who want to visually build complex reminder chains. A drag-and-drop timeline with linked nodes representing each reminder step and their conditions.
+
+DESIGN PROMPT
+Design the Visual Chain Builder screen for MemoCare (used by caregivers or advanced users).
+
+HEADER:
+'Chain Builder' 22pt Bold. Subtitle: 'Lunch Medicine Chain'. Back arrow. Right: 'Save Chain' teal text button + 'Test Run' button (outlined, small — simulates the day's notifications).
+
+ANCHOR NODE (top center):
+Large pill-shaped node at top center: clock icon + 'Lunch Anchor' label + editable time '1:00 PM'. Gold/amber color (#F0A500). This is the starting point of the chain.
+
+CHAIN NODES (below anchor, connected by arrows):
+Each reminder is a rectangular card node (160x80pt). Rounded 12px. Left bar color indicates type (blue = medicine, green = meal, grey = activity). Inside: name (17pt SemiBold) + offset label (e.g., '5 min BEFORE' in amber, '30 min AFTER' in blue) + small type icon. Nodes connected to anchor or to each other with directional arrows (grey line with filled arrowhead). Arrows can be straight or curved depending on layout.
+
+INTERACTION:
+Tap a node to open its detail edit sheet (slides up from bottom). Long-press + drag to reorder nodes. Arrow between nodes shows condition type: solid line = fires after DONE, dashed line = fires regardless. Tapping an arrow opens a condition picker: 'After DONE', 'After SNOOZE', 'Always', 'Only if prior was skipped'.
+
+ADD NODE BUTTON:
+At the bottom of the chain: large '+' node (dashed border, #4A90D9 tint). Tapping opens 'Add Step' bottom sheet.
+
+ZOOM / PAN:
+Canvas is zoomable and pannable for long chains. Mini-map in bottom-right corner (small overview of full chain).
+
+TEST RUN PANEL:
+Tapping 'Test Run' slides up a panel that simulates time: a timeline plays through showing exactly which notifications will fire and when, based on current setup.
+
+FEEL: Powerful but visually calm. Looks like a simple flowchart, not a complex engineering tool.
+
+P12
+Kids Mode Dashboard
+
+Screen Purpose
+Child-facing dashboard. Fun, colorful, task-based UI. Replaces the clinical card design with a gamified checklist. Parents configure this mode; children interact with it.
+
+DESIGN PROMPT
+Design the Kids Mode Dashboard for MemoCare — child-facing view for ages 6–12.
+
+IMPORTANT DESIGN SHIFT:
+Abandon the calm medical palette. Use: bright but not harsh — primary purple #7C3AED, playful green #22C55E, warm yellow #FBBF24, coral #F87171. Rounded bubbly shapes everywhere. Fun but not chaotic.
+
+HEADER:
+Animated greeting: 'Good Morning, Aryan! 🌟' in 26pt Bold purple. Small character/mascot illustration top-right (a friendly owl or robot — consistent app mascot). Below greeting: animated stars showing today's earned points.
+
+DAILY CHECKLIST (main content):
+Title: 'Your Morning Quest 🎯' in 20pt SemiBold. Each task as a large rounded card (full width, 72pt tall) with a checkmark circle left, task name center (20pt SemiBold), time label right (16pt grey). UNCHECKED: white card, grey circle. CHECKED: green fill card, white checkmark circle, task name has strikethrough. Satisfying spring animation on check.
+
+TASKS TO SHOW:
+1. Wake up and stretch (7:00 AM)
+2. Brush your teeth (7:10 AM)
+3. Have breakfast (7:25 AM)
+4. Take your vitamin (7:30 AM — after breakfast)
+5. Pack your school bag (7:45 AM)
+
+PROGRESS BAR:
+Horizontal bar below title. Colorful gradient fill (purple to green). 'Aryan has done 2 out of 5 tasks' in 15pt below bar. Small star icons fill in as tasks complete.
+
+REWARD BANNER (shown at 100% completion):
+Full-width confetti burst + big star explode animation. Text: 'Amazing! You did everything! ⭐⭐⭐' Gold card bg.
+
+PARENT VIEW TOGGLE:
+Small 'Parent View' button top-left. Requires PIN. Switches to standard adult dashboard view for parent to manage settings.
+
+FEEL: Joyful, motivating, simple. A child should instantly know what to do and feel proud doing it.
+
+
+MemoCare UI/UX Prompt Handbook — 12 Screens Covered
+Use each DESIGN PROMPT block with Figma AI, v0.dev, Uizard, Framer AI, or your design team.

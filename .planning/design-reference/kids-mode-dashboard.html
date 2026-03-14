@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#7C3AED", // Vibrant Purple
+                        "playful-green": "#22C55E",
+                        "warm-yellow": "#FBBF24",
+                        "coral-pink": "#F87171",
+                        "background-light": "#FDFCFE",
+                        "background-dark": "#13191f",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "1.5rem",
+                        "xl": "2rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<title>MemoCare Kids Mode</title>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light font-display text-slate-900 min-h-screen">
+<div class="max-w-md mx-auto min-h-screen flex flex-col pb-24 relative overflow-hidden">
+<!-- Parent View Toggle -->
+<div class="px-6 pt-6 flex justify-between items-center">
+<button class="bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 border-2 border-primary/20 hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-lg">lock</span>
+                Parent View
+            </button>
+<div class="flex items-center bg-warm-yellow/20 px-3 py-1 rounded-full border-2 border-warm-yellow/40">
+<span class="material-symbols-outlined text-warm-yellow fill-1">stars</span>
+<span class="ml-1 font-bold text-warm-yellow">125 pts</span>
+</div>
+</div>
+<!-- Header Section -->
+<header class="px-6 pt-8 pb-4 flex justify-between items-start">
+<div class="flex-1">
+<h1 class="text-[26pt] font-bold text-primary leading-tight">
+                    Good Morning, Aryan! 🌟
+                </h1>
+<div class="flex gap-1 mt-2">
+<span class="material-symbols-outlined text-warm-yellow fill-1">star</span>
+<span class="material-symbols-outlined text-warm-yellow fill-1">star</span>
+<span class="material-symbols-outlined text-warm-yellow fill-1">star</span>
+<span class="material-symbols-outlined text-slate-300">star</span>
+<span class="material-symbols-outlined text-slate-300">star</span>
+</div>
+</div>
+<div class="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center border-4 border-white shadow-lg shrink-0">
+<span class="material-symbols-outlined text-5xl text-primary">smart_toy</span>
+</div>
+</header>
+<!-- Progress Bar Section -->
+<section class="px-6 py-4">
+<div class="flex justify-between items-end mb-2">
+<h2 class="text-[20pt] font-semibold text-slate-800">Your Morning Quest 🎯</h2>
+</div>
+<div class="w-full h-6 bg-slate-200 rounded-full overflow-hidden border-2 border-white shadow-inner">
+<div class="h-full bg-gradient-to-r from-primary to-playful-green rounded-full" style="width: 40%"></div>
+</div>
+<p class="text-[15pt] mt-3 font-medium text-slate-600 flex items-center gap-2">
+<span class="material-symbols-outlined text-playful-green font-bold">check_circle</span>
+                Aryan has done 2 out of 5 tasks
+            </p>
+</section>
+<!-- Daily Checklist -->
+<main class="px-6 flex flex-col gap-4 mt-2">
+<!-- Task 1: Done -->
+<div class="h-[72pt] w-full bg-white rounded-xl shadow-sm border-2 border-playful-green/30 flex items-center px-6 transition-all">
+<div class="w-12 h-12 rounded-full bg-playful-green flex items-center justify-center text-white shrink-0">
+<span class="material-symbols-outlined text-3xl font-bold">check</span>
+</div>
+<div class="ml-4 flex-1">
+<p class="text-[20pt] font-semibold text-slate-400 line-through">Wake up and stretch</p>
+</div>
+<div class="text-[16pt] font-medium text-slate-400">7:00 AM</div>
+</div>
+<!-- Task 2: Done -->
+<div class="h-[72pt] w-full bg-white rounded-xl shadow-sm border-2 border-playful-green/30 flex items-center px-6">
+<div class="w-12 h-12 rounded-full bg-playful-green flex items-center justify-center text-white shrink-0">
+<span class="material-symbols-outlined text-3xl font-bold">check</span>
+</div>
+<div class="ml-4 flex-1">
+<p class="text-[20pt] font-semibold text-slate-400 line-through">Brush your teeth</p>
+</div>
+<div class="text-[16pt] font-medium text-slate-400">7:10 AM</div>
+</div>
+<!-- Task 3: Active -->
+<div class="h-[72pt] w-full bg-white rounded-xl shadow-md border-b-4 border-coral-pink flex items-center px-6 ring-4 ring-coral-pink/10">
+<div class="w-12 h-12 rounded-full border-4 border-slate-200 flex items-center justify-center text-slate-300 shrink-0">
+</div>
+<div class="ml-4 flex-1">
+<p class="text-[20pt] font-semibold text-slate-800">Have breakfast</p>
+</div>
+<div class="text-[16pt] font-medium text-slate-500">7:25 AM</div>
+</div>
+<!-- Task 4: Future -->
+<div class="h-[72pt] w-full bg-white rounded-xl shadow-sm border-2 border-slate-100 flex items-center px-6">
+<div class="w-12 h-12 rounded-full border-4 border-slate-100 flex items-center justify-center text-slate-200 shrink-0">
+</div>
+<div class="ml-4 flex-1">
+<p class="text-[20pt] font-semibold text-slate-800">Take your vitamin</p>
+</div>
+<div class="text-[16pt] font-medium text-slate-400">7:30 AM</div>
+</div>
+<!-- Task 5: Future -->
+<div class="h-[72pt] w-full bg-white rounded-xl shadow-sm border-2 border-slate-100 flex items-center px-6">
+<div class="w-12 h-12 rounded-full border-4 border-slate-100 flex items-center justify-center text-slate-200 shrink-0">
+</div>
+<div class="ml-4 flex-1">
+<p class="text-[20pt] font-semibold text-slate-800">Pack your school bag</p>
+</div>
+<div class="text-[16pt] font-medium text-slate-400">7:45 AM</div>
+</div>
+</main>
+<!-- Decorative Elements -->
+<div class="fixed bottom-24 right-4 pointer-events-none opacity-20">
+<span class="material-symbols-outlined text-9xl text-warm-yellow rotate-12">auto_awesome</span>
+</div>
+<!-- Kids Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t-4 border-primary/10 px-6 py-4 flex justify-between items-center rounded-t-xl shadow-2xl">
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<div class="bg-primary/20 p-2 rounded-xl">
+<span class="material-symbols-outlined text-3xl fill-1">rocket_launch</span>
+</div>
+<p class="text-xs font-bold uppercase tracking-wider">Quest</p>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<div class="p-2">
+<span class="material-symbols-outlined text-3xl">emoji_events</span>
+</div>
+<p class="text-xs font-bold uppercase tracking-wider">Prizes</p>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<div class="p-2">
+<span class="material-symbols-outlined text-3xl">face_6</span>
+</div>
+<p class="text-xs font-bold uppercase tracking-wider">Me</p>
+</a>
+</nav>
+</div>
+</body></html>

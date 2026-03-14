@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1a3c5b",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#13191f",
+                        "success": "#27AE60",
+                        "warning": "#F39C12"
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "2xl": "2rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .pulsing-glow {
+            background: radial-gradient(circle at 50% 50%, #1a3c5b 0%, #0d1e2e 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .pulsing-glow::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display antialiased">
+<div class="relative flex min-h-screen w-full flex-col bg-primary pulsing-glow p-6 text-white overflow-hidden">
+<header class="flex flex-col items-center mt-4">
+<div class="bg-white/10 backdrop-blur-md px-4 py-1.5 rounded-full mb-6 flex items-center gap-2 border border-white/20">
+<span class="material-symbols-outlined text-white text-xl">notifications_active</span>
+<span class="text-sm font-bold tracking-widest uppercase">Reminder</span>
+</div>
+<h1 class="text-[64px] font-extrabold leading-none mb-1">12:55 PM</h1>
+<p class="text-xl font-medium text-slate-300">Monday, Oct 24th</p>
+</header>
+<main class="flex-grow flex flex-col justify-center py-10">
+<div class="bg-white rounded-xl p-8 shadow-2xl flex flex-col items-center text-center">
+<div class="w-20 h-20 bg-teal-500 rounded-full flex items-center justify-center mb-6 shadow-lg shadow-teal-500/20">
+<span class="material-symbols-outlined text-white text-5xl">medication</span>
+</div>
+<div class="flex items-center gap-2 mb-2">
+<div class="flex gap-1.5">
+<div class="h-2 w-2 rounded-full bg-primary"></div>
+<div class="h-2 w-2 rounded-full bg-slate-200"></div>
+<div class="h-2 w-2 rounded-full bg-slate-200"></div>
+</div>
+<span class="text-xs font-bold text-slate-400 uppercase tracking-tighter ml-1">Step 1 of 3 today</span>
+</div>
+<h2 class="text-[32px] font-extrabold text-slate-900 leading-tight mb-2">Paracetamol 500mg</h2>
+<p class="text-lg text-slate-600 mb-6">Take before your lunch meal</p>
+<div class="w-full bg-warning/10 border border-warning/20 p-4 rounded-lg flex items-center gap-3">
+<span class="material-symbols-outlined text-warning">warning</span>
+<p class="text-warning font-bold text-left leading-tight">Your lunch window closes in 8 minutes.</p>
+</div>
+</div>
+</main>
+<footer class="flex flex-col gap-4 mb-8">
+<button class="w-full h-[88px] bg-success hover:bg-success/90 text-white rounded-xl shadow-xl flex items-center justify-center gap-3 transition-transform active:scale-95">
+<span class="material-symbols-outlined text-3xl">check_circle</span>
+<span class="text-[28px] font-bold">I've Done It</span>
+</button>
+<button class="w-full h-[88px] bg-transparent border-2 border-white/40 hover:bg-white/10 text-white rounded-xl flex items-center justify-center gap-3 transition-colors active:scale-95">
+<span class="material-symbols-outlined text-3xl">snooze</span>
+<span class="text-[24px] font-semibold">Remind me in 10 min</span>
+</button>
+<div class="flex flex-col items-center gap-4">
+<button class="h-12 text-slate-300 hover:text-white font-medium text-lg transition-colors">
+                    Skip this reminder
+                </button>
+<div class="flex flex-col items-center opacity-70">
+<div class="w-12 h-0.5 bg-white/20 mb-3 rounded-full"></div>
+<p class="text-xs text-center leading-relaxed tracking-wide">
+                        No response in 20 min will notify your caregiver.
+                    </p>
+</div>
+</div>
+</footer>
+<div aria-hidden="true" class="fixed top-0 left-0 w-full h-full pointer-events-none opacity-20">
+<div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-white rounded-full blur-[120px]"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-white rounded-full blur-[120px]"></div>
+</div>
+</div>
+</body></html>

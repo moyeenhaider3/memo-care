@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1a3c5b",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#13191f",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>MemoCare Home Dashboard</title>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen pb-24">
+<!-- Header Section -->
+<header class="p-6 bg-white dark:bg-slate-900 shadow-sm sticky top-0 z-10">
+<div class="flex items-center justify-between gap-4">
+<div class="flex items-center gap-4">
+<div class="size-14 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border-2 border-primary/20">
+<div class="bg-center bg-no-repeat bg-cover size-full" data-alt="Portrait of a smiling older man named Abdul" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuALI7f4a8Q8-WJH1AgUAW8qVGMuVFN5J6O6oncrZXoRMA8ivZ6SKmZ42k8x8Sg5mFHJxxVMZ7vRZEJ5ZS10_HoWgsn9xF4c_grVZhi5CBh5OQKiUN8HDN2u6r-6vdQbSnaiCixhMl9aZCU6nVnQIamAvyUJpwhuqngjAtW0ITfuVjooV8Qn32q5Z68scoAPf3XU_Ikbt4m1ejC1yXPqCot0jNxdHK3fXw1JPt82stZxDyXVW0oD04ERYCfcbAECw7sZn7nQea8");'></div>
+</div>
+<div>
+<h1 class="text-2xl font-bold tracking-tight">Good Morning, Abdul</h1>
+<p class="text-slate-500 dark:text-slate-400 font-medium">Monday, Oct 24th</p>
+</div>
+</div>
+<!-- Circular Progress -->
+<div class="relative size-16 flex items-center justify-center">
+<svg class="size-full -rotate-90" viewbox="0 0 36 36">
+<circle class="stroke-slate-200 dark:stroke-slate-700" cx="18" cy="18" fill="none" r="16" stroke-width="3"></circle>
+<circle class="stroke-primary" cx="18" cy="18" fill="none" r="16" stroke-dasharray="100" stroke-dashoffset="62.5" stroke-linecap="round" stroke-width="3"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-sm font-bold leading-none">3/8</span>
+<span class="text-[8px] uppercase font-bold text-slate-400">Done</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Hero Card: Next Dose -->
+<main class="p-4 space-y-6">
+<section>
+<div class="bg-primary rounded-xl p-6 text-white shadow-xl relative overflow-hidden">
+<!-- Abstract Pattern Decoration -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16"></div>
+<div class="flex justify-between items-start mb-4">
+<div class="bg-white/20 px-3 py-1 rounded-full text-xs font-bold tracking-widest uppercase">Up Next</div>
+<span class="material-symbols-outlined text-white/60">notifications_active</span>
+</div>
+<h2 class="text-3xl font-bold mb-1">Paracetamol 500mg</h2>
+<div class="flex items-center gap-2 text-primary-200 mb-6">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span class="text-lg font-medium">Today at 12:55 PM</span>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 bg-[#22c55e] hover:bg-[#16a34a] text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-colors">
+<span class="material-symbols-outlined">check_circle</span>
+                        DONE
+                    </button>
+<button class="flex-1 border-2 border-white/30 hover:bg-white/10 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-colors">
+<span class="material-symbols-outlined">alarm_off</span>
+                        SNOOZE
+                    </button>
+</div>
+</div>
+</section>
+<!-- Timeline Section -->
+<section class="space-y-4">
+<div class="flex items-center justify-between px-2">
+<h3 class="text-xl font-bold">Today's Schedule</h3>
+<button class="text-primary font-bold text-sm">View All</button>
+</div>
+<div class="relative space-y-6 px-2">
+<!-- Vertical Dotted Line -->
+<div class="absolute left-[19px] top-4 bottom-4 w-0.5 border-l-2 border-dashed border-slate-300 dark:border-slate-700"></div>
+<!-- Timeline Item: Done -->
+<div class="relative flex gap-4">
+<div class="z-10 size-10 rounded-full bg-green-100 dark:bg-green-900/30 border-4 border-background-light dark:border-background-dark flex items-center justify-center">
+<span class="material-symbols-outlined text-green-600 dark:text-green-400 text-xl font-bold">check</span>
+</div>
+<div class="flex-1 bg-white dark:bg-slate-900 p-4 rounded-lg shadow-sm border border-slate-100 dark:border-slate-800">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-bold text-lg text-slate-500 line-through decoration-slate-400">Vitamin D3</h4>
+<p class="text-slate-400 text-sm">Taken at 8:00 AM</p>
+</div>
+<span class="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded">DONE</span>
+</div>
+</div>
+</div>
+<!-- Timeline Item: Done -->
+<div class="relative flex gap-4">
+<div class="z-10 size-10 rounded-full bg-green-100 dark:bg-green-900/30 border-4 border-background-light dark:border-background-dark flex items-center justify-center">
+<span class="material-symbols-outlined text-green-600 dark:text-green-400 text-xl font-bold">check</span>
+</div>
+<div class="flex-1 bg-white dark:bg-slate-900 p-4 rounded-lg shadow-sm border border-slate-100 dark:border-slate-800">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-bold text-lg text-slate-500 line-through decoration-slate-400">Lisinopril 10mg</h4>
+<p class="text-slate-400 text-sm">Taken at 8:00 AM</p>
+</div>
+<span class="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded">DONE</span>
+</div>
+</div>
+</div>
+<!-- Timeline Item: Missed -->
+<div class="relative flex gap-4">
+<div class="z-10 size-10 rounded-full bg-red-100 dark:bg-red-900/30 border-4 border-background-light dark:border-background-dark flex items-center justify-center">
+<span class="material-symbols-outlined text-red-600 dark:text-red-400 text-xl font-bold">close</span>
+</div>
+<div class="flex-1 bg-white dark:bg-slate-900 p-4 rounded-lg shadow-sm border-l-4 border-l-red-500 border border-slate-100 dark:border-slate-800">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-bold text-lg">Metformin 500mg</h4>
+<p class="text-red-500 text-sm font-medium">Missed at 10:00 AM</p>
+</div>
+<button class="bg-primary text-white text-xs font-bold px-3 py-1.5 rounded-lg">TAKE NOW</button>
+</div>
+</div>
+</div>
+<!-- Timeline Item: Upcoming -->
+<div class="relative flex gap-4">
+<div class="z-10 size-10 rounded-full bg-slate-200 dark:bg-slate-800 border-4 border-background-light dark:border-background-dark flex items-center justify-center">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400 text-xl font-bold">hourglass_empty</span>
+</div>
+<div class="flex-1 bg-white dark:bg-slate-900 p-4 rounded-lg shadow-sm border border-slate-100 dark:border-slate-800">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="font-bold text-lg">Omega-3 Fish Oil</h4>
+<p class="text-slate-500 text-sm font-medium">Upcoming at 1:30 PM</p>
+</div>
+<span class="text-xs font-bold text-slate-500 bg-slate-100 px-2 py-1 rounded">UPCOMING</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- FAB -->
+<button class="fixed bottom-24 left-1/2 -translate-x-1/2 size-16 bg-primary text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-105 transition-transform active:scale-95 z-20">
+<span class="material-symbols-outlined text-4xl">add</span>
+</button>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-6 pb-6 pt-3 flex justify-between items-center z-10">
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined font-variation-fill text-2xl">home</span>
+<span class="text-xs font-bold">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined text-2xl">calendar_month</span>
+<span class="text-xs font-medium">Schedule</span>
+</a>
+<div class="w-12"></div> <!-- Spacer for FAB -->
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined text-2xl">pill</span>
+<span class="text-xs font-medium">Meds</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined text-2xl">person</span>
+<span class="text-xs font-medium">Profile</span>
+</a>
+</nav>
+<style>
+        .font-variation-fill {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</body></html>

@@ -11,9 +11,11 @@ import 'package:memo_care/features/confirmation/application/providers.dart';
 import 'package:memo_care/features/confirmation/domain/confirmation_service.dart';
 import 'package:memo_care/features/confirmation/domain/models/confirmation_state.dart';
 import 'package:memo_care/features/confirmation/domain/models/undoable_confirmation.dart';
+import 'package:memo_care/features/fasting/application/fasting_notifier.dart';
 import 'package:memo_care/features/history/application/history_notifier.dart';
 import 'package:memo_care/features/reminders/application/providers.dart';
 import 'package:memo_care/features/reminders/data/reminder_repository.dart';
+import 'package:memo_care/features/reminders/domain/models/medicine_type.dart';
 import 'package:memo_care/features/reminders/domain/models/reminder.dart';
 
 /// Handles user confirmation actions (DONE / SNOOZE / SKIP)
@@ -121,8 +123,18 @@ class ConfirmationNotifier extends AsyncNotifier<void> {
     List<Reminder> reminders,
   ) async {
     final scheduler = ref.read(alarmSchedulerProvider);
+    final fastingState = ref.read(fastingNotifierProvider);
+    final fastingNotifier = ref.read(fastingNotifierProvider.notifier);
+
     for (final reminder in reminders) {
       if (reminder.scheduledAt != null) {
+        final shouldSuppress = fastingNotifier.isSuppressedDuringFast(
+          scheduledAt: reminder.scheduledAt!,
+          isMealLinked: _isMealLinked(reminder),
+        );
+        if (fastingState.isActive && shouldSuppress) {
+          continue;
+        }
         await scheduler.schedule(
           reminderId: reminder.id,
           fireAt: reminder.scheduledAt!,
@@ -161,6 +173,12 @@ class ConfirmationNotifier extends AsyncNotifier<void> {
         r.copyWith(isActive: false),
       );
     }
+  }
+
+  bool _isMealLinked(Reminder reminder) {
+    return reminder.medicineType == MedicineType.beforeMeal ||
+        reminder.medicineType == MedicineType.afterMeal ||
+        reminder.medicineType == MedicineType.emptyStomach;
   }
 }
 

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Quest Completed! - MemoCare Kids</title>
+<!-- BEGIN: Scripts -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brandPurple: '#7C3AED',
+            brandLightPurple: '#F5F3FF',
+            brandYellow: '#FBBF24',
+            brandGreen: '#10B981',
+            brandCoral: '#FB7185',
+          },
+          borderRadius: {
+            '3xl': '24px',
+          }
+        }
+      }
+    }
+  </script>
+<!-- END: Scripts -->
+<!-- BEGIN: Custom Styles -->
+<style data-purpose="animations">
+    @keyframes confetti-fall {
+      0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+
+    @keyframes star-pop {
+      0% { transform: scale(0.5); opacity: 0; }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .confetti-piece {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      animation: confetti-fall 4s linear infinite;
+    }
+
+    .star-animation {
+      animation: star-pop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    .shimmer {
+      background: linear-gradient(90deg, #FBBF24 0%, #FFF 50%, #FBBF24 100%);
+      background-size: 200% auto;
+      animation: shimmer-effect 2s linear infinite;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    @keyframes shimmer-effect {
+      to { background-position: 200% center; }
+    }
+  </style>
+<style data-purpose="layout-tweaks">
+    body {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden; /* Prevent scrolling during celebration */
+    }
+    .main-card {
+      box-shadow: 0 20px 25px -5px rgba(124, 58, 237, 0.1), 0 10px 10px -5px rgba(124, 58, 237, 0.04);
+    }
+  </style>
+<!-- END: Custom Styles -->
+</head>
+<body class="bg-white min-h-screen flex items-center justify-center p-6 relative overflow-hidden">
+<!-- BEGIN: Confetti Background -->
+<div aria-hidden="true" class="absolute inset-0 pointer-events-none" id="confetti-container">
+<!-- Confetti pieces will be injected here via script -->
+</div>
+<!-- END: Confetti Background -->
+<!-- BEGIN: Completion Card -->
+<main class="w-full max-w-sm z-10" data-purpose="celebration-container">
+<div class="main-card bg-white border-4 border-brandYellow rounded-3xl p-8 flex flex-col items-center text-center relative overflow-hidden">
+<!-- Decorative background stars (static) -->
+<div class="absolute top-4 left-4 opacity-20 text-brandYellow text-4xl">★</div>
+<div class="absolute bottom-12 right-4 opacity-20 text-brandYellow text-3xl">★</div>
+<!-- BEGIN: Hero Illustration -->
+<div class="star-animation mb-8" data-purpose="star-illustration">
+<div class="relative w-48 h-48 flex items-center justify-center">
+<!-- Main Gold Star -->
+<svg class="drop-shadow-xl" fill="none" height="180" viewbox="0 0 24 24" width="180" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#FBBF24" stroke="#D97706" stroke-width="0.5"></path>
+</svg>
+<!-- Burst lines -->
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-full h-full border-4 border-dashed border-brandYellow rounded-full opacity-30 animate-spin-slow"></div>
+</div>
+</div>
+</div>
+<!-- END: Hero Illustration -->
+<!-- BEGIN: Content Text -->
+<div class="space-y-4">
+<h1 class="text-[28pt] font-bold leading-tight text-brandPurple">
+          Amazing!<br/>You did everything!
+        </h1>
+<p class="text-[18pt] font-semibold text-slate-600">
+          You earned <span class="text-brandYellow font-bold">50</span> bonus stars today!
+        </p>
+</div>
+<!-- END: Content Text -->
+<!-- BEGIN: Action Button -->
+<p class="text-brandPurple/60 text-sm font-medium italic mb-2 tracking-wide">
+          [Cheerful Fanfare &amp; Sparkle Sounds Play]
+        </p><div class="mt-12 w-full">
+<button class="w-full h-[64px] bg-brandPurple text-white text-xl font-bold rounded-full shadow-lg active:scale-95 transition-transform" data-purpose="dashboard-link">
+          Back to Dashboard
+        </button>
+</div>
+<!-- END: Action Button -->
+</div>
+</main>
+<!-- END: Completion Card -->
+<!-- BEGIN: Celebration Scripts -->
+<script data-purpose="confetti-generator">
+    const container = document.getElementById('confetti-container');
+    const colors = ['#7C3AED', '#10B981', '#FBBF24', '#FB7185'];
+    
+    function createConfetti() {
+      for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti-piece';
+        
+        // Randomize appearance and animation
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const left = Math.random() * 100 + 'vw';
+        const delay = Math.random() * 4 + 's';
+        const size = (Math.random() * 10 + 8) + 'px';
+        
+        confetti.style.backgroundColor = color;
+        confetti.style.left = left;
+        confetti.style.animationDelay = delay;
+        confetti.style.width = size;
+        confetti.style.height = size;
+        
+        container.appendChild(confetti);
+      }
+    }
+    
+    // Run confetti on load
+    window.addEventListener('load', createConfetti);
+  </script>
+<!-- END: Celebration Scripts -->
+</body></html>

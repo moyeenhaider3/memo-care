@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>MemoCare - Ramadan Mode</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#F0A500",
+                        "background-light": "#0D1B2A",
+                        "background-dark": "#0D1B2A",
+                        "card-bg": "#1A2E44",
+                        "sehri-blue": "#4A90E2",
+                        "iftar-gold": "#F0A500",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0D1B2A;
+        }
+        .stars-pattern {
+            background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light text-slate-100 font-display min-h-screen">
+<div class="relative flex min-h-screen w-full flex-col stars-pattern overflow-x-hidden">
+<header class="flex items-center bg-background-light/80 backdrop-blur-md sticky top-0 z-50 p-4 justify-between border-b border-white/5">
+<div class="flex items-center gap-3">
+<div class="text-iftar-gold flex size-10 shrink-0 items-center justify-center rounded-full bg-iftar-gold/10">
+<span class="material-symbols-outlined text-2xl">brightness_3</span>
+</div>
+<div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-tight">Ramadan Mode</h2>
+<p class="text-white/50 text-xs">Day 14 of 30</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex size-10 items-center justify-center rounded-xl bg-white/5 text-white">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="flex size-10 items-center justify-center rounded-xl bg-white/5 text-white">
+<span class="material-symbols-outlined text-xl">settings</span>
+</button>
+</div>
+</header>
+<main class="flex-1 pb-24">
+<div class="px-4 pt-4 pb-2">
+<button class="flex h-9 items-center justify-center gap-x-2 rounded-full bg-white/10 px-4 border border-white/10">
+<span class="material-symbols-outlined text-iftar-gold text-lg">location_on</span>
+<p class="text-white text-sm font-medium">Delhi, India</p>
+<span class="material-symbols-outlined text-white/40 text-lg">expand_more</span>
+</button>
+</div>
+<div class="flex gap-3 p-4">
+<div class="flex-1 flex flex-col gap-2 rounded-xl p-5 bg-card-bg border-t-2 border-sehri-blue relative overflow-hidden">
+<div class="flex justify-between items-start">
+<p class="text-white/70 text-[13px] font-medium leading-normal uppercase tracking-wider">Sehri Ends</p>
+<span class="material-symbols-outlined text-sehri-blue text-lg">nights_stay</span>
+</div>
+<p class="text-white text-3xl font-bold leading-tight mt-1">4:28 AM</p>
+<p class="text-amber-400/90 text-[13px] font-semibold leading-normal flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">schedule</span> in 1h 12m
+                    </p>
+</div>
+<div class="flex-1 flex flex-col gap-2 rounded-xl p-5 bg-card-bg border-t-2 border-iftar-gold relative overflow-hidden">
+<div class="flex justify-between items-start">
+<p class="text-white/70 text-[13px] font-medium leading-normal uppercase tracking-wider">Iftar Today</p>
+<span class="material-symbols-outlined text-iftar-gold text-lg">wb_twilight</span>
+</div>
+<p class="text-white text-3xl font-bold leading-tight mt-1">7:30 PM</p>
+<p class="text-iftar-gold text-[13px] font-semibold leading-normal flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">schedule</span> in 14h 3m
+                    </p>
+</div>
+</div>
+<div class="px-4 py-6">
+<div class="flex justify-between text-[11px] font-bold text-white/40 uppercase tracking-widest mb-3">
+<span>Sehri 4:28 AM</span>
+<span class="text-iftar-gold">44% of fast completed</span>
+<span>Iftar 7:30 PM</span>
+</div>
+<div class="relative w-full h-3 bg-white/5 rounded-full overflow-hidden border border-white/5">
+<div class="absolute top-0 left-0 h-full bg-gradient-to-r from-sehri-blue/60 to-iftar-gold rounded-full" style="width: 44%;"></div>
+<div class="absolute top-1/2 -translate-y-1/2 size-2 bg-white rounded-full shadow-[0_0_8px_rgba(255,255,255,0.8)]" style="left: 44%;"></div>
+</div>
+</div>
+<div class="px-4 mt-4">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-sehri-blue">bedtime</span>
+<h3 class="text-white text-base font-semibold">Sehri Medicines</h3>
+</div>
+<div class="relative space-y-4">
+<div class="absolute left-6 top-6 bottom-6 w-0.5 bg-gradient-to-b from-sehri-blue/50 to-sehri-blue/10"></div>
+<div class="relative flex gap-4 bg-card-bg p-4 rounded-xl border border-white/5 ml-2">
+<div class="flex size-10 shrink-0 items-center justify-center rounded-full bg-sehri-blue/20 text-sehri-blue z-10">
+<span class="material-symbols-outlined">pill</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<p class="text-white font-semibold">Metformin 500mg</p>
+<span class="text-sehri-blue text-xs font-bold px-2 py-0.5 rounded-full bg-sehri-blue/10">Taken</span>
+</div>
+<p class="text-white/50 text-sm mt-0.5">With food before fast</p>
+</div>
+</div>
+<div class="relative flex gap-4 bg-card-bg p-4 rounded-xl border border-white/5 ml-2">
+<div class="flex size-10 shrink-0 items-center justify-center rounded-full bg-white/5 text-white/40 z-10 border border-white/10">
+<span class="material-symbols-outlined">medication</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<p class="text-white font-semibold">Omega-3 Supplement</p>
+<span class="text-white/40 text-xs font-medium">3:45 AM</span>
+</div>
+<p class="text-white/50 text-sm mt-0.5">General health</p>
+</div>
+</div>
+</div>
+</div>
+<div class="px-4 mt-10">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-iftar-gold">wb_twilight</span>
+<h3 class="text-white text-base font-semibold">Iftar Medicines</h3>
+</div>
+<div class="relative space-y-4">
+<div class="absolute left-6 top-6 bottom-6 w-0.5 bg-gradient-to-b from-iftar-gold/50 to-iftar-gold/10"></div>
+<div class="relative flex gap-4 bg-card-bg p-4 rounded-xl border border-white/5 ml-2">
+<div class="flex size-10 shrink-0 items-center justify-center rounded-full bg-iftar-gold/20 text-iftar-gold z-10">
+<span class="material-symbols-outlined">pill</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<p class="text-white font-semibold">Atorvastatin 20mg</p>
+<span class="text-iftar-gold text-xs font-bold">-1 min</span>
+</div>
+<p class="text-white/50 text-sm mt-0.5">Take with first date/water</p>
+</div>
+</div>
+<div class="relative flex gap-4 bg-card-bg p-4 rounded-xl border border-white/5 ml-2 opacity-70">
+<div class="flex size-10 shrink-0 items-center justify-center rounded-full bg-white/5 text-white/40 z-10 border border-white/10">
+<span class="material-symbols-outlined">vaccines</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start">
+<p class="text-white font-semibold">Vitamin D3</p>
+<span class="text-white/40 text-xs font-medium">+30 min</span>
+</div>
+<p class="text-white/50 text-sm mt-0.5">After meal</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<nav class="fixed bottom-0 left-0 right-0 border-t border-white/5 bg-background-light/90 backdrop-blur-xl px-4 pb-6 pt-3 flex justify-between items-center z-[100]">
+<a class="flex flex-col items-center gap-1 text-white/50" href="#">
+<span class="material-symbols-outlined">home</span>
+<p class="text-[10px] font-medium tracking-wide">Home</p>
+</a>
+<a class="flex flex-col items-center gap-1 text-iftar-gold" href="#">
+<span class="material-symbols-outlined fill-[1]">brightness_3</span>
+<p class="text-[10px] font-medium tracking-wide">Fast</p>
+</a>
+<div class="relative -top-6">
+<button class="size-14 rounded-full bg-iftar-gold shadow-lg shadow-iftar-gold/20 flex items-center justify-center text-background-dark">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+</div>
+<a class="flex flex-col items-center gap-1 text-white/50" href="#">
+<span class="material-symbols-outlined">medication</span>
+<p class="text-[10px] font-medium tracking-wide">Meds</p>
+</a>
+<a class="flex flex-col items-center gap-1 text-white/50" href="#">
+<span class="material-symbols-outlined">person</span>
+<p class="text-[10px] font-medium tracking-wide">Profile</p>
+</a>
+</nav>
+</div>
+</body></html>

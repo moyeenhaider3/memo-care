@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1a3c5b",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#13191f",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<title>MemoCare - Today's Schedule</title>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<header class="bg-white dark:bg-slate-900 px-6 pt-8 pb-6 sticky top-0 z-10 shadow-sm">
+<div class="flex items-center justify-between mb-6">
+<h1 class="text-[28pt] font-bold text-primary dark:text-slate-100 leading-none">Today</h1>
+<div class="bg-[#EAF2FB] dark:bg-primary/20 px-4 py-2 rounded-full">
+<span class="text-primary dark:text-slate-200 font-bold text-lg">8 Mar</span>
+</div>
+</div>
+<div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+<div class="flex h-[36pt] shrink-0 items-center justify-center gap-x-2 rounded-full bg-emerald-100 dark:bg-emerald-900/30 px-4 border border-emerald-200 dark:border-emerald-800">
+<span class="material-symbols-outlined text-emerald-600 dark:text-emerald-400 text-xl">check_circle</span>
+<p class="text-emerald-700 dark:text-emerald-300 text-base font-semibold">5 Done</p>
+</div>
+<div class="flex h-[36pt] shrink-0 items-center justify-center gap-x-2 rounded-full bg-blue-100 dark:bg-blue-900/30 px-4 border border-blue-200 dark:border-blue-800">
+<span class="material-symbols-outlined text-blue-600 dark:text-blue-400 text-xl">schedule</span>
+<p class="text-blue-700 dark:text-blue-300 text-base font-semibold">2 Upcoming</p>
+</div>
+<div class="flex h-[36pt] shrink-0 items-center justify-center gap-x-2 rounded-full bg-rose-100 dark:bg-rose-900/30 px-4 border border-rose-200 dark:border-rose-800">
+<span class="material-symbols-outlined text-rose-600 dark:text-rose-400 text-xl">cancel</span>
+<p class="text-rose-700 dark:text-rose-300 text-base font-semibold">1 Missed</p>
+</div>
+</div>
+</header>
+<main class="relative px-4 py-8">
+<div class="absolute left-8 top-0 bottom-0 w-[2px] bg-[#E0E0E0] dark:bg-slate-700"></div>
+<div class="space-y-12">
+<div class="relative flex gap-6">
+<div class="w-12 pt-1">
+<span class="text-[13pt] font-medium text-slate-400 dark:text-slate-500 bg-background-light dark:bg-background-dark pr-2 relative z-10">8 AM</span>
+</div>
+<div class="flex-1">
+<div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden flex min-h-[100px]">
+<div class="w-2 bg-emerald-500"></div>
+<div class="p-4 flex flex-1 items-center justify-between">
+<div>
+<h3 class="text-[18pt] font-semibold text-slate-800 dark:text-slate-100 leading-tight">Blood Pressure Meds</h3>
+<p class="text-[14pt] text-slate-400 dark:text-slate-500 mt-1">8:00 AM</p>
+<p class="text-[14pt] text-slate-500 dark:text-slate-400 italic">Take with a glass of water</p>
+</div>
+<span class="material-symbols-outlined text-emerald-500 text-3xl">check_circle</span>
+</div>
+</div>
+</div>
+</div>
+<div class="relative flex gap-6">
+<div class="w-12 pt-1">
+<span class="text-[13pt] font-medium text-slate-400 dark:text-slate-500 bg-background-light dark:bg-background-dark pr-2 relative z-10">9 AM</span>
+</div>
+<div class="flex-1">
+<div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden flex min-h-[100px]">
+<div class="w-2 bg-rose-500"></div>
+<div class="p-4 flex flex-1 items-center justify-between">
+<div>
+<h3 class="text-[18pt] font-semibold text-slate-800 dark:text-slate-100 leading-tight">Morning Stretch</h3>
+<p class="text-[14pt] text-slate-400 dark:text-slate-500 mt-1">9:15 AM</p>
+<p class="text-[14pt] text-slate-500 dark:text-slate-400 italic">5 minutes of chair yoga</p>
+</div>
+<span class="material-symbols-outlined text-rose-500 text-3xl">cancel</span>
+</div>
+</div>
+</div>
+</div>
+<div class="relative flex flex-col gap-4">
+<div class="flex gap-6 items-center">
+<div class="w-12">
+<span class="text-[13pt] font-medium text-slate-400 dark:text-slate-500 bg-background-light dark:bg-background-dark pr-2 relative z-10">12 PM</span>
+</div>
+<div class="flex-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary dark:text-blue-400 text-sm">link</span>
+<span class="text-sm font-bold uppercase tracking-wider text-primary dark:text-blue-400">Lunch Chain</span>
+</div>
+</div>
+<div class="ml-14 mr-0 p-4 rounded-xl bg-[#EAF2FB] dark:bg-primary/10 border border-blue-100 dark:border-primary/20 space-y-4">
+<div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden flex min-h-[100px]">
+<div class="w-2 bg-amber-400"></div>
+<div class="p-4 flex flex-1 items-center justify-between">
+<div>
+<h3 class="text-[18pt] font-semibold text-slate-800 dark:text-slate-100 leading-tight">Eat Lunch</h3>
+<p class="text-[14pt] text-slate-400 dark:text-slate-500 mt-1">12:30 PM</p>
+<p class="text-[14pt] text-slate-500 dark:text-slate-400 italic">Nutritious meal with vegetables</p>
+</div>
+<span class="material-symbols-outlined text-amber-500 text-3xl">schedule</span>
+</div>
+</div>
+<div class="bg-white/70 dark:bg-slate-800/70 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden flex min-h-[100px] opacity-75">
+<div class="w-2 bg-slate-300 dark:bg-slate-600"></div>
+<div class="p-4 flex flex-1 items-center justify-between">
+<div>
+<h3 class="text-[18pt] font-semibold text-slate-400 dark:text-slate-500 leading-tight">Afternoon Pill</h3>
+<p class="text-[14pt] text-slate-300 dark:text-slate-600 mt-1">1:00 PM</p>
+<p class="text-[14pt] text-slate-400 dark:text-slate-600 italic">Take after finishing meal</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 dark:text-slate-600 text-3xl">lock</span>
+</div>
+</div>
+</div>
+</div>
+<div class="relative flex gap-6">
+<div class="w-12 pt-1">
+<span class="text-[13pt] font-medium text-slate-400 dark:text-slate-500 bg-background-light dark:bg-background-dark pr-2 relative z-10">4 PM</span>
+</div>
+<div class="flex-1">
+<div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden flex min-h-[100px]">
+<div class="w-2 bg-blue-400"></div>
+<div class="p-4 flex flex-1 items-center justify-between">
+<div>
+<h3 class="text-[18pt] font-semibold text-slate-800 dark:text-slate-100 leading-tight">Walk in Park</h3>
+<p class="text-[14pt] text-slate-400 dark:text-slate-500 mt-1">4:00 PM</p>
+<p class="text-[14pt] text-slate-500 dark:text-slate-400 italic">Wear comfortable shoes</p>
+</div>
+<span class="material-symbols-outlined text-blue-400 text-3xl">schedule</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<div class="fixed bottom-24 right-6">
+<button class="bg-primary hover:bg-primary/90 text-white w-16 h-16 rounded-full shadow-lg flex items-center justify-center transition-transform active:scale-95">
+<span class="material-symbols-outlined text-4xl">add</span>
+</button>
+</div>
+<nav class="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 px-6 py-3 flex justify-between items-center z-20">
+<a class="flex flex-col items-center gap-1 text-primary dark:text-blue-400" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">calendar_today</span>
+<span class="text-xs font-medium">Schedule</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined">medication</span>
+<span class="text-xs font-medium">Meds</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined">favorite</span>
+<span class="text-xs font-medium">Care</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 dark:text-slate-500" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-xs font-medium">Profile</span>
+</a>
+</nav>
+<div class="h-24"></div>
+</body></html>

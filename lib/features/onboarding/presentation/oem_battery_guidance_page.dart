@@ -201,7 +201,7 @@ class _StepCard extends StatelessWidget {
                       step.subInstruction!,
                       style: const TextStyle(
                         fontSize: 14,
-                        color: AppColors.skippedGrey,
+                        color: LegacyAppColors.skippedGrey,
                       ),
                     ),
                   ],

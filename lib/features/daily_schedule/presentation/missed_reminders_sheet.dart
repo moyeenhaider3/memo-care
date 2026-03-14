@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:memo_care/core/theme/app_theme.dart';
+import 'package:memo_care/core/theme/app_colors.dart';
+import 'package:memo_care/core/theme/app_spacing.dart';
+import 'package:memo_care/core/theme/app_typography.dart';
 import 'package:memo_care/features/confirmation/application/confirmation_notifier.dart';
 import 'package:memo_care/features/confirmation/domain/models/confirmation_state.dart';
 import 'package:memo_care/features/daily_schedule/application/daily_schedule_providers.dart';
@@ -121,7 +123,7 @@ class _MissedRemindersSheetState extends ConsumerState<MissedRemindersSheet> {
                   child: Icon(
                     Icons.warning_amber_rounded,
                     size: 32,
-                    color: AppColors.warningAmber,
+                    color: AppColors.warning,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -200,8 +202,7 @@ class _MissedRemindersSheetState extends ConsumerState<MissedRemindersSheet> {
                               child: FilledButton(
                                 onPressed: () => _markDone(reminder),
                                 style: FilledButton.styleFrom(
-                                  backgroundColor:
-                                      AppColors.doneButtonBackground,
+                                  backgroundColor: AppColors.success,
                                   foregroundColor: Colors.white,
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 16,
@@ -229,10 +230,9 @@ class _MissedRemindersSheetState extends ConsumerState<MissedRemindersSheet> {
                               child: OutlinedButton(
                                 onPressed: () => _markSkip(reminder),
                                 style: OutlinedButton.styleFrom(
-                                  foregroundColor:
-                                      AppColors.skipButtonForeground,
+                                  foregroundColor: AppColors.danger,
                                   side: const BorderSide(
-                                    color: AppColors.skipButtonForeground,
+                                    color: AppColors.danger,
                                   ),
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 16,
@@ -281,7 +281,7 @@ class _MissedRemindersSheetState extends ConsumerState<MissedRemindersSheet> {
                           ),
                         ),
                         style: FilledButton.styleFrom(
-                          backgroundColor: AppColors.doneButtonBackground,
+                          backgroundColor: AppColors.success,
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -314,9 +314,9 @@ class _MissedRemindersSheetState extends ConsumerState<MissedRemindersSheet> {
                           ),
                         ),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.skipButtonForeground,
+                          foregroundColor: AppColors.danger,
                           side: const BorderSide(
-                            color: AppColors.skipButtonForeground,
+                            color: AppColors.danger,
                             width: 2,
                           ),
                           shape: RoundedRectangleBorder(
