@@ -22,6 +22,7 @@ import 'package:memo_care/features/daily_schedule/presentation/widgets/timeline_
 import 'package:memo_care/features/daily_schedule/presentation/widgets/user_greeting_header.dart';
 import 'package:memo_care/features/fasting/application/fasting_notifier.dart';
 import 'package:memo_care/features/reminders/domain/models/reminder.dart';
+import 'package:memo_care/features/settings/application/settings_providers.dart';
 
 /// Home dashboard — greeting + progress ring + navy hero + timeline.
 class HomeScreen extends ConsumerStatefulWidget {
@@ -69,10 +70,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _handleSnooze(Reminder reminder) {
-    unawaited(_confirm(reminder, ConfirmationState.snoozed));
+    final settings = ref.read(settingsRepositoryProvider).current;
+    final snoozeUntil = DateTime.now().toUtc().add(
+      Duration(minutes: settings.snoozeDurationMinutes),
+    );
+    unawaited(
+      _confirm(reminder, ConfirmationState.snoozed, snoozeUntil: snoozeUntil),
+    );
   }
 
-  Future<void> _confirm(Reminder reminder, ConfirmationState state) async {
+  Future<void> _confirm(
+    Reminder reminder,
+    ConfirmationState state, {
+    DateTime? snoozeUntil,
+  }) async {
     final result = await ref
         .read(confirmationNotifierProvider.notifier)
         .confirm(
@@ -80,6 +91,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           chainId: reminder.chainId,
           confirmState: state,
           medicineName: reminder.medicineName,
+          snoozeUntil: snoozeUntil,
         );
 
     if (result != null && mounted) {
@@ -287,7 +299,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               sortKey: OrdinalSortKey(4.0 + reminderIndex),
                               child: ReminderListTile(
                                 reminder: reminder,
-                                confirmationStatus: null,
                                 isMissed: isMissed,
                               ),
                             );

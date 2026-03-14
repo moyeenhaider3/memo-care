@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memo_care/core/platform/alarm_callback.dart';
+import 'package:memo_care/core/providers/alarm_providers.dart';
+import 'package:memo_care/features/chain_engine/application/providers.dart';
 import 'package:memo_care/features/fasting/application/fasting_notifier.dart';
 import 'package:memo_care/features/reminders/application/add_reminder_state.dart';
 import 'package:memo_care/features/reminders/application/providers.dart';
@@ -85,16 +88,31 @@ class AddReminderNotifier extends Notifier<AddReminderState> {
         }
       }
 
-      // For now, create a single-reminder chain.
-      // The chain engine will manage linking if chainLink is true.
-      await repo.createReminder(
-        chainId: 0, // Will be assigned by chain engine
+      // Create a chain record for this reminder.
+      final chainRepo = ref.read(chainRepositoryProvider);
+      final chainId = await chainRepo.createChain(
+        name: state.name.trim(),
+      );
+
+      // Create the reminder linked to the new chain.
+      final reminderId = await repo.createReminder(
+        chainId: chainId,
         medicineName: state.name.trim(),
         medicineType: state.medicineType,
         dosage: state.dose.isNotEmpty ? '${state.dose} ${state.unit}' : null,
         scheduledAt: scheduledAt,
         isActive: true,
       );
+
+      // Schedule the alarm so it actually fires at the right time.
+      if (scheduledAt != null) {
+        final scheduler = ref.read(alarmSchedulerProvider);
+        await scheduler.schedule(
+          reminderId: reminderId,
+          fireAt: scheduledAt,
+          callbackHandle: alarmFiredCallback,
+        );
+      }
 
       state = state.copyWith(
         isSaving: false,

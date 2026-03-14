@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:memo_care/core/theme/app_colors.dart';
 import 'package:memo_care/core/theme/app_spacing.dart';
 import 'package:memo_care/core/theme/app_typography.dart';
@@ -21,8 +22,7 @@ class TemplateLibraryScreen extends ConsumerStatefulWidget {
       _TemplateLibraryScreenState();
 }
 
-class _TemplateLibraryScreenState
-    extends ConsumerState<TemplateLibraryScreen> {
+class _TemplateLibraryScreenState extends ConsumerState<TemplateLibraryScreen> {
   String _searchQuery = '';
   String _selectedCategory = 'All';
 
@@ -39,7 +39,6 @@ class _TemplateLibraryScreenState
 
   @override
   Widget build(BuildContext context) {
-    final repo = ref.read(templateRepositoryProvider);
     const allPacks = kTemplatePacks;
 
     // Filter by category
@@ -54,12 +53,11 @@ class _TemplateLibraryScreenState
     final filtered = _searchQuery.isEmpty
         ? categoryFiltered
         : categoryFiltered
-            .where(
-              (p) => p.name
-                  .toLowerCase()
-                  .contains(_searchQuery.toLowerCase()),
-            )
-            .toList();
+              .where(
+                (p) =>
+                    p.name.toLowerCase().contains(_searchQuery.toLowerCase()),
+              )
+              .toList();
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -102,11 +100,11 @@ class _TemplateLibraryScreenState
                     ),
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: AppSpacing.cardGap,
-                      crossAxisSpacing: AppSpacing.cardGap,
-                      childAspectRatio: 1.3,
-                    ),
+                          crossAxisCount: 2,
+                          mainAxisSpacing: AppSpacing.cardGap,
+                          crossAxisSpacing: AppSpacing.cardGap,
+                          childAspectRatio: 1.3,
+                        ),
                     itemCount: filtered.length,
                     itemBuilder: (context, index) {
                       final pack = filtered[index];
@@ -115,8 +113,36 @@ class _TemplateLibraryScreenState
                         onTap: () => TemplateDetailSheet.show(
                           context,
                           pack: pack,
-                          onApply: () {
-                            // TODO: apply template via service
+                          onApply: () async {
+                            final service = ref.read(
+                              templateServiceProvider,
+                            );
+                            final result = await service.apply(pack: pack);
+                            result.fold(
+                              (error) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Failed: ${error.message}',
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                              (_) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        '${pack.name} applied!',
+                                      ),
+                                    ),
+                                  );
+                                  context.go('/home');
+                                }
+                              },
+                            );
                           },
                           onCustomize: () {
                             // TODO: navigate to customization
