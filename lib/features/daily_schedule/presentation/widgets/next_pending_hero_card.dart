@@ -16,12 +16,12 @@ import 'package:memo_care/features/reminders/domain/models/reminder.dart';
 class NextPendingHeroCard extends ConsumerWidget {
   const NextPendingHeroCard({
     required this.onDone,
-    required this.onSkip,
+    required this.onSnooze,
     super.key,
   });
 
   final void Function(Reminder reminder) onDone;
-  final void Function(Reminder reminder) onSkip;
+  final void Function(Reminder reminder) onSnooze;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -34,7 +34,7 @@ class NextPendingHeroCard extends ConsumerWidget {
     return _PendingCard(
       reminder: reminder,
       onDone: () => onDone(reminder),
-      onSkip: () => onSkip(reminder),
+      onSnooze: () => onSnooze(reminder),
     );
   }
 }
@@ -82,12 +82,12 @@ class _PendingCard extends StatelessWidget {
   const _PendingCard({
     required this.reminder,
     required this.onDone,
-    required this.onSkip,
+    required this.onSnooze,
   });
 
   final Reminder reminder;
   final VoidCallback onDone;
-  final VoidCallback onSkip;
+  final VoidCallback onSnooze;
 
   @override
   Widget build(BuildContext context) {
@@ -189,7 +189,7 @@ class _PendingCard extends StatelessWidget {
                     child: SizedBox(
                       height: AppSpacing.buttonHeight,
                       child: OutlinedButton.icon(
-                        onPressed: onSkip,
+                        onPressed: onSnooze,
                         icon: const Icon(Icons.snooze, size: 24),
                         label: const Text(
                           'Snooze',

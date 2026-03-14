@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memo_care/core/platform/caregiver_service.dart';
 import 'package:memo_care/core/theme/app_colors.dart';
 import 'package:memo_care/core/theme/app_spacing.dart';
 import 'package:memo_care/core/theme/app_typography.dart';
@@ -165,12 +166,24 @@ class _SettingsBody extends ConsumerWidget {
 
         // ─── CAREGIVER ───
         CaregiverSection(
-          caregiverPhone: null,
+          caregiverPhone: settings.caregiverPhone.isEmpty
+              ? null
+              : settings.caregiverPhone,
           onAddCaregiver: () {
             // TODO: show phone input dialog
           },
-          onRemoveCaregiver: () {},
-          onSendTestAlert: () {},
+          onRemoveCaregiver: () {
+            unawaited(repo.setCaregiverPhone(''));
+          },
+          onSendTestAlert: () {
+            if (settings.caregiverPhone.isNotEmpty) {
+              unawaited(
+                CaregiverService.sendTestAlert(
+                  phoneNumber: settings.caregiverPhone,
+                ),
+              );
+            }
+          },
         ),
 
         const Divider(height: 32, indent: 16, endIndent: 16),

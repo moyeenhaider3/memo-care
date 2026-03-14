@@ -23,7 +23,10 @@ mixin _$AppSettings {
  int get audibleTimeoutMinutes;/// Whether notifications are enabled globally.
  bool get notificationsEnabled;/// Whether alarm sound is enabled.
  bool get soundEnabled;/// Whether vibration is enabled.
- bool get vibrationEnabled;
+ bool get vibrationEnabled;/// Whether large text mode is enabled.
+ bool get largeText;/// Whether high contrast mode is enabled.
+ bool get highContrast;/// Linked caregiver phone number (empty if none).
+ String get caregiverPhone;
 /// Create a copy of AppSettings
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -36,16 +39,16 @@ $AppSettingsCopyWith<AppSettings> get copyWith => _$AppSettingsCopyWithImpl<AppS
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppSettings&&(identical(other.snoozeDurationMinutes, snoozeDurationMinutes) || other.snoozeDurationMinutes == snoozeDurationMinutes)&&(identical(other.silentTimeoutMinutes, silentTimeoutMinutes) || other.silentTimeoutMinutes == silentTimeoutMinutes)&&(identical(other.audibleTimeoutMinutes, audibleTimeoutMinutes) || other.audibleTimeoutMinutes == audibleTimeoutMinutes)&&(identical(other.notificationsEnabled, notificationsEnabled) || other.notificationsEnabled == notificationsEnabled)&&(identical(other.soundEnabled, soundEnabled) || other.soundEnabled == soundEnabled)&&(identical(other.vibrationEnabled, vibrationEnabled) || other.vibrationEnabled == vibrationEnabled));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppSettings&&(identical(other.snoozeDurationMinutes, snoozeDurationMinutes) || other.snoozeDurationMinutes == snoozeDurationMinutes)&&(identical(other.silentTimeoutMinutes, silentTimeoutMinutes) || other.silentTimeoutMinutes == silentTimeoutMinutes)&&(identical(other.audibleTimeoutMinutes, audibleTimeoutMinutes) || other.audibleTimeoutMinutes == audibleTimeoutMinutes)&&(identical(other.notificationsEnabled, notificationsEnabled) || other.notificationsEnabled == notificationsEnabled)&&(identical(other.soundEnabled, soundEnabled) || other.soundEnabled == soundEnabled)&&(identical(other.vibrationEnabled, vibrationEnabled) || other.vibrationEnabled == vibrationEnabled)&&(identical(other.largeText, largeText) || other.largeText == largeText)&&(identical(other.highContrast, highContrast) || other.highContrast == highContrast)&&(identical(other.caregiverPhone, caregiverPhone) || other.caregiverPhone == caregiverPhone));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,snoozeDurationMinutes,silentTimeoutMinutes,audibleTimeoutMinutes,notificationsEnabled,soundEnabled,vibrationEnabled);
+int get hashCode => Object.hash(runtimeType,snoozeDurationMinutes,silentTimeoutMinutes,audibleTimeoutMinutes,notificationsEnabled,soundEnabled,vibrationEnabled,largeText,highContrast,caregiverPhone);
 
 @override
 String toString() {
-  return 'AppSettings(snoozeDurationMinutes: $snoozeDurationMinutes, silentTimeoutMinutes: $silentTimeoutMinutes, audibleTimeoutMinutes: $audibleTimeoutMinutes, notificationsEnabled: $notificationsEnabled, soundEnabled: $soundEnabled, vibrationEnabled: $vibrationEnabled)';
+  return 'AppSettings(snoozeDurationMinutes: $snoozeDurationMinutes, silentTimeoutMinutes: $silentTimeoutMinutes, audibleTimeoutMinutes: $audibleTimeoutMinutes, notificationsEnabled: $notificationsEnabled, soundEnabled: $soundEnabled, vibrationEnabled: $vibrationEnabled, largeText: $largeText, highContrast: $highContrast, caregiverPhone: $caregiverPhone)';
 }
 
 
@@ -56,7 +59,7 @@ abstract mixin class $AppSettingsCopyWith<$Res>  {
   factory $AppSettingsCopyWith(AppSettings value, $Res Function(AppSettings) _then) = _$AppSettingsCopyWithImpl;
 @useResult
 $Res call({
- int snoozeDurationMinutes, int silentTimeoutMinutes, int audibleTimeoutMinutes, bool notificationsEnabled, bool soundEnabled, bool vibrationEnabled
+ int snoozeDurationMinutes, int silentTimeoutMinutes, int audibleTimeoutMinutes, bool notificationsEnabled, bool soundEnabled, bool vibrationEnabled, bool largeText, bool highContrast, String caregiverPhone
 });
 
 
@@ -73,7 +76,7 @@ class _$AppSettingsCopyWithImpl<$Res>
 
 /// Create a copy of AppSettings
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? snoozeDurationMinutes = null,Object? silentTimeoutMinutes = null,Object? audibleTimeoutMinutes = null,Object? notificationsEnabled = null,Object? soundEnabled = null,Object? vibrationEnabled = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? snoozeDurationMinutes = null,Object? silentTimeoutMinutes = null,Object? audibleTimeoutMinutes = null,Object? notificationsEnabled = null,Object? soundEnabled = null,Object? vibrationEnabled = null,Object? largeText = null,Object? highContrast = null,Object? caregiverPhone = null,}) {
   return _then(_self.copyWith(
 snoozeDurationMinutes: null == snoozeDurationMinutes ? _self.snoozeDurationMinutes : snoozeDurationMinutes // ignore: cast_nullable_to_non_nullable
 as int,silentTimeoutMinutes: null == silentTimeoutMinutes ? _self.silentTimeoutMinutes : silentTimeoutMinutes // ignore: cast_nullable_to_non_nullable
@@ -81,7 +84,10 @@ as int,audibleTimeoutMinutes: null == audibleTimeoutMinutes ? _self.audibleTimeo
 as int,notificationsEnabled: null == notificationsEnabled ? _self.notificationsEnabled : notificationsEnabled // ignore: cast_nullable_to_non_nullable
 as bool,soundEnabled: null == soundEnabled ? _self.soundEnabled : soundEnabled // ignore: cast_nullable_to_non_nullable
 as bool,vibrationEnabled: null == vibrationEnabled ? _self.vibrationEnabled : vibrationEnabled // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,largeText: null == largeText ? _self.largeText : largeText // ignore: cast_nullable_to_non_nullable
+as bool,highContrast: null == highContrast ? _self.highContrast : highContrast // ignore: cast_nullable_to_non_nullable
+as bool,caregiverPhone: null == caregiverPhone ? _self.caregiverPhone : caregiverPhone // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
@@ -166,10 +172,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int snoozeDurationMinutes,  int silentTimeoutMinutes,  int audibleTimeoutMinutes,  bool notificationsEnabled,  bool soundEnabled,  bool vibrationEnabled)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int snoozeDurationMinutes,  int silentTimeoutMinutes,  int audibleTimeoutMinutes,  bool notificationsEnabled,  bool soundEnabled,  bool vibrationEnabled,  bool largeText,  bool highContrast,  String caregiverPhone)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AppSettings() when $default != null:
-return $default(_that.snoozeDurationMinutes,_that.silentTimeoutMinutes,_that.audibleTimeoutMinutes,_that.notificationsEnabled,_that.soundEnabled,_that.vibrationEnabled);case _:
+return $default(_that.snoozeDurationMinutes,_that.silentTimeoutMinutes,_that.audibleTimeoutMinutes,_that.notificationsEnabled,_that.soundEnabled,_that.vibrationEnabled,_that.largeText,_that.highContrast,_that.caregiverPhone);case _:
   return orElse();
 
 }
@@ -187,10 +193,10 @@ return $default(_that.snoozeDurationMinutes,_that.silentTimeoutMinutes,_that.aud
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int snoozeDurationMinutes,  int silentTimeoutMinutes,  int audibleTimeoutMinutes,  bool notificationsEnabled,  bool soundEnabled,  bool vibrationEnabled)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int snoozeDurationMinutes,  int silentTimeoutMinutes,  int audibleTimeoutMinutes,  bool notificationsEnabled,  bool soundEnabled,  bool vibrationEnabled,  bool largeText,  bool highContrast,  String caregiverPhone)  $default,) {final _that = this;
 switch (_that) {
 case _AppSettings():
-return $default(_that.snoozeDurationMinutes,_that.silentTimeoutMinutes,_that.audibleTimeoutMinutes,_that.notificationsEnabled,_that.soundEnabled,_that.vibrationEnabled);case _:
+return $default(_that.snoozeDurationMinutes,_that.silentTimeoutMinutes,_that.audibleTimeoutMinutes,_that.notificationsEnabled,_that.soundEnabled,_that.vibrationEnabled,_that.largeText,_that.highContrast,_that.caregiverPhone);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -207,10 +213,10 @@ return $default(_that.snoozeDurationMinutes,_that.silentTimeoutMinutes,_that.aud
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int snoozeDurationMinutes,  int silentTimeoutMinutes,  int audibleTimeoutMinutes,  bool notificationsEnabled,  bool soundEnabled,  bool vibrationEnabled)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int snoozeDurationMinutes,  int silentTimeoutMinutes,  int audibleTimeoutMinutes,  bool notificationsEnabled,  bool soundEnabled,  bool vibrationEnabled,  bool largeText,  bool highContrast,  String caregiverPhone)?  $default,) {final _that = this;
 switch (_that) {
 case _AppSettings() when $default != null:
-return $default(_that.snoozeDurationMinutes,_that.silentTimeoutMinutes,_that.audibleTimeoutMinutes,_that.notificationsEnabled,_that.soundEnabled,_that.vibrationEnabled);case _:
+return $default(_that.snoozeDurationMinutes,_that.silentTimeoutMinutes,_that.audibleTimeoutMinutes,_that.notificationsEnabled,_that.soundEnabled,_that.vibrationEnabled,_that.largeText,_that.highContrast,_that.caregiverPhone);case _:
   return null;
 
 }
@@ -222,7 +228,7 @@ return $default(_that.snoozeDurationMinutes,_that.silentTimeoutMinutes,_that.aud
 @JsonSerializable()
 
 class _AppSettings implements AppSettings {
-  const _AppSettings({this.snoozeDurationMinutes = 5, this.silentTimeoutMinutes = 2, this.audibleTimeoutMinutes = 3, this.notificationsEnabled = true, this.soundEnabled = true, this.vibrationEnabled = true});
+  const _AppSettings({this.snoozeDurationMinutes = 5, this.silentTimeoutMinutes = 2, this.audibleTimeoutMinutes = 3, this.notificationsEnabled = true, this.soundEnabled = true, this.vibrationEnabled = true, this.largeText = false, this.highContrast = false, this.caregiverPhone = ''});
   factory _AppSettings.fromJson(Map<String, dynamic> json) => _$AppSettingsFromJson(json);
 
 /// Snooze duration in minutes (VIEW-05, ESCL-02).
@@ -239,6 +245,12 @@ class _AppSettings implements AppSettings {
 @override@JsonKey() final  bool soundEnabled;
 /// Whether vibration is enabled.
 @override@JsonKey() final  bool vibrationEnabled;
+/// Whether large text mode is enabled.
+@override@JsonKey() final  bool largeText;
+/// Whether high contrast mode is enabled.
+@override@JsonKey() final  bool highContrast;
+/// Linked caregiver phone number (empty if none).
+@override@JsonKey() final  String caregiverPhone;
 
 /// Create a copy of AppSettings
 /// with the given fields replaced by the non-null parameter values.
@@ -253,16 +265,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppSettings&&(identical(other.snoozeDurationMinutes, snoozeDurationMinutes) || other.snoozeDurationMinutes == snoozeDurationMinutes)&&(identical(other.silentTimeoutMinutes, silentTimeoutMinutes) || other.silentTimeoutMinutes == silentTimeoutMinutes)&&(identical(other.audibleTimeoutMinutes, audibleTimeoutMinutes) || other.audibleTimeoutMinutes == audibleTimeoutMinutes)&&(identical(other.notificationsEnabled, notificationsEnabled) || other.notificationsEnabled == notificationsEnabled)&&(identical(other.soundEnabled, soundEnabled) || other.soundEnabled == soundEnabled)&&(identical(other.vibrationEnabled, vibrationEnabled) || other.vibrationEnabled == vibrationEnabled));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppSettings&&(identical(other.snoozeDurationMinutes, snoozeDurationMinutes) || other.snoozeDurationMinutes == snoozeDurationMinutes)&&(identical(other.silentTimeoutMinutes, silentTimeoutMinutes) || other.silentTimeoutMinutes == silentTimeoutMinutes)&&(identical(other.audibleTimeoutMinutes, audibleTimeoutMinutes) || other.audibleTimeoutMinutes == audibleTimeoutMinutes)&&(identical(other.notificationsEnabled, notificationsEnabled) || other.notificationsEnabled == notificationsEnabled)&&(identical(other.soundEnabled, soundEnabled) || other.soundEnabled == soundEnabled)&&(identical(other.vibrationEnabled, vibrationEnabled) || other.vibrationEnabled == vibrationEnabled)&&(identical(other.largeText, largeText) || other.largeText == largeText)&&(identical(other.highContrast, highContrast) || other.highContrast == highContrast)&&(identical(other.caregiverPhone, caregiverPhone) || other.caregiverPhone == caregiverPhone));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,snoozeDurationMinutes,silentTimeoutMinutes,audibleTimeoutMinutes,notificationsEnabled,soundEnabled,vibrationEnabled);
+int get hashCode => Object.hash(runtimeType,snoozeDurationMinutes,silentTimeoutMinutes,audibleTimeoutMinutes,notificationsEnabled,soundEnabled,vibrationEnabled,largeText,highContrast,caregiverPhone);
 
 @override
 String toString() {
-  return 'AppSettings(snoozeDurationMinutes: $snoozeDurationMinutes, silentTimeoutMinutes: $silentTimeoutMinutes, audibleTimeoutMinutes: $audibleTimeoutMinutes, notificationsEnabled: $notificationsEnabled, soundEnabled: $soundEnabled, vibrationEnabled: $vibrationEnabled)';
+  return 'AppSettings(snoozeDurationMinutes: $snoozeDurationMinutes, silentTimeoutMinutes: $silentTimeoutMinutes, audibleTimeoutMinutes: $audibleTimeoutMinutes, notificationsEnabled: $notificationsEnabled, soundEnabled: $soundEnabled, vibrationEnabled: $vibrationEnabled, largeText: $largeText, highContrast: $highContrast, caregiverPhone: $caregiverPhone)';
 }
 
 
@@ -273,7 +285,7 @@ abstract mixin class _$AppSettingsCopyWith<$Res> implements $AppSettingsCopyWith
   factory _$AppSettingsCopyWith(_AppSettings value, $Res Function(_AppSettings) _then) = __$AppSettingsCopyWithImpl;
 @override @useResult
 $Res call({
- int snoozeDurationMinutes, int silentTimeoutMinutes, int audibleTimeoutMinutes, bool notificationsEnabled, bool soundEnabled, bool vibrationEnabled
+ int snoozeDurationMinutes, int silentTimeoutMinutes, int audibleTimeoutMinutes, bool notificationsEnabled, bool soundEnabled, bool vibrationEnabled, bool largeText, bool highContrast, String caregiverPhone
 });
 
 
@@ -290,7 +302,7 @@ class __$AppSettingsCopyWithImpl<$Res>
 
 /// Create a copy of AppSettings
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? snoozeDurationMinutes = null,Object? silentTimeoutMinutes = null,Object? audibleTimeoutMinutes = null,Object? notificationsEnabled = null,Object? soundEnabled = null,Object? vibrationEnabled = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? snoozeDurationMinutes = null,Object? silentTimeoutMinutes = null,Object? audibleTimeoutMinutes = null,Object? notificationsEnabled = null,Object? soundEnabled = null,Object? vibrationEnabled = null,Object? largeText = null,Object? highContrast = null,Object? caregiverPhone = null,}) {
   return _then(_AppSettings(
 snoozeDurationMinutes: null == snoozeDurationMinutes ? _self.snoozeDurationMinutes : snoozeDurationMinutes // ignore: cast_nullable_to_non_nullable
 as int,silentTimeoutMinutes: null == silentTimeoutMinutes ? _self.silentTimeoutMinutes : silentTimeoutMinutes // ignore: cast_nullable_to_non_nullable
@@ -298,7 +310,10 @@ as int,audibleTimeoutMinutes: null == audibleTimeoutMinutes ? _self.audibleTimeo
 as int,notificationsEnabled: null == notificationsEnabled ? _self.notificationsEnabled : notificationsEnabled // ignore: cast_nullable_to_non_nullable
 as bool,soundEnabled: null == soundEnabled ? _self.soundEnabled : soundEnabled // ignore: cast_nullable_to_non_nullable
 as bool,vibrationEnabled: null == vibrationEnabled ? _self.vibrationEnabled : vibrationEnabled // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,largeText: null == largeText ? _self.largeText : largeText // ignore: cast_nullable_to_non_nullable
+as bool,highContrast: null == highContrast ? _self.highContrast : highContrast // ignore: cast_nullable_to_non_nullable
+as bool,caregiverPhone: null == caregiverPhone ? _self.caregiverPhone : caregiverPhone // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 

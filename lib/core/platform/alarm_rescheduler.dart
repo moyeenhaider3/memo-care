@@ -1,4 +1,7 @@
 import 'package:flutter/widgets.dart';
+import 'package:memo_care/core/database/app_database.dart';
+import 'package:memo_care/core/platform/alarm_callback.dart';
+import 'package:memo_care/core/platform/alarm_scheduler.dart';
 
 /// Entry point called by the native boot/update broadcast
 /// receivers via a headless FlutterEngine.
@@ -17,22 +20,32 @@ Future<void> rescheduleAlarmsOnBoot() async {
   // Ensure Flutter binding is initialized in headless mode.
   WidgetsFlutterBinding.ensureInitialized();
 
+  final db = AppDatabase();
   try {
-    // TODO(phukon): Wire to actual Drift DB + AlarmScheduler
-    // in Phase 04 when reminder scheduling is complete.
-    //
-    // 1. Open fresh Drift database
-    // 2. Query pending reminders
-    // 3. Separate into future (reschedule) and past (missed)
-    // 4. Reschedule future alarms via AlarmScheduler
-    // 5. Mark missed reminders for display
-    // 6. Close database
+    final allReminders = await (db.select(db.reminders)
+          ..where((r) => r.isActive.equals(true)))
+        .get();
+
+    final now = DateTime.now().toUtc();
+    final scheduler = AlarmScheduler();
+
+    for (final r in allReminders) {
+      if (r.scheduledAt != null && r.scheduledAt!.isAfter(now)) {
+        await scheduler.schedule(
+          reminderId: r.id,
+          fireAt: r.scheduledAt!,
+          callbackHandle: alarmFiredCallback,
+        );
+      }
+    }
 
     debugPrint('MemoCare: Boot rescheduler completed');
   } on Exception catch (e, st) {
     debugPrint(
       'MemoCare: Boot rescheduler failed: $e\n$st',
     );
+  } finally {
+    await db.close();
   }
 }
 

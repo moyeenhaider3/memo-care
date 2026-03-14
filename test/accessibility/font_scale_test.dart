@@ -131,7 +131,7 @@ void main() {
             child: _scaled(
               NextPendingHeroCard(
                 onDone: (_) {},
-                onSkip: (_) {},
+                onSnooze: (_) {},
               ),
             ),
           ),
@@ -156,7 +156,7 @@ void main() {
             child: _scaled(
               NextPendingHeroCard(
                 onDone: (_) {},
-                onSkip: (_) {},
+                onSnooze: (_) {},
               ),
             ),
           ),

@@ -54,7 +54,12 @@ class _OemBatteryGuidancePageState extends State<OemBatteryGuidancePage> {
       );
     }
 
-    final guidance = _guidance!;
+    final guidance = _guidance;
+    if (guidance == null) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(

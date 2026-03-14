@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:memo_care/core/theme/app_colors.dart' show AppColors;
-import 'package:memo_care/core/theme/app_theme.dart' show AppColors;
 
 // Re-export new design-system tokens so existing
 // `import 'app_theme.dart'` statements pick them up.

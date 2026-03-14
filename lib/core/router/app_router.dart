@@ -9,7 +9,7 @@ import 'package:memo_care/features/history/presentation/history_screen.dart';
 import 'package:memo_care/features/kids_mode/presentation/kids_dashboard_screen.dart';
 import 'package:memo_care/features/kids_mode/presentation/kids_reward_screen.dart';
 import 'package:memo_care/features/kids_mode/presentation/kids_reward_sound_screen.dart';
-import 'package:memo_care/features/onboarding/application/onboarding_notifier.dart';
+import 'package:memo_care/features/settings/application/settings_providers.dart';
 import 'package:memo_care/features/onboarding/presentation/anchor_step.dart';
 import 'package:memo_care/features/onboarding/presentation/condition_step.dart';
 import 'package:memo_care/features/onboarding/presentation/medicine_step.dart';
@@ -75,9 +75,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: AppRoutes.home,
     redirect: (context, state) {
-      final onboardingState = ref.read(onboardingNotifierProvider);
+      final prefs = ref.read(sharedPreferencesProvider);
       final isOnboarding = state.uri.path.startsWith(AppRoutes.onboarding);
-      final isComplete = onboardingState.isComplete;
+      final isComplete = prefs.getBool('onboarding_complete') ?? false;
 
       // Legacy /settings → /profile redirect.
       if (state.uri.path == AppRoutes.settings) {

@@ -19,11 +19,16 @@ class ReminderListTile extends StatelessWidget {
   const ReminderListTile({
     required this.reminder,
     this.confirmationStatus,
+    this.isMissed,
     super.key,
   });
 
   final Reminder reminder;
   final ConfirmationState? confirmationStatus;
+
+  /// Explicit missed flag from the schedule notifier. If null,
+  /// falls back to time-based computation.
+  final bool? isMissed;
 
   @override
   Widget build(BuildContext context) {
@@ -31,14 +36,14 @@ class ReminderListTile extends StatelessWidget {
     final timeText = reminder.scheduledAt != null
         ? timeFormat.format(reminder.scheduledAt!.toLocal())
         : '--:--';
-    final isMissed = _isMissed;
+    final missed = isMissed ?? _computeIsMissed;
 
     return Semantics(
       label:
           '${reminder.medicineName}, '
           '${reminder.dosage ?? "no dosage"}, '
           'scheduled at $timeText, '
-          'status: $_statusLabel',
+          'status: ${_statusLabel(missed)}',
       button: true,
       child: InkWell(
         onTap: () {
@@ -56,7 +61,7 @@ class ReminderListTile extends StatelessWidget {
                   Container(
                     width: 4,
                     decoration: BoxDecoration(
-                      color: _borderColor(isMissed),
+                      color: _borderColor(missed),
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -102,7 +107,7 @@ class ReminderListTile extends StatelessWidget {
                   // Status badge (pill)
                   StatusBadge(
                     status: confirmationStatus,
-                    isMissed: isMissed,
+                    isMissed: missed,
                   ),
                 ],
               ),
@@ -113,16 +118,16 @@ class ReminderListTile extends StatelessWidget {
     );
   }
 
-  Color _borderColor(bool isMissed) {
+  Color _borderColor(bool missed) {
     if (confirmationStatus == ConfirmationState.done) return AppColors.success;
     if (confirmationStatus == ConfirmationState.skipped) {
       return AppColors.skippedGrey;
     }
-    if (isMissed) return AppColors.danger;
+    if (missed) return AppColors.danger;
     return AppColors.warning;
   }
 
-  bool get _isMissed {
+  bool get _computeIsMissed {
     if (confirmationStatus == ConfirmationState.done ||
         confirmationStatus == ConfirmationState.skipped) {
       return false;
@@ -132,10 +137,10 @@ class ReminderListTile extends StatelessWidget {
     return scheduledAt.isBefore(DateTime.now().toUtc());
   }
 
-  String get _statusLabel {
+  String _statusLabel(bool missed) {
     if (confirmationStatus == ConfirmationState.done) return 'done';
     if (confirmationStatus == ConfirmationState.skipped) return 'skipped';
-    if (_isMissed) return 'missed';
+    if (missed) return 'missed';
     return 'pending';
   }
 }

@@ -1,6 +1,10 @@
+import 'dart:io' show Platform;
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:memo_care/core/platform/permission_service.dart';
 import 'package:memo_care/core/router/app_router.dart';
 import 'package:memo_care/features/onboarding/application/onboarding_notifier.dart';
 
@@ -87,17 +91,29 @@ class _PermissionStepState
     setState(() => _isRequesting = true);
 
     try {
-      // TODO(memo-care): Wire PermissionService.requestAll()
-      // Placeholder: mark all as granted for flow completion.
-      setState(() {
-        _notificationsGranted = true;
-        _exactAlarmGranted = true;
-        _batteryOptimizationGranted = true;
-      });
+      if (!kIsWeb && Platform.isAndroid) {
+        final permService = PermissionService();
+        final result = await permService.requestAllMissing();
+        if (mounted) {
+          setState(() {
+            _notificationsGranted = result.notifications;
+            _exactAlarmGranted = result.exactAlarms;
+            _batteryOptimizationGranted = result.batteryOptimization;
+          });
+        }
+      } else {
+        // Non-Android platforms: mark as granted (permissions
+        // are handled differently on iOS).
+        setState(() {
+          _notificationsGranted = true;
+          _exactAlarmGranted = true;
+          _batteryOptimizationGranted = true;
+        });
+      }
 
       ref
           .read(onboardingNotifierProvider.notifier)
-          .setPermissionsGranted(granted: true);
+          .setPermissionsGranted(granted: _allGranted);
     } finally {
       if (mounted) {
         setState(() => _isRequesting = false);

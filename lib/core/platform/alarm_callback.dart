@@ -1,8 +1,10 @@
 import 'dart:convert';
 
+import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:memo_care/core/database/app_database.dart';
+import 'package:memo_care/core/platform/alarm_scheduler.dart';
 import 'package:memo_care/core/platform/notification_service.dart';
 import 'package:memo_care/core/platform/tts_service.dart';
 import 'package:memo_care/features/escalation/domain/escalation_level.dart';
@@ -138,22 +140,66 @@ Future<void> _handleDone(int reminderId) async {
   final notifService = NotificationService();
   await notifService.initialize();
   await notifService.cancel(reminderId);
-  // TODO(memo-care): Record DONE confirmation in DB (Phase 04)
-  // TODO(memo-care): Trigger chain engine propagation (Phase 04)
+
+  final db = AppDatabase();
+  try {
+    await db.confirmationDao.insertConfirmation(
+      ConfirmationsCompanion.insert(
+        reminderId: reminderId,
+        state: 'done',
+        confirmedAt: DateTime.now().toUtc(),
+      ),
+    );
+  } finally {
+    await db.close();
+  }
 }
 
 Future<void> _handleSnooze(int reminderId) async {
   final notifService = NotificationService();
   await notifService.initialize();
   await notifService.cancel(reminderId);
-  // TODO(memo-care): Record SNOOZED confirmation in DB (Phase 04)
-  // TODO(memo-care): Reschedule alarm with snooze duration (Phase 04)
+
+  final snoozeUntil = DateTime.now().toUtc().add(const Duration(minutes: 5));
+
+  final db = AppDatabase();
+  try {
+    await db.confirmationDao.insertConfirmation(
+      ConfirmationsCompanion.insert(
+        reminderId: reminderId,
+        state: 'snoozed',
+        confirmedAt: DateTime.now().toUtc(),
+        snoozeUntil: Value(snoozeUntil),
+      ),
+    );
+  } finally {
+    await db.close();
+  }
+
+  // Reschedule alarm to fire after snooze duration.
+  final scheduler = AlarmScheduler();
+  await scheduler.schedule(
+    reminderId: reminderId,
+    fireAt: snoozeUntil,
+    callbackHandle: alarmFiredCallback,
+  );
 }
 
 Future<void> _handleSkip(int reminderId) async {
   final notifService = NotificationService();
   await notifService.initialize();
   await notifService.cancel(reminderId);
-  // TODO(memo-care): Record SKIPPED confirmation in DB (Phase 04)
-  // TODO(memo-care): Suspend downstream chain nodes (Phase 04)
+
+  final db = AppDatabase();
+  try {
+    await db.confirmationDao.insertConfirmation(
+      ConfirmationsCompanion.insert(
+        reminderId: reminderId,
+        state: 'skipped',
+        confirmedAt: DateTime.now().toUtc(),
+      ),
+    );
+  } finally {
+    await db.close();
+  }
 }

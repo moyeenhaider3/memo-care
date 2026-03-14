@@ -32,6 +32,15 @@ abstract class AppSettings with _$AppSettings {
 
     /// Whether vibration is enabled.
     @Default(true) bool vibrationEnabled,
+
+    /// Whether large text mode is enabled.
+    @Default(false) bool largeText,
+
+    /// Whether high contrast mode is enabled.
+    @Default(false) bool highContrast,
+
+    /// Linked caregiver phone number (empty if none).
+    @Default('') String caregiverPhone,
   }) = _AppSettings;
 
   /// Deserialises from JSON.

@@ -1,9 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:memo_care/features/fasting/application/fasting_state.dart';
 import 'package:memo_care/features/fasting/application/prayer_time_service.dart';
 import 'package:memo_care/features/fasting/domain/fasting_models.dart';
+import 'package:memo_care/features/reminders/application/providers.dart';
+import 'package:memo_care/features/reminders/domain/models/medicine_type.dart';
+import 'package:memo_care/features/reminders/domain/models/reminder.dart';
 import 'package:memo_care/features/settings/application/settings_providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,10 +16,12 @@ class FastingNotifier extends Notifier<FastingState> {
   static const _kFastingModeEnabled = 'settings_fasting_mode_enabled';
 
   Timer? _progressTimer;
+  StreamSubscription<List<Reminder>>? _reminderSub;
 
   @override
   FastingState build() {
     ref.onDispose(() => _progressTimer?.cancel());
+    ref.onDispose(() => _reminderSub?.cancel());
     final prefs = _readPrefsOrNull();
 
     final now = DateTime.now();
@@ -30,12 +36,22 @@ class FastingNotifier extends Notifier<FastingState> {
       _startProgressTimer();
     }
 
+    // Subscribe to the user's real reminders from the database.
+    _reminderSub?.cancel();
+    final repo = ref.read(reminderRepositoryProvider);
+    _reminderSub = repo.watchActive().listen((reminders) {
+      state = state.copyWith(
+        sehriMedicines: _sehriMedicinesFrom(reminders),
+        iftarMedicines: _iftarMedicinesFrom(reminders),
+      );
+    });
+
     return FastingState(
       isActive: isActive,
       sehriTime: sehri,
       iftarTime: iftar,
-      sehriMedicines: _defaultSehriMedicines(),
-      iftarMedicines: _defaultIftarMedicines(),
+      sehriMedicines: const [],
+      iftarMedicines: const [],
       locationName: 'Select Location',
       progressPercent: isActive ? _calcProgressWith(sehri, iftar) : 0,
     );
@@ -145,43 +161,44 @@ class FastingNotifier extends Notifier<FastingState> {
     }
   }
 
-  List<FastingMedicine> _defaultSehriMedicines() => [
-    const FastingMedicine(
-      id: 'sm1',
-      name: 'Metformin 500mg',
-      dosage: '1 tablet',
-      notes: 'With food before fast',
-      section: FastingSection.sehri,
-      scheduledTime: '4:00 AM',
-    ),
-    const FastingMedicine(
-      id: 'sm2',
-      name: 'Omega-3 Supplement',
-      dosage: '1 capsule',
-      notes: 'General health',
-      section: FastingSection.sehri,
-      scheduledTime: '3:45 AM',
-    ),
-  ];
+  /// Build [FastingMedicine] list for sehri from the user's active reminders.
+  /// Includes medicines taken before meals or on an empty stomach.
+  List<FastingMedicine> _sehriMedicinesFrom(List<Reminder> reminders) {
+    return reminders
+        .where((r) =>
+            r.medicineType == MedicineType.beforeMeal ||
+            r.medicineType == MedicineType.emptyStomach)
+        .map((r) => FastingMedicine(
+              id: 'r_${r.id}',
+              name: r.medicineName,
+              dosage: r.dosage ?? '',
+              notes: r.medicineType.ttsContext,
+              section: FastingSection.sehri,
+              scheduledTime: _formatScheduledTime(r.scheduledAt),
+            ))
+        .toList();
+  }
 
-  List<FastingMedicine> _defaultIftarMedicines() => [
-    const FastingMedicine(
-      id: 'im1',
-      name: 'Atorvastatin 20mg',
-      dosage: '1 tablet',
-      notes: 'Take with first date/water',
-      section: FastingSection.iftar,
-      scheduledTime: '-1 min',
-    ),
-    const FastingMedicine(
-      id: 'im2',
-      name: 'Vitamin D3',
-      dosage: '1 capsule',
-      notes: 'After meal',
-      section: FastingSection.iftar,
-      scheduledTime: '+30 min',
-    ),
-  ];
+  /// Build [FastingMedicine] list for iftar from the user's active reminders.
+  /// Includes medicines taken after meals.
+  List<FastingMedicine> _iftarMedicinesFrom(List<Reminder> reminders) {
+    return reminders
+        .where((r) => r.medicineType == MedicineType.afterMeal)
+        .map((r) => FastingMedicine(
+              id: 'r_${r.id}',
+              name: r.medicineName,
+              dosage: r.dosage ?? '',
+              notes: r.medicineType.ttsContext,
+              section: FastingSection.iftar,
+              scheduledTime: _formatScheduledTime(r.scheduledAt),
+            ))
+        .toList();
+  }
+
+  static String? _formatScheduledTime(DateTime? dt) {
+    if (dt == null) return null;
+    return DateFormat.jm().format(dt);
+  }
 }
 
 /// Provider — keep-alive so fasting state survives navigation.

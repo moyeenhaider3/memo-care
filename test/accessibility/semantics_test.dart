@@ -174,7 +174,7 @@ void main() {
           child: _wrap(
             NextPendingHeroCard(
               onDone: (_) {},
-              onSkip: (_) {},
+              onSnooze: (_) {},
             ),
           ),
         ),

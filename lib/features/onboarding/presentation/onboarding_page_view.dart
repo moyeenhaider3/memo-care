@@ -1,4 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memo_care/features/settings/application/settings_providers.dart';
 import 'package:memo_care/features/onboarding/presentation/pages/accessibility_page.dart';
 import 'package:memo_care/features/onboarding/presentation/pages/anchors_page.dart';
 import 'package:memo_care/features/onboarding/presentation/pages/caregiver_page.dart';
@@ -37,15 +41,16 @@ const _kCelebration = 8;
 ///   Page 6 Accessibility→ Step 6 of 7
 ///   Page 7 Caregiver    → Step 7 of 7
 ///   (Welcome & Celebration have no step label)
-class OnboardingPageView extends StatefulWidget {
+class OnboardingPageView extends ConsumerStatefulWidget {
   /// Creates an [OnboardingPageView].
   const OnboardingPageView({super.key});
 
   @override
-  State<OnboardingPageView> createState() => _OnboardingPageViewState();
+  ConsumerState<OnboardingPageView> createState() =>
+      _OnboardingPageViewState();
 }
 
-class _OnboardingPageViewState extends State<OnboardingPageView> {
+class _OnboardingPageViewState extends ConsumerState<OnboardingPageView> {
   late final PageController _ctrl;
   int _current = 0;
 
@@ -123,7 +128,9 @@ class _OnboardingPageViewState extends State<OnboardingPageView> {
               AccessibilityPage(
                 stepLabel: _stepLabel(6),
                 onNext: ({required largeText, required highContrast}) {
-                  // TODO(onboarding): Persist accessibility prefs via SettingsRepo
+                  final repo = ref.read(settingsRepositoryProvider);
+                  unawaited(repo.setLargeText(largeText));
+                  unawaited(repo.setHighContrast(highContrast));
                   _next();
                 },
               ),

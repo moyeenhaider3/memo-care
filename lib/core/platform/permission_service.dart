@@ -1,4 +1,7 @@
+import 'dart:io' show Platform;
+
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:permission_handler/permission_handler.dart';
 
 /// Result of checking all critical permissions.
@@ -55,8 +58,13 @@ class PermissionService {
   int? _sdkVersion;
 
   /// Gets the Android SDK version, cached after first call.
+  /// Returns 0 on non-Android platforms.
   Future<int> get sdkVersion async {
     if (_sdkVersion != null) return _sdkVersion!;
+    if (kIsWeb || !Platform.isAndroid) {
+      _sdkVersion = 0;
+      return 0;
+    }
     final info = await _deviceInfo.androidInfo;
     _sdkVersion = info.version.sdkInt;
     return _sdkVersion!;

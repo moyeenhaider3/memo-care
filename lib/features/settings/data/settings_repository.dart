@@ -27,6 +27,9 @@ class SettingsRepository {
   static const _kNotificationsEnabled = 'settings_notifications_enabled';
   static const _kSoundEnabled = 'settings_sound_enabled';
   static const _kVibrationEnabled = 'settings_vibration_enabled';
+  static const _kLargeText = 'settings_large_text';
+  static const _kHighContrast = 'settings_high_contrast';
+  static const _kCaregiverPhone = 'settings_caregiver_phone';
 
   /// Returns the current settings snapshot.
   AppSettings get current => _load();
@@ -81,6 +84,27 @@ class SettingsRepository {
     _notify();
   }
 
+  /// Updates large text mode.
+  Future<void> setLargeText(bool enabled) async {
+    await _prefs.setBool(_kLargeText, enabled);
+    _notify();
+  }
+
+  /// Updates high contrast mode.
+  Future<void> setHighContrast(bool enabled) async {
+    await _prefs.setBool(_kHighContrast, enabled);
+    _notify();
+  }
+
+  /// Sets the caregiver phone number.
+  Future<void> setCaregiverPhone(String phone) async {
+    await _prefs.setString(_kCaregiverPhone, phone);
+    _notify();
+  }
+
+  /// Returns the current caregiver phone number (empty if none).
+  String getCaregiverPhone() => _prefs.getString(_kCaregiverPhone) ?? '';
+
   /// Bulk update all settings at once.
   Future<void> update(AppSettings settings) async {
     await _prefs.setInt(
@@ -107,6 +131,9 @@ class SettingsRepository {
       _kVibrationEnabled,
       settings.vibrationEnabled,
     );
+    await _prefs.setBool(_kLargeText, settings.largeText);
+    await _prefs.setBool(_kHighContrast, settings.highContrast);
+    await _prefs.setString(_kCaregiverPhone, settings.caregiverPhone);
     _notify();
   }
 
@@ -118,6 +145,9 @@ class SettingsRepository {
       notificationsEnabled: _prefs.getBool(_kNotificationsEnabled) ?? true,
       soundEnabled: _prefs.getBool(_kSoundEnabled) ?? true,
       vibrationEnabled: _prefs.getBool(_kVibrationEnabled) ?? true,
+      largeText: _prefs.getBool(_kLargeText) ?? false,
+      highContrast: _prefs.getBool(_kHighContrast) ?? false,
+      caregiverPhone: _prefs.getString(_kCaregiverPhone) ?? '',
     );
   }
 

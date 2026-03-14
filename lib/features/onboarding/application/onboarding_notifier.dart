@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memo_care/features/onboarding/domain/models/onboarding_state.dart';
+import 'package:memo_care/features/settings/application/settings_providers.dart';
 
 /// Manages onboarding wizard state across all steps.
 ///
@@ -100,8 +101,9 @@ class OnboardingNotifier extends Notifier<OnboardingState> {
     state = state.copyWith(caregiverPhone: phone);
   }
 
-  /// Mark onboarding as complete.
+  /// Mark onboarding as complete and persist to SharedPreferences.
   void completeOnboarding() {
+    ref.read(sharedPreferencesProvider).setBool('onboarding_complete', true);
     state = state.copyWith(
       currentStep: OnboardingStep.complete,
       isComplete: true,

@@ -1,3 +1,6 @@
+import 'dart:io' show Platform;
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memo_care/app.dart';
@@ -11,7 +14,10 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize AndroidAlarmManager before any scheduling.
-  await AlarmScheduler.initialize();
+  // Only available on Android — skip on iOS/other platforms.
+  if (!kIsWeb && Platform.isAndroid) {
+    await AlarmScheduler.initialize();
+  }
 
   // Initialize SharedPreferences before any provider reads it.
   final prefs = await SharedPreferences.getInstance();

@@ -68,8 +68,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     unawaited(_confirm(reminder, ConfirmationState.done));
   }
 
-  void _handleSkip(Reminder reminder) {
-    unawaited(_confirm(reminder, ConfirmationState.skipped));
+  void _handleSnooze(Reminder reminder) {
+    unawaited(_confirm(reminder, ConfirmationState.snoozed));
   }
 
   Future<void> _confirm(Reminder reminder, ConfirmationState state) async {
@@ -159,7 +159,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           sortKey: const OrdinalSortKey(2),
                           child: NextPendingHeroCard(
                             onDone: _handleDone,
-                            onSkip: _handleSkip,
+                            onSnooze: _handleSnooze,
                           ),
                         ),
                       ),
@@ -289,7 +289,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               sortKey: OrdinalSortKey(4.0 + reminderIndex),
                               child: ReminderListTile(
                                 reminder: reminder,
-                                confirmationStatus: isMissed ? null : null,
+                                confirmationStatus: null,
+                                isMissed: isMissed,
                               ),
                             );
                           },

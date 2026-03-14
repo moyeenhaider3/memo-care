@@ -1,4 +1,7 @@
+import 'dart:io' show Platform;
+
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 /// A step in the battery optimization disable guide.
 class OemGuidanceStep {
@@ -53,9 +56,13 @@ class OemDetector {
   String? _manufacturer;
 
   /// Gets the device manufacturer (lowercased), cached after
-  /// first call.
+  /// first call. Returns 'unknown' on non-Android platforms.
   Future<String> getManufacturer() async {
     if (_manufacturer != null) return _manufacturer!;
+    if (kIsWeb || !Platform.isAndroid) {
+      _manufacturer = 'unknown';
+      return _manufacturer!;
+    }
     final info = await _deviceInfo.androidInfo;
     _manufacturer = info.manufacturer.toLowerCase().trim();
     return _manufacturer!;
