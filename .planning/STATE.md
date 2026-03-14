@@ -3,15 +3,47 @@
 ## Project Reference
 
 **Core value:** Linked Reminder Chains that fire based on user confirmation, not just clock time.
-**Current focus:** Phase 10 — Design System + Core UI Revamp (executing).
+**Current focus:** Post-audit stabilization. Phases 1–10 + audit complete. Phase 11 in progress.
+**Blueprint:** `docs/MemoCare_App_Blueprint.md` — complete architecture, flows, edge cases.
 
 ## Current Position
 
-- **Stage:** Phase execution
+- **Stage:** Phase execution + audit complete
 - **Phase:** 11 of 12 — Kids Mode + Ramadan/Fasting
-- **Plan:** Phase 10 fully DONE. Starting Phase 11 (11-01 Kids Dashboard)
-- **Progress:** [████████████░] 90% (Phases 01-10 done, Phase 11 in progress)
-- **Current Wave:** Phase 11 Wave 1 (11-01, 11-02)
+- **Plan:** Phase 10 fully DONE. Audit complete. Phase 11 Wave 1 next.
+- **Progress:** [█████████████░] 92% (Phases 01-10 done, audit done, Phase 11 ~50%)
+- **Current Wave:** Phase 11 Wave 1 (11-01 Kids Dashboard, 11-02 Kids Rewards)
+- **Tests:** 212 passing, 0 failures
+- **Analysis:** 0 errors, ~10 warnings (pre-existing), ~80 infos
+
+## Audit Summary (March 2026)
+
+Full codebase audit completed. 12 critical + 15 medium issues found and fixed in 2 commits:
+
+### Fixed Issues
+
+- **Platform crashes:** iOS crash guards added to main.dart, oem_detector.dart, permission_service.dart
+- **Logic bugs:** Snooze-calls-skip (hero card), null confirmation status, progress ring miscount
+- **Persistence gaps:** Notification callbacks now write to DB (DONE/SNOOZE/SKIP), boot rescheduler implemented, onboarding + accessibility prefs persisted to SharedPreferences
+- **Features wired:** CaregiverService for WhatsApp alerts (new file), actual permission requests in onboarding, fasting medicines from real DB (not hardcoded), caregiver alerts on missed reminders
+- **Code cleanup:** Dead legacy onboarding routes removed, self-import in app_theme fixed, firstWhere safety in anchor_notifier
+- **Test fixes:** All API changes reflected in tests, flaky font_scale test fixed with proper provider mocks
+
+### Files Created
+
+- `lib/core/platform/caregiver_service.dart` — WhatsApp notification service
+
+### Files Modified (30 files)
+
+- lib/main.dart, lib/core/platform/alarm_callback.dart, alarm_rescheduler.dart, oem_detector.dart, permission_service.dart
+- lib/core/router/app_router.dart, lib/core/theme/app_theme.dart
+- lib/features/daily_schedule/\* (home_screen, hero_card, reminder_list_tile, notifier, providers)
+- lib/features/onboarding/\* (notifier, page_view, permission_step, oem_guidance)
+- lib/features/settings/\* (repository, model, screen)
+- lib/features/fasting/application/fasting_notifier.dart
+- lib/features/anchors/application/anchor_notifier.dart
+- pubspec.yaml (added url_launcher)
+- test/\* (widget_test, font_scale_test, semantics_test)
 
 ## Plan Summary
 
@@ -54,17 +86,30 @@
 | exec  | Router wiring (/schedule, /add-reminder, /templates) | ✅ Done       |
 | exec  | Phase 10-09 Onboarding Revamp (9-step PageView)      | ✅ Done       |
 | test  | Full test suite after Phase 10                       | ✅ 183 passed |
+| audit | Full codebase audit + critical fixes                 | ✅ 212 pass   |
+| doc   | `docs/MemoCare_App_Blueprint.md`                     | ✅ Created    |
 
 ## Next Steps
 
-| Action                           | Command / Notes                            |
-| -------------------------------- | ------------------------------------------ |
-| ✅ Phase 10-01 Design System     | DONE — AppColors, AppTypography, 5-tab nav |
-| ✅ Execute Wave 2: 10-02 → 10-08 | DONE — core screen revamps completed       |
-| ✅ Phase 10-09 Onboarding        | DONE — 9-step PageView merged flow         |
-| Next: Phase 11 Wave 1            | 11-01 Kids Dashboard, 11-02 Kids Rewards   |
-| Then: Phase 11 Wave 2            | 11-03 Ramadan Screen, 11-04 Fasting Logic  |
-| Then: Phase 12                   | Chain Builder + Voice Mode                 |
+| Action                    | Command / Notes                           |
+| ------------------------- | ----------------------------------------- |
+| ✅ Phase 10 Design System | DONE                                      |
+| ✅ Codebase Audit         | DONE — 12 critical + 15 medium fixed      |
+| ✅ App Blueprint Document | DONE — docs/MemoCare_App_Blueprint.md     |
+| Next: Phase 11 Wave 1     | 11-01 Kids Dashboard, 11-02 Kids Rewards  |
+| Then: Phase 11 Wave 2     | 11-03 Ramadan Screen, 11-04 Fasting Logic |
+| Then: Phase 12            | Chain Builder + Voice Mode                |
+
+## Known Remaining Issues (Lower Priority)
+
+| Issue                               | Severity | Notes                                     |
+| ----------------------------------- | -------- | ----------------------------------------- |
+| Prayer times hardcoded for Dhaka    | Medium   | Needs geolocation + Adhan library         |
+| Kids mode data not persisted        | Medium   | Quest points reset on restart (in-memory) |
+| google_fonts may fetch over network | Low      | Consider bundling fonts as assets         |
+| No draft system for Add Reminder    | Low      | Abandoned form loses state                |
+| No cloud backup                     | Low      | Future Firebase integration               |
+| Caregiver portal (read-only)        | Deferred | Requires remote backend                   |
 
 ## Recent Decisions
 
@@ -77,8 +122,26 @@
 - Onboarding: merge profile-based (Stitch design) + condition-based (current) into combined flow
 - Voice Mode included in scope (Phase 12) despite original deferral
 - UI split into 3 phases: Phase 10 (core revamp), Phase 11 (Kids+Ramadan), Phase 12 (Chain Builder+Voice)
+- Caregiver notification: WhatsApp only (no SMS gateway), triggered on missed reminder detection
+- Background isolates: Fresh AppDatabase() per invocation, closed in finally blocks (cannot use Riverpod)
+- Router redirect: SharedPreferences check (not in-memory notifier) for onboarding guard
 
 ## Accumulated Context
+
+### Architecture
+
+- Feature-first Clean Architecture with Riverpod state management
+- 5 DB tables (ReminderChains, Reminders, ChainEdges, Confirmations, MealAnchors) via Drift SQLite
+- 13 feature modules, 18 screens, 40+ providers
+- 3 theme variants: default (navy medical), kids (purple playful), ramadan (dark navy gold)
+- Background isolate pattern for alarm callbacks and boot rescheduler
+
+### Data Flow
+
+- All data local (SQLite + SharedPreferences), zero network dependency for core features
+- Only network feature: CaregiverService WhatsApp URL via url_launcher
+- Chain Engine: DAG evaluation with LAZY (DONE: immediate children) and EAGER (SKIP: full transitive) strategies
+- Escalation: 3-tier FSM (Silent 2min → Audible 3min → Fullscreen) with wakelock + volume control
 
 ### Roadmap Evolution
 
@@ -88,7 +151,10 @@
 
 ## Pending Todos
 
-(None captured yet)
+- Persist kids mode quest data to SharedPreferences or SQLite
+- Add geolocation-based prayer time calculation (replace Dhaka hardcode)
+- Implement cloud backup toggle (Firebase Firestore, deferred)
+- Add draft/autosave for Add Reminder form
 
 ## Blockers / Concerns
 
@@ -99,13 +165,12 @@
 ## Session Continuity
 
 Last session: 2026-03-14
-Stopped at: Phase 10 fully DONE (183 tests passing). Starting Phase 11.
-Total tests: 183 passing (full suite green after Phase 10 execution)
-10-09 artifacts: onboarding_page_view.dart + 9 page files (welcome, profile_type, condition, template, anchors, medicines, accessibility, caregiver, celebration)
-Phase 03 commits: 03-01 through 03-08 all committed to main branch
-Design reference: 16 Stitch HTML screens downloaded to `.planning/design-reference/`
+Stopped at: Full audit complete, blueprint created. Phase 11 next.
+Total tests: 212 passing (0 failures)
+Audit commits: 2 commits on main (c3fcedc, dba9d52)
+Blueprint: docs/MemoCare_App_Blueprint.md (complete architecture, all flows, edge cases)
+Design reference: 16 Stitch HTML screens in `.planning/design-reference/`
 Design comparison: `.planning/design-reference/DESIGN_VS_CODE_COMPARISON.md` (1020 lines)
 Planning rules: `.planning/PLANNING_RULES.md` (14 rules for Phases 10-12)
-Phase 10 plans: 9 plans (10-01 through 10-09), Wave 1→2→3
 Phase 11 plans: 4 plans (11-01 through 11-04), Wave 1→2
 Phase 12 plans: 4 plans (12-01 through 12-04), Wave 1→2
