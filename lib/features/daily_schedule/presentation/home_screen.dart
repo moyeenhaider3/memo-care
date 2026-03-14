@@ -115,9 +115,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
             data: (schedule) {
               final confirmedCount = schedule.todayReminders
-                  .where((r) => !schedule.missedReminders.any(
-                        (m) => m.id == r.id,
-                      ))
+                  .where(
+                    (r) => !schedule.missedReminders.any(
+                      (m) => m.id == r.id,
+                    ),
+                  )
                   .length;
 
               return SafeArea(
@@ -225,7 +227,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         child: Semantics(
                           header: true,
                           sortKey: const OrdinalSortKey(3),
-                          label: "Today's Schedule, "
+                          label:
+                              "Today's Schedule, "
                               '${schedule.todayReminders.length} items',
                           child: Padding(
                             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),

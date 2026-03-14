@@ -5,11 +5,11 @@ import 'package:memo_care/core/theme/app_colors.dart';
 import 'package:memo_care/core/theme/app_typography.dart';
 import 'package:memo_care/features/daily_schedule/application/daily_schedule_notifier.dart';
 import 'package:memo_care/features/daily_schedule/application/full_schedule_providers.dart';
-import 'package:memo_care/features/fasting/application/fasting_notifier.dart';
-import 'package:memo_care/features/fasting/application/fasting_state.dart';
 import 'package:memo_care/features/daily_schedule/presentation/widgets/hourly_timeline_item.dart';
 import 'package:memo_care/features/daily_schedule/presentation/widgets/schedule_empty_state.dart';
 import 'package:memo_care/features/daily_schedule/presentation/widgets/schedule_status_chips.dart';
+import 'package:memo_care/features/fasting/application/fasting_notifier.dart';
+import 'package:memo_care/features/fasting/application/fasting_state.dart';
 
 /// Today's Full Schedule screen — hourly timeline view.
 ///
@@ -103,12 +103,14 @@ class TodaysFullScheduleScreen extends ConsumerWidget {
         final time = DateTime(2024, 1, 1, group.hour);
         final sehriTime = fasting.sehriTime;
         final iftarTime = fasting.iftarTime;
-        final showSehriMarker = fasting.isActive &&
-          sehriTime != null &&
-          sehriTime.hour == group.hour;
-        final showIftarMarker = fasting.isActive &&
-          iftarTime != null &&
-          iftarTime.hour == group.hour;
+        final showSehriMarker =
+            fasting.isActive &&
+            sehriTime != null &&
+            sehriTime.hour == group.hour;
+        final showIftarMarker =
+            fasting.isActive &&
+            iftarTime != null &&
+            iftarTime.hour == group.hour;
         return Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
           child: Column(

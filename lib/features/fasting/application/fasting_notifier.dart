@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memo_care/features/fasting/application/prayer_time_service.dart';
 import 'package:memo_care/features/fasting/application/fasting_state.dart';
+import 'package:memo_care/features/fasting/application/prayer_time_service.dart';
 import 'package:memo_care/features/fasting/domain/fasting_models.dart';
 import 'package:memo_care/features/settings/application/settings_providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';

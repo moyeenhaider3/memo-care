@@ -12,9 +12,9 @@ import 'package:memo_care/features/confirmation/domain/models/confirmation.dart'
 import 'package:memo_care/features/confirmation/domain/snooze_limiter.dart';
 import 'package:memo_care/features/confirmation/domain/undo_confirmation_service.dart';
 import 'package:memo_care/features/fasting/application/fasting_notifier.dart';
-import 'package:memo_care/features/reminders/domain/models/medicine_type.dart';
 import 'package:memo_care/features/reminders/application/providers.dart'
     as reminder_providers;
+import 'package:memo_care/features/reminders/domain/models/medicine_type.dart';
 
 /// Provides the [ConfirmationDao] from the database singleton.
 final confirmationDaoProvider = Provider<ConfirmationDao>((ref) {
@@ -67,7 +67,8 @@ final undoConfirmationServiceProvider = Provider<UndoConfirmationService>((
     ),
     alarmScheduler: ref.watch(alarmSchedulerProvider),
     shouldSuppressSchedule: (reminder, scheduledAt) {
-      final isMealLinked = reminder.medicineType == MedicineType.beforeMeal ||
+      final isMealLinked =
+          reminder.medicineType == MedicineType.beforeMeal ||
           reminder.medicineType == MedicineType.afterMeal ||
           reminder.medicineType == MedicineType.emptyStomach;
       return fastingState.isActive &&

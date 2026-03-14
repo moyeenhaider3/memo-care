@@ -1,5 +1,5 @@
-import 'package:memo_care/features/reminders/domain/models/medicine_type.dart';
 import 'package:memo_care/features/fasting/data/ramadan_template_pack.dart';
+import 'package:memo_care/features/reminders/domain/models/medicine_type.dart';
 import 'package:memo_care/features/templates/domain/models/template_pack.dart';
 
 /// All available template packs.
@@ -169,7 +169,8 @@ const kSchoolMorningPack = TemplatePack(
 const kHydrationBoosterPack = TemplatePack(
   id: 'hydration_booster_pack',
   name: 'Hydration Booster',
-  description: 'Stay hydrated with water and electrolyte reminders throughout the day',
+  description:
+      'Stay hydrated with water and electrolyte reminders throughout the day',
   condition: 'hydration',
   medicines: [
     TemplateMedicine(

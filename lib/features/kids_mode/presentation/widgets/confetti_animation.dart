@@ -106,9 +106,10 @@ class _ConfettiPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     for (final particle in particles) {
       final paint = Paint()..color = particle.color;
-      final local = ((progress + particle.delay) % 1.0);
+      final local = (progress + particle.delay) % 1.0;
       final y = local * size.height * particle.speed;
-      final wobble = math.sin(local * math.pi * 6 + particle.wobblePhase) *
+      final wobble =
+          math.sin(local * math.pi * 6 + particle.wobblePhase) *
           size.width *
           particle.wobbleAmp;
       final x = particle.xFactor * size.width + wobble;

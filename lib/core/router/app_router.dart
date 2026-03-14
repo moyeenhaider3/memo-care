@@ -1,11 +1,14 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:memo_care/core/presentation/app_shell.dart';
 import 'package:memo_care/features/daily_schedule/presentation/chain_context_screen.dart';
 import 'package:memo_care/features/daily_schedule/presentation/home_screen.dart';
 import 'package:memo_care/features/daily_schedule/presentation/todays_full_schedule_screen.dart';
+import 'package:memo_care/features/fasting/presentation/ramadan_screen.dart';
 import 'package:memo_care/features/history/presentation/history_screen.dart';
+import 'package:memo_care/features/kids_mode/presentation/kids_dashboard_screen.dart';
+import 'package:memo_care/features/kids_mode/presentation/kids_reward_screen.dart';
+import 'package:memo_care/features/kids_mode/presentation/kids_reward_sound_screen.dart';
 import 'package:memo_care/features/onboarding/application/onboarding_notifier.dart';
 import 'package:memo_care/features/onboarding/presentation/anchor_step.dart';
 import 'package:memo_care/features/onboarding/presentation/condition_step.dart';
@@ -18,10 +21,6 @@ import 'package:memo_care/features/reminders/presentation/add_reminder_screen.da
 import 'package:memo_care/features/settings/presentation/settings_screen.dart';
 import 'package:memo_care/features/templates/presentation/template_library_screen.dart';
 import 'package:memo_care/features/templates/presentation/template_picker_screen.dart';
-import 'package:memo_care/features/fasting/presentation/ramadan_screen.dart';
-import 'package:memo_care/features/kids_mode/presentation/kids_dashboard_screen.dart';
-import 'package:memo_care/features/kids_mode/presentation/kids_reward_screen.dart';
-import 'package:memo_care/features/kids_mode/presentation/kids_reward_sound_screen.dart';
 
 /// Route path constants used across the app.
 abstract final class AppRoutes {
@@ -45,6 +44,7 @@ abstract final class AppRoutes {
   /// Standalone routes.
   static const addReminder = '/add-reminder';
   static const templates = '/templates';
+
   /// Kids Mode route.
   static const kids = '/kids';
   static const kidsReward = '/kids/reward';
@@ -52,6 +52,7 @@ abstract final class AppRoutes {
 
   /// Ramadan / Fasting Mode route.
   static const ramadan = '/ramadan';
+
   /// Legacy alias — redirects to /profile.
   @Deprecated('Use AppRoutes.profile')
   static const settings = '/settings';
@@ -116,8 +117,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: AppRoutes.schedule,
                 name: 'schedule',
-                builder: (context, state) =>
-                    const TodaysFullScheduleScreen(),
+                builder: (context, state) => const TodaysFullScheduleScreen(),
               ),
             ],
           ),

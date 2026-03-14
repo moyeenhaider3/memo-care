@@ -20,9 +20,10 @@ class _GoldStarAnimationState extends State<GoldStarAnimation>
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
-    _scale = Tween<double>(begin: 0, end: 1)
-        .chain(CurveTween(curve: Curves.elasticOut))
-        .animate(_controller);
+    _scale = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).chain(CurveTween(curve: Curves.elasticOut)).animate(_controller);
     _controller.forward();
   }
 

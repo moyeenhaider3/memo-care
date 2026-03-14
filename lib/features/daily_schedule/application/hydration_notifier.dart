@@ -6,9 +6,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class HydrationState {
   const HydrationState({
+    required this.lastUpdated,
     this.glasses = 0,
     this.target = 8,
-    required this.lastUpdated,
   });
 
   final int glasses;

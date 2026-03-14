@@ -11,8 +11,7 @@ class AddReminderNotifier extends Notifier<AddReminderState> {
   @override
   AddReminderState build() => const AddReminderState();
 
-  void setType(ReminderType type) =>
-      state = state.copyWith(reminderType: type);
+  void setType(ReminderType type) => state = state.copyWith(reminderType: type);
 
   void setName(String name) => state = state.copyWith(name: name);
 
@@ -22,8 +21,7 @@ class AddReminderNotifier extends Notifier<AddReminderState> {
 
   void setTimeMode(TimeMode mode) => state = state.copyWith(timeMode: mode);
 
-  void setFixedTime(TimeOfDay time) =>
-      state = state.copyWith(fixedTime: time);
+  void setFixedTime(TimeOfDay time) => state = state.copyWith(fixedTime: time);
 
   void setLinkedEvent(String event) =>
       state = state.copyWith(linkedEvent: event);
@@ -43,8 +41,7 @@ class AddReminderNotifier extends Notifier<AddReminderState> {
 
   void setNotes(String notes) => state = state.copyWith(notes: notes);
 
-  void toggleChainLink() =>
-      state = state.copyWith(chainLink: !state.chainLink);
+  void toggleChainLink() => state = state.copyWith(chainLink: !state.chainLink);
 
   /// Persist the reminder. Returns `true` on success.
   Future<bool> save() async {
@@ -94,9 +91,7 @@ class AddReminderNotifier extends Notifier<AddReminderState> {
         chainId: 0, // Will be assigned by chain engine
         medicineName: state.name.trim(),
         medicineType: state.medicineType,
-        dosage: state.dose.isNotEmpty
-            ? '${state.dose} ${state.unit}'
-            : null,
+        dosage: state.dose.isNotEmpty ? '${state.dose} ${state.unit}' : null,
         scheduledAt: scheduledAt,
         isActive: true,
       );
@@ -128,7 +123,8 @@ class AddReminderNotifier extends Notifier<AddReminderState> {
 }
 
 /// Provider for the Add Reminder form notifier.
-final NotifierProvider<AddReminderNotifier, AddReminderState> addReminderNotifierProvider =
+final NotifierProvider<AddReminderNotifier, AddReminderState>
+addReminderNotifierProvider =
     NotifierProvider.autoDispose<AddReminderNotifier, AddReminderState>(
-  AddReminderNotifier.new,
-);
+      AddReminderNotifier.new,
+    );

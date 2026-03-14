@@ -58,7 +58,7 @@ class UndoConfirmationService {
 
   /// Optional predicate used to suppress scheduling for specific reminders.
   final bool Function(Reminder reminder, DateTime scheduledAt)?
-      shouldSuppressSchedule;
+  shouldSuppressSchedule;
 
   /// Attempts to undo the given [undoable] confirmation.
   ///
