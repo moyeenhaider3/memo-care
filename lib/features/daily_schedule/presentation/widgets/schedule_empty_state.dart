@@ -25,9 +25,7 @@ class ScheduleEmptyState extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            allComplete
-                ? 'Rest of the day is free!'
-                : 'No reminders for today',
+            allComplete ? 'Rest of the day is free!' : 'No reminders for today',
             style: AppTypography.titleMedium.copyWith(
               color: AppColors.textPrimary,
             ),

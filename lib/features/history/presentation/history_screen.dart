@@ -1,10 +1,12 @@
-import 'dart:async';
+import 'dart:async' show unawaited;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memo_care/core/theme/app_colors.dart';
 import 'package:memo_care/core/theme/app_typography.dart';
+import 'package:memo_care/features/history/application/history_export_service.dart';
 import 'package:memo_care/features/history/application/history_notifier.dart';
+import 'package:memo_care/features/history/domain/models/history_entry.dart';
 import 'package:memo_care/features/history/presentation/widgets/compliance_donut_chart.dart';
 import 'package:memo_care/features/history/presentation/widgets/day_grouped_log.dart';
 import 'package:memo_care/features/history/presentation/widgets/export_pdf_button.dart';
@@ -25,6 +27,7 @@ class HistoryScreen extends ConsumerStatefulWidget {
 class _HistoryScreenState extends ConsumerState<HistoryScreen> {
   late DateTime _weekStart;
   DateTime? _selectedDay;
+  bool _isExportingPdf = false;
 
   @override
   void initState() {
@@ -55,6 +58,79 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     });
   }
 
+  List<HistoryEntry> _visibleHistoryEntries(List<HistoryEntry> allItems) {
+    final weekStartLocal = DateTime(
+      _weekStart.year,
+      _weekStart.month,
+      _weekStart.day,
+    );
+    final weekEndLocal = weekStartLocal.add(const Duration(days: 7));
+
+    final inWeek = allItems.where((entry) {
+      final scheduled = entry.scheduledAt.toLocal();
+      return !scheduled.isBefore(weekStartLocal) &&
+          scheduled.isBefore(weekEndLocal);
+    });
+
+    if (_selectedDay == null) {
+      return inWeek.toList();
+    }
+
+    final selected = _selectedDay!;
+    return inWeek.where((entry) {
+      final scheduled = entry.scheduledAt.toLocal();
+      return scheduled.year == selected.year &&
+          scheduled.month == selected.month &&
+          scheduled.day == selected.day;
+    }).toList();
+  }
+
+  Future<void> _exportPdf() async {
+    if (_isExportingPdf) return;
+
+    final historyState = ref.read(historyNotifierProvider).asData?.value;
+    if (historyState == null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('History is still loading. Please try again.'),
+        ),
+      );
+      return;
+    }
+
+    final visibleEntries = _visibleHistoryEntries(historyState.items);
+    if (visibleEntries.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No history entries in the selected period.'),
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isExportingPdf = true);
+    try {
+      await HistoryExportService.exportPdf(
+        entries: visibleEntries,
+        weekStart: _weekStart,
+        selectedDay: _selectedDay,
+      );
+    } on Exception catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('PDF export failed: $e'),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isExportingPdf = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final historyAsync = ref.watch(historyNotifierProvider);
@@ -73,9 +149,8 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
         centerTitle: false,
         actions: [
           ExportPdfButton(
-            onPressed: () {
-              // TODO: export PDF
-            },
+            onPressed: () => unawaited(_exportPdf()),
+            isLoading: _isExportingPdf,
           ),
         ],
       ),
@@ -100,8 +175,9 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           ),
         ),
         data: (state) {
+          final items = _visibleHistoryEntries(state.items);
+
           // Compute compliance stats from items
-          final items = state.items;
           var done = 0;
           var missed = 0;
           var skipped = 0;

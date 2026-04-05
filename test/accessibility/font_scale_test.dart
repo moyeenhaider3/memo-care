@@ -11,17 +11,16 @@ import 'package:memo_care/features/daily_schedule/presentation/widgets/next_pend
 import 'package:memo_care/features/daily_schedule/presentation/widgets/reminder_list_tile.dart';
 import 'package:memo_care/features/daily_schedule/presentation/widgets/status_badge.dart';
 import 'package:memo_care/features/escalation/presentation/fullscreen_alarm_screen.dart';
-import 'package:memo_care/features/fasting/application/fasting_notifier.dart';
-import 'package:memo_care/features/fasting/application/fasting_state.dart';
+
 import 'package:memo_care/features/reminders/domain/models/medicine_type.dart';
 import 'package:memo_care/features/reminders/domain/models/reminder.dart';
 import 'package:mocktail/mocktail.dart';
 
 // ── Mocks ──────────────────────────────────────────────
 class _MockDailyScheduleNotifier extends AsyncNotifier<DailyScheduleState>
-        // AsyncNotifier requires extends, not mixin.
+        // Test workaround for mocktail
         with
-        Mock // ignore: prefer_mixin
+                Mock // ignore: prefer_mixin // workaround
     implements DailyScheduleNotifier {
   @override
   Future<DailyScheduleState> build() async => const DailyScheduleState(
@@ -31,23 +30,18 @@ class _MockDailyScheduleNotifier extends AsyncNotifier<DailyScheduleState>
 }
 
 class _MockConfirmationNotifier extends AsyncNotifier<void>
-        // AsyncNotifier requires extends, not mixin.
+        // Test workaround for mocktail
         with
-        Mock // ignore: prefer_mixin
+                Mock // ignore: prefer_mixin // workaround
     implements ConfirmationNotifier {
   @override
   Future<void> build() async {}
 }
 
-class _MockFastingNotifier extends Notifier<FastingState>
-        with Mock // ignore: prefer_mixin
-    implements FastingNotifier {
-  @override
-  FastingState build() => const FastingState();
-}
-
 class _MockHydrationNotifier extends Notifier<HydrationState>
-        with Mock // ignore: prefer_mixin
+        // Test workaround for mocktail
+        with
+                Mock // ignore: prefer_mixin // workaround
     implements HydrationNotifier {
   @override
   HydrationState build() => HydrationState(lastUpdated: DateTime.now());
@@ -195,6 +189,7 @@ void main() {
               dosage: '1 tablet',
               scheduledTime: '9:00 AM',
               onDone: () {},
+              onSnooze: () {},
               onSkip: () {},
             ),
           ),
@@ -227,9 +222,7 @@ void main() {
               confirmationNotifierProvider.overrideWith(
                 () => confNotifier,
               ),
-              fastingNotifierProvider.overrideWith(
-                _MockFastingNotifier.new,
-              ),
+
               hydrationNotifierProvider.overrideWith(
                 _MockHydrationNotifier.new,
               ),
@@ -291,6 +284,7 @@ void main() {
               dosage: '1 tab',
               scheduledTime: '9 AM',
               onDone: () {},
+              onSnooze: () {},
               onSkip: () {},
             ),
           ),
@@ -299,20 +293,6 @@ void main() {
 
         // Action buttons now use Container (not SizedBox)
         // with height == 88 (AppSpacing.alertButtonHeight).
-        final containers = tester.widgetList<Container>(
-          find.byType(Container),
-        );
-        final tallContainers = containers.where(
-          (c) {
-            final constraints = c.constraints;
-            final h = constraints?.maxHeight;
-            // Check either explicit constraints or BoxDecoration
-            // containers with height >= 72.
-            if (h != null && h >= 72) return true;
-            // Fallback: check render object size.
-            return false;
-          },
-        );
         // The buttons are 88px containers — verify via render
         // objects that at least 2 rendered elements are >= 72dp.
         final renderBoxes = tester

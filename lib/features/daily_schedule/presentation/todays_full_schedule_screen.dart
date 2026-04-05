@@ -8,8 +8,6 @@ import 'package:memo_care/features/daily_schedule/application/full_schedule_prov
 import 'package:memo_care/features/daily_schedule/presentation/widgets/hourly_timeline_item.dart';
 import 'package:memo_care/features/daily_schedule/presentation/widgets/schedule_empty_state.dart';
 import 'package:memo_care/features/daily_schedule/presentation/widgets/schedule_status_chips.dart';
-import 'package:memo_care/features/fasting/application/fasting_notifier.dart';
-import 'package:memo_care/features/fasting/application/fasting_state.dart';
 
 /// Today's Full Schedule screen — hourly timeline view.
 ///
@@ -22,7 +20,6 @@ class TodaysFullScheduleScreen extends ConsumerWidget {
     final scheduleAsync = ref.watch(dailyScheduleNotifierProvider);
     final stats = ref.watch(scheduleStatsProvider);
     final hourlyGroups = ref.watch(hourlyGroupsProvider);
-    final fasting = ref.watch(fastingNotifierProvider);
     final dateText = DateFormat.yMMMd().format(DateTime.now());
 
     return Scaffold(
@@ -70,7 +67,7 @@ class TodaysFullScheduleScreen extends ConsumerWidget {
                   padding: const EdgeInsets.only(top: 8, bottom: 100),
                   itemCount: _itemCount(hourlyGroups),
                   itemBuilder: (context, index) {
-                    return _buildItem(hourlyGroups, index, fasting);
+                    return _buildItem(hourlyGroups, index);
                   },
                 ),
               ),
@@ -93,7 +90,6 @@ class TodaysFullScheduleScreen extends ConsumerWidget {
   Widget _buildItem(
     List<HourlyGroup> groups,
     int index,
-    FastingState fasting,
   ) {
     var current = 0;
     for (final group in groups) {
@@ -101,35 +97,13 @@ class TodaysFullScheduleScreen extends ConsumerWidget {
         // Hour header
         final hourFormat = DateFormat.j();
         final time = DateTime(2024, 1, 1, group.hour);
-        final sehriTime = fasting.sehriTime;
-        final iftarTime = fasting.iftarTime;
-        final showSehriMarker =
-            fasting.isActive &&
-            sehriTime != null &&
-            sehriTime.hour == group.hour;
-        final showIftarMarker =
-            fasting.isActive &&
-            iftarTime != null &&
-            iftarTime.hour == group.hour;
         return Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                hourFormat.format(time),
-                style: AppTypography.titleSmall.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-              ),
-              if (showSehriMarker || showIftarMarker)
-                Container(
-                  margin: const EdgeInsets.only(top: 6),
-                  height: 2,
-                  width: double.infinity,
-                  color: const Color(0xFFF0A500),
-                ),
-            ],
+          child: Text(
+            hourFormat.format(time),
+            style: AppTypography.titleSmall.copyWith(
+              color: AppColors.textSecondary,
+            ),
           ),
         );
       }

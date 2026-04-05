@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memo_care/core/providers/health_check_providers.dart';
+import 'package:memo_care/core/theme/app_colors.dart';
 import 'package:memo_care/core/theme/app_theme.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -26,7 +27,7 @@ class ChannelDisabledBanner extends ConsumerWidget {
         if (status.isHealthy) return const SizedBox.shrink();
 
         return MaterialBanner(
-          backgroundColor: LegacyAppColors.warningBackground,
+          backgroundColor: AppColors.danger,
           padding: const EdgeInsets.symmetric(
             horizontal: 16,
             vertical: 12,
@@ -67,7 +68,7 @@ class ChannelDisabledBanner extends ConsumerWidget {
               onPressed: openAppSettings,
               style: TextButton.styleFrom(
                 foregroundColor: Colors.white,
-                backgroundColor: LegacyAppColors.warningBackgroundDark,
+                backgroundColor: AppColors.danger,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 8,

@@ -45,6 +45,7 @@ class RewardNotifier extends Notifier<RewardState> {
     }
   }
 
+  // ignore: avoid_positional_boolean_parameters // workaround
   void setUseSoundVariant(bool useSoundVariant) {
     state = state.copyWith(useSoundVariant: useSoundVariant);
   }

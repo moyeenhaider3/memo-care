@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memo_care/features/settings/application/settings_providers.dart';
 import 'package:memo_care/features/onboarding/presentation/pages/accessibility_page.dart';
 import 'package:memo_care/features/onboarding/presentation/pages/anchors_page.dart';
 import 'package:memo_care/features/onboarding/presentation/pages/caregiver_page.dart';
@@ -12,19 +11,14 @@ import 'package:memo_care/features/onboarding/presentation/pages/medicines_page.
 import 'package:memo_care/features/onboarding/presentation/pages/profile_type_page.dart';
 import 'package:memo_care/features/onboarding/presentation/pages/template_page.dart';
 import 'package:memo_care/features/onboarding/presentation/pages/welcome_page.dart';
+import 'package:memo_care/features/settings/application/settings_providers.dart';
 
 /// Total number of onboarding pages.
 const _kPageCount = 9;
 
 /// Page index constants.
 const _kWelcome = 0;
-const _kProfile = 1;
-const _kCondition = 2;
-const _kTemplate = 3;
 const _kAnchors = 4;
-const _kMedicines = 5;
-const _kAccessibility = 6;
-const _kCaregiver = 7;
 const _kCelebration = 8;
 
 /// The merged 9-step onboarding experience.
@@ -46,8 +40,7 @@ class OnboardingPageView extends ConsumerStatefulWidget {
   const OnboardingPageView({super.key});
 
   @override
-  ConsumerState<OnboardingPageView> createState() =>
-      _OnboardingPageViewState();
+  ConsumerState<OnboardingPageView> createState() => _OnboardingPageViewState();
 }
 
 class _OnboardingPageViewState extends ConsumerState<OnboardingPageView> {
@@ -67,6 +60,7 @@ class _OnboardingPageViewState extends ConsumerState<OnboardingPageView> {
   }
 
   void _goTo(int page) {
+    // ignore: discarded_futures // workaround
     _ctrl.animateToPage(
       page,
       duration: const Duration(milliseconds: 350),

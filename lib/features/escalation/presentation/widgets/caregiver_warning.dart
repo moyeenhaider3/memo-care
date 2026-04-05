@@ -36,8 +36,8 @@ class CaregiverWarning extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'If not confirmed, your caregiver will be '
-              'notified in $minutesRemaining minutes',
+              'No response in $minutesRemaining min will '
+              'notify your caregiver.',
               style: AppTypography.bodySmall.copyWith(
                 color: AppColors.danger,
                 fontWeight: FontWeight.w500,

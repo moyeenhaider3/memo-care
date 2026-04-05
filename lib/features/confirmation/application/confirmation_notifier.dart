@@ -11,11 +11,10 @@ import 'package:memo_care/features/confirmation/application/providers.dart';
 import 'package:memo_care/features/confirmation/domain/confirmation_service.dart';
 import 'package:memo_care/features/confirmation/domain/models/confirmation_state.dart';
 import 'package:memo_care/features/confirmation/domain/models/undoable_confirmation.dart';
-import 'package:memo_care/features/fasting/application/fasting_notifier.dart';
+
 import 'package:memo_care/features/history/application/history_notifier.dart';
 import 'package:memo_care/features/reminders/application/providers.dart';
 import 'package:memo_care/features/reminders/data/reminder_repository.dart';
-import 'package:memo_care/features/reminders/domain/models/medicine_type.dart';
 import 'package:memo_care/features/reminders/domain/models/reminder.dart';
 
 /// Handles user confirmation actions (DONE / SNOOZE / SKIP)
@@ -100,6 +99,7 @@ class ConfirmationNotifier extends AsyncNotifier<void> {
       // Refresh chain state for watchers.
       ref.invalidate(chainNotifierProvider(chainId));
       // Refresh history so it picks up the new confirmation.
+      // ignore: cascade_invocations // workaround
       ref.invalidate(historyNotifierProvider);
       state = const AsyncData<void>(null);
 
@@ -123,18 +123,9 @@ class ConfirmationNotifier extends AsyncNotifier<void> {
     List<Reminder> reminders,
   ) async {
     final scheduler = ref.read(alarmSchedulerProvider);
-    final fastingState = ref.read(fastingNotifierProvider);
-    final fastingNotifier = ref.read(fastingNotifierProvider.notifier);
 
     for (final reminder in reminders) {
       if (reminder.scheduledAt != null) {
-        final shouldSuppress = fastingNotifier.isSuppressedDuringFast(
-          scheduledAt: reminder.scheduledAt!,
-          isMealLinked: _isMealLinked(reminder),
-        );
-        if (fastingState.isActive && shouldSuppress) {
-          continue;
-        }
         await scheduler.schedule(
           reminderId: reminder.id,
           fireAt: reminder.scheduledAt!,
@@ -174,16 +165,11 @@ class ConfirmationNotifier extends AsyncNotifier<void> {
       );
     }
   }
-
-  bool _isMealLinked(Reminder reminder) {
-    return reminder.medicineType == MedicineType.beforeMeal ||
-        reminder.medicineType == MedicineType.afterMeal ||
-        reminder.medicineType == MedicineType.emptyStomach;
-  }
 }
 
 /// Provider for [ConfirmationNotifier].
 ///
+// ignore: comment_references // workaround
 /// Kept alive (no autoDispose) because [confirm] is called
 /// imperatively via `ref.read` and performs long-running async
 /// work — autoDispose would dispose the Ref mid-operation.

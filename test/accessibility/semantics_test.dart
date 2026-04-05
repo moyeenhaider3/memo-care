@@ -20,7 +20,7 @@ import 'package:mocktail/mocktail.dart';
 class _MockDailyScheduleNotifier extends AsyncNotifier<DailyScheduleState>
         // AsyncNotifier requires extends, not mixin.
         with
-        Mock // ignore: prefer_mixin
+                Mock // ignore: prefer_mixin // workaround
     implements DailyScheduleNotifier {
   @override
   Future<DailyScheduleState> build() async => const DailyScheduleState(
@@ -202,6 +202,7 @@ void main() {
             dosage: '100 mg',
             scheduledTime: '8:00 AM',
             onDone: () {},
+            onSnooze: () {},
             onSkip: () {},
           ),
         ),
@@ -250,6 +251,7 @@ void main() {
             dosage: '100 mg',
             scheduledTime: '8:00 AM',
             onDone: () {},
+            onSnooze: () {},
             onSkip: () {},
           ),
         ),
@@ -337,6 +339,7 @@ void main() {
             dosage: '1 tab',
             scheduledTime: '9 AM',
             onDone: () {},
+            onSnooze: () {},
             onSkip: () {},
           ),
         ),

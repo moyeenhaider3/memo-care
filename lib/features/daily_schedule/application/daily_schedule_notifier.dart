@@ -60,6 +60,10 @@ class DailyScheduleNotifier extends AsyncNotifier<DailyScheduleState> {
     _missed = await missedStream.first;
     _confirmedIds = await confirmedStream.first;
 
+    // If reminders became missed while the app process was dead,
+    // dispatch caregiver alerts once on next launch.
+    _notifyCaregiverForMissed(_missed);
+
     // Set up reactive subscriptions.
     unawaited(_todaySub?.cancel());
     _todaySub = todayStream.listen((reminders) {
@@ -69,7 +73,7 @@ class DailyScheduleNotifier extends AsyncNotifier<DailyScheduleState> {
 
     unawaited(_missedSub?.cancel());
     _missedSub = missedStream.listen((missed) {
-      _notifyCaregiverForNewMissed(missed);
+      _notifyCaregiverForMissed(missed);
       _missed = missed;
       _emitState();
     });
@@ -114,31 +118,50 @@ class DailyScheduleNotifier extends AsyncNotifier<DailyScheduleState> {
     );
   }
 
-  /// Sends a WhatsApp caregiver alert for newly missed reminders.
-  void _notifyCaregiverForNewMissed(List<Reminder> newMissed) {
-    final previousIds = _missed.map((r) => r.id).toSet();
-    final freshlyMissed = newMissed.where(
-      (r) => !previousIds.contains(r.id),
-    );
-    if (freshlyMissed.isEmpty) return;
+  /// Sends WhatsApp caregiver alerts for missed reminders that have not been
+  /// alerted yet, including reminders discovered at cold-start.
+  void _notifyCaregiverForMissed(List<Reminder> missed) {
+    unawaited(_notifyCaregiverForMissedAsync(missed));
+  }
+
+  Future<void> _notifyCaregiverForMissedAsync(List<Reminder> missed) async {
+    if (missed.isEmpty) return;
 
     final settingsRepo = ref.read(settingsRepositoryProvider);
     final phone = settingsRepo.getCaregiverPhone();
-    if (phone == null || phone.isEmpty) return;
+    if (phone.isEmpty) return;
 
-    for (final reminder in freshlyMissed) {
-      unawaited(
-        CaregiverService.sendMissedReminderAlert(
+    final hasNetwork = await CaregiverService.hasNetworkConnection();
+    if (!hasNetwork) {
+      debugPrint('MemoCare: caregiver alerts deferred (offline)');
+      await settingsRepo.retainAlertedMissedReminderIds(
+        missed.map((r) => r.id).toSet(),
+      );
+      return;
+    }
+
+    final alertedIds = settingsRepo.getAlertedMissedReminderIds();
+    final pendingAlerts = missed.where((r) => !alertedIds.contains(r.id));
+
+    for (final reminder in pendingAlerts) {
+      try {
+        final launched = await CaregiverService.sendMissedReminderAlert(
           phoneNumber: phone,
           medicineName: reminder.medicineName,
           dosage: reminder.dosage,
           scheduledAt: reminder.scheduledAt ?? DateTime.now(),
-        ).catchError((Object e) {
-          debugPrint('MemoCare: Caregiver alert failed: $e');
-          return false;
-        }),
-      );
+        );
+        if (launched) {
+          await settingsRepo.markMissedReminderAlerted(reminder.id);
+        }
+      } on Exception catch (e) {
+        debugPrint('MemoCare: Caregiver alert failed: $e');
+      }
     }
+
+    await settingsRepo.retainAlertedMissedReminderIds(
+      missed.map((r) => r.id).toSet(),
+    );
   }
 }
 

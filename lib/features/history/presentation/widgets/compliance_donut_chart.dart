@@ -71,16 +71,19 @@ class ComplianceDonutChart extends StatelessWidget {
           children: [
             _LegendDot(color: AppColors.success, label: 'Done', count: done),
             const SizedBox(width: 16),
-            _LegendDot(
-                color: AppColors.danger, label: 'Missed', count: missed),
+            _LegendDot(color: AppColors.danger, label: 'Missed', count: missed),
             const SizedBox(width: 16),
             _LegendDot(
-                color: AppColors.skippedGrey,
-                label: 'Skipped',
-                count: skipped),
+              color: AppColors.skippedGrey,
+              label: 'Skipped',
+              count: skipped,
+            ),
             const SizedBox(width: 16),
             _LegendDot(
-                color: AppColors.warning, label: 'Pending', count: pending),
+              color: AppColors.warning,
+              label: 'Pending',
+              count: pending,
+            ),
           ],
         ),
       ],

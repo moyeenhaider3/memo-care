@@ -103,6 +103,7 @@ class OnboardingNotifier extends Notifier<OnboardingState> {
 
   /// Mark onboarding as complete and persist to SharedPreferences.
   void completeOnboarding() {
+    // ignore: discarded_futures // workaround
     ref.read(sharedPreferencesProvider).setBool('onboarding_complete', true);
     state = state.copyWith(
       currentStep: OnboardingStep.complete,

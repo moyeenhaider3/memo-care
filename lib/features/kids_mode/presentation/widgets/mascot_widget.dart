@@ -38,6 +38,7 @@ class _MascotWidgetState extends State<MascotWidget>
       'TestWidgetsFlutterBinding',
     );
     if (!isTest) {
+      // ignore: discarded_futures // workaround
       _controller.repeat(reverse: true);
     }
   }

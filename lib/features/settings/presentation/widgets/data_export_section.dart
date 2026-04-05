@@ -58,8 +58,9 @@ class DataExportSection extends StatelessWidget {
                       backgroundColor: AppColors.accent,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(AppSpacing.buttonRadius),
+                        borderRadius: BorderRadius.circular(
+                          AppSpacing.buttonRadius,
+                        ),
                       ),
                     ),
                   ),
@@ -77,8 +78,9 @@ class DataExportSection extends StatelessWidget {
                       foregroundColor: AppColors.accent,
                       side: const BorderSide(color: AppColors.accent),
                       shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(AppSpacing.buttonRadius),
+                        borderRadius: BorderRadius.circular(
+                          AppSpacing.buttonRadius,
+                        ),
                       ),
                     ),
                   ),

@@ -128,9 +128,6 @@ class TemplateService {
     required TemplatePack pack,
     Map<int, CustomMedicineEntry> userOverrides = const {},
     Map<String, int> mealAnchorTimes = const {},
-    bool fastingModeActive = false,
-    DateTime? sehriTime,
-    DateTime? iftarTime,
   }) async {
     // Step 1: Validate edge indices.
     for (final edge in pack.edges) {
@@ -168,9 +165,6 @@ class TemplateService {
           templateMed: med,
           override: override,
           mealAnchorTimes: mealAnchorTimes,
-          fastingModeActive: fastingModeActive,
-          sehriTime: sehriTime,
-          iftarTime: iftarTime,
         );
 
         final id = await _reminderRepo.createReminder(
@@ -228,10 +222,25 @@ class TemplateService {
         }
       }
       if (schedulable.isNotEmpty) {
-        await _alarmScheduler.scheduleAll(
+        final scheduledCount = await _alarmScheduler.scheduleAll(
           reminders: schedulable,
           callbackHandle: alarmFiredCallback,
         );
+        if (scheduledCount != schedulable.length) {
+          // Roll back persisted data and any partially armed alarms so
+          // onboarding does not succeed with a broken schedule.
+          for (final reminder in schedulable) {
+            await _alarmScheduler.cancel(reminder.reminderId);
+          }
+          await _chainRepo.deleteChain(chainId);
+          return left(
+            TemplatePersistenceFailure(
+              'Could not schedule all reminders '
+              '($scheduledCount/${schedulable.length}). '
+              'Please allow Notification and Exact Alarm permissions.',
+            ),
+          );
+        }
       }
 
       return right(
@@ -252,71 +261,31 @@ class TemplateService {
     required TemplateMedicine templateMed,
     required Map<String, int> mealAnchorTimes,
     CustomMedicineEntry? override,
-    bool fastingModeActive = false,
-    DateTime? sehriTime,
-    DateTime? iftarTime,
   }) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
 
     // Check for override time first.
     if (override?.timeMinutes != null) {
-      final scheduled = today.add(Duration(minutes: override!.timeMinutes!));
-      final isMealLinked = _isMealLinked(templateMed.medicineType);
-      if (_isSuppressedDuringFast(
-        fastingModeActive: fastingModeActive,
-        scheduledAt: scheduled,
-        isMealLinked: isMealLinked,
-        sehriTime: sehriTime,
-        iftarTime: iftarTime,
-      )) {
-        return null;
-      }
-      return scheduled;
+      return today.add(Duration(minutes: override!.timeMinutes!));
     }
 
     // Fixed-time medicines use their default time.
     if (templateMed.defaultTimeMinutes != null) {
-      final scheduled = today.add(
+      return today.add(
         Duration(minutes: templateMed.defaultTimeMinutes!),
       );
-      final isMealLinked = _isMealLinked(templateMed.medicineType);
-      if (_isSuppressedDuringFast(
-        fastingModeActive: fastingModeActive,
-        scheduledAt: scheduled,
-        isMealLinked: isMealLinked,
-        sehriTime: sehriTime,
-        iftarTime: iftarTime,
-      )) {
-        return null;
-      }
-      return scheduled;
     }
 
     // Meal-linked: compute from anchor time + offset.
     if (templateMed.anchorMeal != null) {
       final mealKey = templateMed.anchorMeal!.name;
-      DateTime? anchorTime;
-
-      // During fasting mode, remap meal anchors to Sehri/Iftar anchors.
-      if (fastingModeActive) {
-        switch (mealKey) {
-          case 'breakfast':
-            anchorTime = sehriTime;
-          case 'dinner':
-            anchorTime = iftarTime;
-          case 'lunch':
-            // Daytime meal-linked reminders are intentionally suppressed.
-            return null;
-        }
-      }
-
-      anchorTime ??= _anchorTimeFromMinutes(
+      final anchorTime = _anchorTimeFromMinutes(
         mealAnchorTimes[mealKey],
         today,
       );
       if (anchorTime != null) {
-        final scheduled = switch (templateMed.medicineType) {
+        return switch (templateMed.medicineType) {
           MedicineType.beforeMeal => anchorTime.subtract(
             const Duration(minutes: 30),
           ),
@@ -325,18 +294,6 @@ class TemplateService {
           ),
           _ => anchorTime,
         };
-
-        if (_isSuppressedDuringFast(
-          fastingModeActive: fastingModeActive,
-          scheduledAt: scheduled,
-          isMealLinked: _isMealLinked(templateMed.medicineType),
-          sehriTime: sehriTime,
-          iftarTime: iftarTime,
-        )) {
-          return null;
-        }
-
-        return scheduled;
       }
     }
 
@@ -346,23 +303,5 @@ class TemplateService {
   DateTime? _anchorTimeFromMinutes(int? minutes, DateTime today) {
     if (minutes == null) return null;
     return today.add(Duration(minutes: minutes));
-  }
-
-  bool _isMealLinked(MedicineType type) {
-    return type == MedicineType.beforeMeal ||
-        type == MedicineType.afterMeal ||
-        type == MedicineType.emptyStomach;
-  }
-
-  bool _isSuppressedDuringFast({
-    required bool fastingModeActive,
-    required DateTime scheduledAt,
-    required bool isMealLinked,
-    required DateTime? sehriTime,
-    required DateTime? iftarTime,
-  }) {
-    if (!fastingModeActive || !isMealLinked) return false;
-    if (sehriTime == null || iftarTime == null) return false;
-    return scheduledAt.isAfter(sehriTime) && scheduledAt.isBefore(iftarTime);
   }
 }

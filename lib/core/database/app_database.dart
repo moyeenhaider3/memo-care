@@ -133,6 +133,15 @@ LazyDatabase _openConnection() {
     // Required on Android to find the bundled libsqlite3.so
     await applyWorkaroundToOpenSqlite3OnOldAndroidVersions();
 
-    return NativeDatabase.createInBackground(file);
+    return NativeDatabase.createInBackground(
+      file,
+      setup: (db) {
+        // Improve concurrent read/write behavior when background
+        // callbacks and foreground UI touch SQLite at the same time.
+        db
+          ..execute('PRAGMA journal_mode = WAL;')
+          ..execute('PRAGMA busy_timeout = 5000;');
+      },
+    );
   });
 }

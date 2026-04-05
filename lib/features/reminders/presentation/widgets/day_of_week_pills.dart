@@ -46,9 +46,7 @@ class DayOfWeekPills extends StatelessWidget {
             child: Row(
               children: [
                 Icon(
-                  _everyDay
-                      ? Icons.check_circle
-                      : Icons.circle_outlined,
+                  _everyDay ? Icons.check_circle : Icons.circle_outlined,
                   color: _everyDay ? AppColors.accent : AppColors.textSecondary,
                   size: 20,
                 ),
@@ -85,9 +83,7 @@ class DayOfWeekPills extends StatelessWidget {
                     child: Text(
                       _labels[i],
                       style: AppTypography.labelLarge.copyWith(
-                        color: selected
-                            ? Colors.white
-                            : AppColors.textPrimary,
+                        color: selected ? Colors.white : AppColors.textPrimary,
                       ),
                     ),
                   ),

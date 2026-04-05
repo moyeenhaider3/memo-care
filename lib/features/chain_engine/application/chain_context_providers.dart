@@ -15,7 +15,7 @@ import 'package:memo_care/features/reminders/domain/models/medicine_type.dart';
 ///
 /// `FutureProvider.family` because chain structure changes
 /// infrequently — only on chain mutation.
-// ignore: specify_nonobvious_property_types
+// ignore: specify_nonobvious_property_types // workaround
 final chainContextProvider = FutureProvider.family<ChainContext, int>((
   ref,
   reminderId,

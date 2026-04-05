@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:memo_care/core/theme/app_colors.dart';
 import 'package:memo_care/core/theme/app_spacing.dart';
-import 'package:memo_care/core/theme/app_typography.dart';
 
 /// Export PDF/share button for the history AppBar.
 class ExportPdfButton extends StatelessWidget {

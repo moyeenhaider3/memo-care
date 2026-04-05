@@ -65,12 +65,12 @@ class _MedicinesPageState extends ConsumerState<MedicinesPage> {
   }
 
   String _typeLabel(MedicineType type) => switch (type) {
-        MedicineType.beforeMeal => 'Before Meal',
-        MedicineType.afterMeal => 'After Meal',
-        MedicineType.fixedTime => 'Fixed Time',
-        MedicineType.doseGap => 'Dose Gap',
-        MedicineType.emptyStomach => 'Empty Stomach',
-      };
+    MedicineType.beforeMeal => 'Before Meal',
+    MedicineType.afterMeal => 'After Meal',
+    MedicineType.fixedTime => 'Fixed Time',
+    MedicineType.doseGap => 'Dose Gap',
+    MedicineType.emptyStomach => 'Empty Stomach',
+  };
 
   void _showAddDialog() {
     final nameCtrl = TextEditingController();
@@ -133,14 +133,15 @@ class _MedicinesPageState extends ConsumerState<MedicinesPage> {
                     final name = nameCtrl.text.trim();
                     if (name.isNotEmpty) {
                       final dose = doseCtrl.text.trim();
-                      ref.read(onboardingNotifierProvider.notifier)
+                      ref
+                          .read(onboardingNotifierProvider.notifier)
                           .addCustomMedicine(
-                        CustomMedicineEntry(
-                          name: name,
-                          medicineType: selType,
-                          dosage: dose.isEmpty ? null : dose,
-                        ),
-                      );
+                            CustomMedicineEntry(
+                              name: name,
+                              medicineType: selType,
+                              dosage: dose.isEmpty ? null : dose,
+                            ),
+                          );
                       Navigator.pop(ctx);
                     }
                   },
@@ -172,8 +173,9 @@ class _MedicinesPageState extends ConsumerState<MedicinesPage> {
                   children: [
                     TextField(
                       controller: nameCtrl,
-                      decoration:
-                          const InputDecoration(labelText: 'Medicine Name'),
+                      decoration: const InputDecoration(
+                        labelText: 'Medicine Name',
+                      ),
                     ),
                     const SizedBox(height: 12),
                     TextField(
@@ -209,15 +211,16 @@ class _MedicinesPageState extends ConsumerState<MedicinesPage> {
                     final name = nameCtrl.text.trim();
                     if (name.isNotEmpty) {
                       final dose = doseCtrl.text.trim();
-                      ref.read(onboardingNotifierProvider.notifier)
+                      ref
+                          .read(onboardingNotifierProvider.notifier)
                           .updateCustomMedicine(
-                        index,
-                        med.copyWith(
-                          name: name,
-                          medicineType: selType,
-                          dosage: dose.isEmpty ? null : dose,
-                        ),
-                      );
+                            index,
+                            med.copyWith(
+                              name: name,
+                              medicineType: selType,
+                              dosage: dose.isEmpty ? null : dose,
+                            ),
+                          );
                       Navigator.pop(ctx);
                     }
                   },
@@ -270,7 +273,7 @@ class _MedicinesPageState extends ConsumerState<MedicinesPage> {
                       Text(
                         state.useTemplate
                             ? 'These were set up from your template. '
-                                'Tap to edit any field.'
+                                  'Tap to edit any field.'
                             : 'Add the medicines you need reminders for.',
                         style: theme.textTheme.bodyLarge?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
@@ -303,8 +306,7 @@ class _MedicinesPageState extends ConsumerState<MedicinesPage> {
                           ),
                         )
                       : ListView.builder(
-                          padding:
-                              const EdgeInsets.symmetric(horizontal: 24),
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
                           itemCount: medicines.length,
                           itemBuilder: (context, i) {
                             final med = medicines[i];
@@ -333,13 +335,13 @@ class _MedicinesPageState extends ConsumerState<MedicinesPage> {
                                 ),
                                 child: Card(
                                   child: ListTile(
-                                    contentPadding:
-                                        const EdgeInsets.symmetric(
-                                          horizontal: 20,
-                                          vertical: 8,
-                                        ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 8,
+                                    ),
                                     leading: const Icon(
-                                        Icons.medication_outlined),
+                                      Icons.medication_outlined,
+                                    ),
                                     title: Text(med.name),
                                     subtitle: Text(
                                       '${med.dosage ?? '–'} · '

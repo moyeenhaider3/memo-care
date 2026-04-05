@@ -50,7 +50,7 @@ class OemGuidance {
 class OemDetector {
   /// Creates an [OemDetector].
   OemDetector({DeviceInfoPlugin? deviceInfo})
-      : _deviceInfo = deviceInfo ?? DeviceInfoPlugin();
+    : _deviceInfo = deviceInfo ?? DeviceInfoPlugin();
 
   final DeviceInfoPlugin _deviceInfo;
   String? _manufacturer;
@@ -86,8 +86,7 @@ class OemDetector {
   static OemGuidance getGuidanceForManufacturer(
     String manufacturer,
   ) {
-    return _guidanceMap[manufacturer.toLowerCase().trim()] ??
-        _genericGuidance;
+    return _guidanceMap[manufacturer.toLowerCase().trim()] ?? _genericGuidance;
   }
 
   // ── OEM-specific guidance database ───────────────────────
@@ -98,8 +97,7 @@ class OemDetector {
       severity: 10,
       steps: [
         OemGuidanceStep(
-          instruction:
-              'Open Settings → Apps → Manage apps',
+          instruction: 'Open Settings → Apps → Manage apps',
           subInstruction: 'Find and tap "MemoCare"',
         ),
         OemGuidanceStep(
@@ -109,15 +107,14 @@ class OemDetector {
               'and run in the background',
         ),
         OemGuidanceStep(
-          instruction:
-              'Go back, tap "Battery saver"',
+          instruction: 'Go back, tap "Battery saver"',
           subInstruction: 'Select "No restrictions"',
         ),
         OemGuidanceStep(
-          instruction: 'In MIUI Settings → Battery '
+          instruction:
+              'In MIUI Settings → Battery '
               '→ App battery saver',
-          subInstruction:
-              'Find MemoCare and set to "No restrictions"',
+          subInstruction: 'Find MemoCare and set to "No restrictions"',
         ),
       ],
       warningText:
@@ -130,18 +127,17 @@ class OemDetector {
       severity: 8,
       steps: [
         OemGuidanceStep(
-          instruction:
-              'Open Settings → Apps → MemoCare',
+          instruction: 'Open Settings → Apps → MemoCare',
         ),
         OemGuidanceStep(
-          instruction:
-              'Tap "Battery" → Select "Unrestricted"',
+          instruction: 'Tap "Battery" → Select "Unrestricted"',
           subInstruction:
               'This prevents Samsung from putting '
               'MemoCare to sleep',
         ),
         OemGuidanceStep(
-          instruction: 'Settings → Device care → Battery '
+          instruction:
+              'Settings → Device care → Battery '
               '→ Background usage limits',
           subInstruction:
               'Make sure MemoCare is NOT in '
@@ -161,17 +157,16 @@ class OemDetector {
           subInstruction: 'Find and tap "MemoCare"',
         ),
         OemGuidanceStep(
-          instruction:
-              'Tap "Battery" → "App launch"',
+          instruction: 'Tap "Battery" → "App launch"',
           subInstruction:
               'Disable "Manage automatically" and enable '
               'all three toggles manually',
         ),
         OemGuidanceStep(
-          instruction: 'Settings → Battery → More '
+          instruction:
+              'Settings → Battery → More '
               'battery settings',
-          subInstruction:
-              'Disable "Ultra power saving" if enabled',
+          subInstruction: 'Disable "Ultra power saving" if enabled',
         ),
       ],
       warningText:
@@ -184,18 +179,20 @@ class OemDetector {
       severity: 8,
       steps: [
         OemGuidanceStep(
-          instruction: 'Open Settings → App management '
+          instruction:
+              'Open Settings → App management '
               '→ App list',
           subInstruction: 'Find and tap "MemoCare"',
         ),
         OemGuidanceStep(
-          instruction: 'Tap "Battery usage" → '
+          instruction:
+              'Tap "Battery usage" → '
               '"Allow background activity"',
         ),
         OemGuidanceStep(
-          instruction:
-              'Also enable "Auto-launch" for MemoCare',
-          subInstruction: 'Settings → Battery → More '
+          instruction: 'Also enable "Auto-launch" for MemoCare',
+          subInstruction:
+              'Settings → Battery → More '
               'settings → Auto-launch',
         ),
       ],
@@ -209,17 +206,16 @@ class OemDetector {
       severity: 8,
       steps: [
         OemGuidanceStep(
-          instruction: 'Open Settings → Battery '
+          instruction:
+              'Open Settings → Battery '
               '→ Background power consumption',
           subInstruction:
               'Find "MemoCare" and allow background '
               'power consumption',
         ),
         OemGuidanceStep(
-          instruction:
-              'Settings → Apps → Autostart manager',
-          subInstruction:
-              'Enable autostart for MemoCare',
+          instruction: 'Settings → Apps → Autostart manager',
+          subInstruction: 'Enable autostart for MemoCare',
         ),
       ],
       warningText:
@@ -232,15 +228,16 @@ class OemDetector {
       severity: 6,
       steps: [
         OemGuidanceStep(
-          instruction:
-              'Open Settings → Apps → MemoCare',
+          instruction: 'Open Settings → Apps → MemoCare',
         ),
         OemGuidanceStep(
-          instruction: 'Tap "Battery" → '
+          instruction:
+              'Tap "Battery" → '
               'Select "Don\'t optimize"',
         ),
         OemGuidanceStep(
-          instruction: 'Settings → Battery '
+          instruction:
+              'Settings → Battery '
               '→ Battery optimization',
           subInstruction:
               'Find MemoCare in the "All apps" list '
@@ -262,7 +259,8 @@ class OemDetector {
         instruction: 'Open Settings → Apps → MemoCare',
       ),
       OemGuidanceStep(
-        instruction: 'Tap "Battery" → Select '
+        instruction:
+            'Tap "Battery" → Select '
             '"Unrestricted" or "Don\'t optimize"',
         subInstruction:
             'The exact wording varies by device. Look for '
@@ -270,7 +268,8 @@ class OemDetector {
             'background.',
       ),
       OemGuidanceStep(
-        instruction: 'If available, enable "Autostart" '
+        instruction:
+            'If available, enable "Autostart" '
             'for MemoCare',
         subInstruction:
             'Check Settings → Battery → Background or '

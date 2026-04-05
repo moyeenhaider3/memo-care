@@ -5,6 +5,7 @@ import android.util.Log
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.dart.DartExecutor
 import io.flutter.embedding.engine.loader.FlutterLoader
+import io.flutter.plugins.GeneratedPluginRegistrant
 
 /**
  * Shared service that starts a headless FlutterEngine to run
@@ -30,6 +31,7 @@ object AlarmReschedulerService {
 
             val engine = FlutterEngine(context.applicationContext)
             flutterEngine = engine
+            GeneratedPluginRegistrant.registerWith(engine)
 
             engine.dartExecutor.executeDartEntrypoint(
                 DartExecutor.DartEntrypoint(

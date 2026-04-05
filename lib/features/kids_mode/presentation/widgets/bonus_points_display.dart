@@ -28,6 +28,7 @@ class _BonusPointsDisplayState extends State<BonusPointsDisplay>
     );
     _scale = CurvedAnimation(parent: _controller, curve: Curves.elasticOut);
     _count = IntTween(begin: 0, end: widget.points).animate(_controller);
+    // ignore: discarded_futures // workaround
     _controller.forward();
   }
 

@@ -1,0 +1,79 @@
+Analyzing memo_care...                                          
+
+   info • The referenced name isn't visible in scope • lib/app.dart:11:9 • comment_references
+   info • 'Future'-returning calls in a non-'async' function • lib/core/presentation/app_shell.dart:44:15 • discarded_futures
+   info • Unnecessary duplication of receiver • lib/features/confirmation/application/confirmation_notifier.dart:102:7 • cascade_invocations
+   info • The referenced name isn't visible in scope • lib/features/confirmation/application/confirmation_notifier.dart:171:42 • comment_references
+   info • Unnecessary use of multiple underscores • lib/features/confirmation/application/providers.dart:65:33 • unnecessary_underscores
+   info • Catch clause should use 'on' to specify the type of exception being caught • lib/features/daily_schedule/application/hydration_notifier.dart:83:7 • avoid_catches_without_on_clauses
+   info • The line length exceeds the 80-character limit • lib/features/daily_schedule/presentation/home_screen.dart:205:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit • lib/features/daily_schedule/presentation/home_screen.dart:206:81 • lines_longer_than_80_chars
+   info • The referenced name isn't visible in scope • lib/features/daily_schedule/presentation/widgets/user_greeting_header.dart:7:45 • comment_references
+  error • Undefined class 'AutoDisposeStreamProviderFamily' • lib/features/escalation/presentation/alarm_screen_loader.dart:22:7 • undefined_class
+   info • Type could be non-nullable • lib/features/escalation/presentation/alarm_screen_loader.dart:23:1 • unnecessary_nullable_for_final_variable_declarations
+warning • The type argument(s) of the function 'watch' can't be inferred • lib/features/escalation/presentation/alarm_screen_loader.dart:183:31 • inference_failure_on_function_invocation
+  error • The argument type 'dynamic' can't be assigned to the parameter type 'ProviderListenable<dynamic>'.  • lib/features/escalation/presentation/alarm_screen_loader.dart:184:7 • argument_type_not_assignable
+   info • Method invocation or property access on a 'dynamic' target • lib/features/escalation/presentation/alarm_screen_loader.dart:187:12 • avoid_dynamic_calls
+  error • A value of type 'dynamic' can't be returned from the method 'build' because it has a return type of 'Widget' • lib/features/escalation/presentation/alarm_screen_loader.dart:187:12 • return_of_invalid_type
+warning • The type of e can't be inferred; a type must be explicitly provided • lib/features/escalation/presentation/alarm_screen_loader.dart:194:15 • inference_failure_on_untyped_parameter
+warning • The type of reminder can't be inferred; a type must be explicitly provided • lib/features/escalation/presentation/alarm_screen_loader.dart:197:14 • inference_failure_on_untyped_parameter
+   info • Method invocation or property access on a 'dynamic' target • lib/features/escalation/presentation/alarm_screen_loader.dart:209:31 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target • lib/features/escalation/presentation/alarm_screen_loader.dart:210:43 • avoid_dynamic_calls
+   info • Method invocation or property access on a 'dynamic' target • lib/features/escalation/presentation/alarm_screen_loader.dart:210:43 • avoid_dynamic_calls
+  error • The argument type 'dynamic' can't be assigned to the parameter type 'DateTime'.  • lib/features/escalation/presentation/alarm_screen_loader.dart:210:43 • argument_type_not_assignable
+   info • Method invocation or property access on a 'dynamic' target • lib/features/escalation/presentation/alarm_screen_loader.dart:214:23 • avoid_dynamic_calls
+  error • The argument type 'dynamic' can't be assigned to the parameter type 'int'.  • lib/features/escalation/presentation/alarm_screen_loader.dart:214:23 • argument_type_not_assignable
+   info • Method invocation or property access on a 'dynamic' target • lib/features/escalation/presentation/alarm_screen_loader.dart:215:25 • avoid_dynamic_calls
+  error • The argument type 'dynamic' can't be assigned to the parameter type 'String'.  • lib/features/escalation/presentation/alarm_screen_loader.dart:215:25 • argument_type_not_assignable
+   info • Method invocation or property access on a 'dynamic' target • lib/features/escalation/presentation/alarm_screen_loader.dart:216:19 • avoid_dynamic_calls
+  error • The argument type 'dynamic' can't be assigned to the parameter type 'String'.  • lib/features/escalation/presentation/alarm_screen_loader.dart:216:19 • argument_type_not_assignable
+   info • 'Future'-returning calls in a non-'async' function • lib/features/escalation/presentation/widgets/pulsing_gradient_background.dart:38:19 • discarded_futures
+   info • Unnecessary duplication of receiver • lib/features/fasting/application/fasting_notifier.dart:24:5 • cascade_invocations
+   info • 'Future'-returning calls in a non-'async' function • lib/features/fasting/application/fasting_notifier.dart:40:19 • discarded_futures
+   info • Catch clause should use 'on' to specify the type of exception being caught • lib/features/fasting/application/fasting_notifier.dart:157:7 • avoid_catches_without_on_clauses
+   info • The line length exceeds the 80-character limit • lib/features/fasting/presentation/ramadan_screen.dart:26:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit • lib/features/fasting/presentation/widgets/sehri_iftar_cards.dart:57:81 • lines_longer_than_80_chars
+   info • To-do comment doesn't follow the Flutter style • lib/features/history/presentation/history_screen.dart:75:15 • flutter_style_todos
+   info • 'bool' parameters should be named parameters • lib/features/kids_mode/application/reward_notifier.dart:48:27 • avoid_positional_boolean_parameters
+   info • 'Future'-returning calls in a non-'async' function • lib/features/kids_mode/presentation/kids_reward_sound_screen.dart:24:5 • discarded_futures
+   info • Catch clause should use 'on' to specify the type of exception being caught • lib/features/kids_mode/presentation/kids_reward_sound_screen.dart:31:7 • avoid_catches_without_on_clauses
+   info • 'Future'-returning calls in a non-'async' function • lib/features/kids_mode/presentation/kids_reward_sound_screen.dart:38:13 • discarded_futures
+   info • 'Future'-returning calls in a non-'async' function • lib/features/kids_mode/presentation/widgets/bonus_points_display.dart:31:17 • discarded_futures
+   info • 'Future'-returning calls in a non-'async' function • lib/features/kids_mode/presentation/widgets/celebration_text.dart:32:17 • discarded_futures
+   info • 'Future'-returning calls in a non-'async' function • lib/features/kids_mode/presentation/widgets/confetti_animation.dart:39:8 • discarded_futures
+   info • 'Future'-returning calls in a non-'async' function • lib/features/kids_mode/presentation/widgets/gold_star_animation.dart:27:17 • discarded_futures
+   info • 'Future'-returning calls in a non-'async' function • lib/features/kids_mode/presentation/widgets/mascot_widget.dart:41:19 • discarded_futures
+   info • The line length exceeds the 80-character limit • lib/features/kids_mode/presentation/widgets/parent_view_toggle.dart:4:81 • lines_longer_than_80_chars
+   info • 'Future'-returning calls in a non-'async' function • lib/features/kids_mode/presentation/widgets/waving_mascot.dart:23:8 • discarded_futures
+   info • 'Future'-returning calls in a non-'async' function • lib/features/onboarding/application/onboarding_notifier.dart:106:41 • discarded_futures
+warning • The declaration '_kProfile' isn't referenced • lib/features/onboarding/presentation/onboarding_page_view.dart:21:7 • unused_element
+warning • The declaration '_kCondition' isn't referenced • lib/features/onboarding/presentation/onboarding_page_view.dart:22:7 • unused_element
+warning • The declaration '_kTemplate' isn't referenced • lib/features/onboarding/presentation/onboarding_page_view.dart:23:7 • unused_element
+warning • The declaration '_kMedicines' isn't referenced • lib/features/onboarding/presentation/onboarding_page_view.dart:25:7 • unused_element
+warning • The declaration '_kAccessibility' isn't referenced • lib/features/onboarding/presentation/onboarding_page_view.dart:26:7 • unused_element
+warning • The declaration '_kCaregiver' isn't referenced • lib/features/onboarding/presentation/onboarding_page_view.dart:27:7 • unused_element
+   info • 'Future'-returning calls in a non-'async' function • lib/features/onboarding/presentation/onboarding_page_view.dart:69:11 • discarded_futures
+   info • The line length exceeds the 80-character limit • lib/features/onboarding/presentation/pages/anchors_page.dart:69:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit • lib/features/onboarding/presentation/pages/celebration_page.dart:34:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit • lib/features/onboarding/presentation/pages/celebration_page.dart:270:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit • lib/features/onboarding/presentation/pages/celebration_page.dart:275:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit • lib/features/onboarding/presentation/pages/celebration_page.dart:281:81 • lines_longer_than_80_chars
+   info • The line length exceeds the 80-character limit • lib/features/onboarding/presentation/pages/celebration_page.dart:382:81 • lines_longer_than_80_chars
+   info • Catch clause should use 'on' to specify the type of exception being caught • lib/features/reminders/application/add_reminder_notifier.dart:124:7 • avoid_catches_without_on_clauses
+   info • Unnecessary use of multiple underscores • lib/features/reminders/presentation/reminder_list_screen.dart:63:35 • unnecessary_underscores
+   info • To-do comment doesn't follow the Flutter style • lib/features/settings/presentation/settings_screen.dart:161:13 • flutter_style_todos
+   info • To-do comment doesn't follow the Flutter style • lib/features/settings/presentation/settings_screen.dart:182:13 • flutter_style_todos
+   info • To-do comment doesn't follow the Flutter style • lib/features/settings/presentation/settings_screen.dart:185:13 • flutter_style_todos
+   info • To-do comment doesn't follow the Flutter style • lib/features/templates/presentation/template_library_screen.dart:148:29 • flutter_style_todos
+   info • Unnecessary use of multiple underscores • lib/features/templates/presentation/widgets/category_filter_chips.dart:29:31 • unnecessary_underscores
+   info • Missing documentation explaining why the diagnostic is ignored • test/accessibility/font_scale_test.dart:1:1 • document_ignores
+   info • Missing documentation explaining why the diagnostic is ignored • test/accessibility/font_scale_test.dart:24:14 • document_ignores
+warning • The diagnostic 'prefer_mixin' doesn't need to be ignored here because it's already being ignored • test/accessibility/font_scale_test.dart:24:25 • duplicate_ignore
+   info • Missing documentation explaining why the diagnostic is ignored • test/accessibility/font_scale_test.dart:36:14 • document_ignores
+warning • The diagnostic 'prefer_mixin' doesn't need to be ignored here because it's already being ignored • test/accessibility/font_scale_test.dart:36:25 • duplicate_ignore
+   info • Missing documentation explaining why the diagnostic is ignored • test/accessibility/font_scale_test.dart:45:14 • document_ignores
+warning • The diagnostic 'prefer_mixin' doesn't need to be ignored here because it's already being ignored • test/accessibility/font_scale_test.dart:45:25 • duplicate_ignore
+   info • Missing documentation explaining why the diagnostic is ignored • test/accessibility/semantics_test.dart:1:1 • document_ignores
+   info • Missing documentation explaining why the diagnostic is ignored • test/accessibility/semantics_test.dart:24:14 • document_ignores
+warning • The diagnostic 'prefer_mixin' doesn't need to be ignored here because it's already being ignored • test/accessibility/semantics_test.dart:24:25 • duplicate_ignore
+

@@ -39,6 +39,9 @@ abstract class AppSettings with _$AppSettings {
     /// Whether high contrast mode is enabled.
     @Default(false) bool highContrast,
 
+    /// Whether dark mode is enabled.
+    @Default(false) bool darkMode,
+
     /// Linked caregiver phone number (empty if none).
     @Default('') String caregiverPhone,
   }) = _AppSettings;

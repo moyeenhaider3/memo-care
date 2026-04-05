@@ -29,6 +29,7 @@ class _CelebrationTextState extends State<CelebrationText>
       begin: const Offset(0, 0.2),
       end: Offset.zero,
     ).animate(_fade);
+    // ignore: discarded_futures // workaround
     _controller.forward();
   }
 

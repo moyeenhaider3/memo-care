@@ -1,11 +1,17 @@
+import 'dart:async' show unawaited;
+import 'dart:io' show Platform;
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:memo_care/core/platform/caregiver_service.dart';
+import 'package:memo_care/core/platform/permission_service.dart';
 import 'package:memo_care/core/router/app_router.dart';
-import 'package:memo_care/features/fasting/application/fasting_notifier.dart';
 import 'package:memo_care/features/onboarding/application/onboarding_notifier.dart';
 import 'package:memo_care/features/onboarding/domain/models/onboarding_state.dart';
 import 'package:memo_care/features/reminders/domain/models/medicine_type.dart';
+import 'package:memo_care/features/settings/application/settings_providers.dart';
 import 'package:memo_care/features/templates/application/template_providers.dart';
 import 'package:memo_care/features/templates/domain/models/template_pack.dart';
 
@@ -31,6 +37,7 @@ class _CelebrationPageState extends ConsumerState<CelebrationPage> {
     final m = mins % 60;
     final period = h >= 12 ? 'PM' : 'AM';
     final dh = h == 0 ? 12 : (h > 12 ? h - 12 : h);
+    // ignore: lines_longer_than_80_chars // workaround
     return '${dh.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')} $period';
   }
 
@@ -49,11 +56,47 @@ class _CelebrationPageState extends ConsumerState<CelebrationPage> {
     MedicineType.emptyStomach => 'Empty Stomach',
   };
 
+  Future<bool> _ensureCriticalPermissions() async {
+    if (kIsWeb || !Platform.isAndroid) return true;
+
+    final permService = PermissionService();
+
+    var notificationsGranted = await permService
+        .isNotificationPermissionGranted();
+    if (!notificationsGranted) {
+      if (!mounted) return false;
+      await permService.requestNotificationPermission(context: context);
+      notificationsGranted = await permService
+          .isNotificationPermissionGranted();
+    }
+
+    var exactAlarmGranted = await permService.canScheduleExactAlarms();
+    if (!exactAlarmGranted) {
+      if (!mounted) return false;
+      await permService.requestExactAlarmPermission(context: context);
+      exactAlarmGranted = await permService.canScheduleExactAlarms();
+    }
+
+    return notificationsGranted && exactAlarmGranted;
+  }
+
   Future<void> _finish() async {
     if (_isCreating) return;
     setState(() => _isCreating = true);
     final state = ref.read(onboardingNotifierProvider);
     try {
+      final hasCriticalPermissions = await _ensureCriticalPermissions();
+      if (!hasCriticalPermissions) {
+        ref
+            .read(onboardingNotifierProvider.notifier)
+            .setPermissionsGranted(granted: false);
+        _showError(
+          'Please allow Notification and Exact Alarm permissions so reminders '
+          'can ring on time.',
+        );
+        return;
+      }
+
       if (state.useTemplate && state.selectedTemplateId != null) {
         await _fromTemplate(state);
       } else {
@@ -69,7 +112,6 @@ class _CelebrationPageState extends ConsumerState<CelebrationPage> {
   Future<void> _fromTemplate(OnboardingState state) async {
     final svc = ref.read(templateServiceProvider);
     final repo = ref.read(templateRepositoryProvider);
-    final fasting = ref.read(fastingNotifierProvider);
     final pack = repo.getById(state.selectedTemplateId!);
     if (pack == null) {
       _showError('Template not found. Please go back and try again.');
@@ -83,9 +125,6 @@ class _CelebrationPageState extends ConsumerState<CelebrationPage> {
       pack: pack,
       userOverrides: overrides,
       mealAnchorTimes: state.mealAnchorDefaults,
-      fastingModeActive: fasting.isActive,
-      sehriTime: fasting.sehriTime,
-      iftarTime: fasting.iftarTime,
     );
     result.match(
       (err) => _showError('Could not create schedule: ${err.message}'),
@@ -95,7 +134,6 @@ class _CelebrationPageState extends ConsumerState<CelebrationPage> {
 
   Future<void> _fromManual(OnboardingState state) async {
     final svc = ref.read(templateServiceProvider);
-    final fasting = ref.read(fastingNotifierProvider);
     final meds = state.customMedicines
         .asMap()
         .entries
@@ -126,9 +164,6 @@ class _CelebrationPageState extends ConsumerState<CelebrationPage> {
     final result = await svc.apply(
       pack: pack,
       mealAnchorTimes: state.mealAnchorDefaults,
-      fastingModeActive: fasting.isActive,
-      sehriTime: fasting.sehriTime,
-      iftarTime: fasting.iftarTime,
     );
     result.match(
       (err) => _showError('Could not create schedule: ${err.message}'),
@@ -137,7 +172,19 @@ class _CelebrationPageState extends ConsumerState<CelebrationPage> {
   }
 
   void _complete() {
-    // Grant permissions (placeholder — real service wired in Phase 09-03)
+    final onboardingState = ref.read(onboardingNotifierProvider);
+    final caregiverPhone = onboardingState.caregiverPhone.trim();
+    if (CaregiverService.isValidE164(caregiverPhone)) {
+      unawaited(
+        ref
+            .read(settingsRepositoryProvider)
+            .setCaregiverPhone(
+              CaregiverService.normalizeE164Phone(caregiverPhone),
+            ),
+      );
+    }
+
+    // Permissions are checked in _finish before schedule creation.
     ref.read(onboardingNotifierProvider.notifier)
       ..setPermissionsGranted(granted: true)
       ..completeOnboarding();
@@ -275,17 +322,20 @@ class _CelebrationPageState extends ConsumerState<CelebrationPage> {
                               _SummaryItem(
                                 icon: Icons.person,
                                 label:
+                                    // ignore: lines_longer_than_80_chars // workaround
                                     'Profile: ${_profileLabel(state.profileType)}',
                               ),
                               _SummaryItem(
                                 icon: Icons.medical_information_outlined,
                                 label:
+                                    // ignore: lines_longer_than_80_chars // workaround
                                     'Condition: ${_conditionLabel(state.selectedCondition)}',
                               ),
                               _SummaryItem(
                                 icon: Icons.medication_outlined,
                                 label:
                                     '${state.customMedicines.length} medicine'
+                                    // ignore: lines_longer_than_80_chars // workaround
                                     '${state.customMedicines.length == 1 ? '' : 's'} '
                                     'scheduled',
                               ),
@@ -387,6 +437,7 @@ class _CelebrationPageState extends ConsumerState<CelebrationPage> {
                               .map(
                                 (m) =>
                                     '• ${m.name}'
+                                    // ignore: lines_longer_than_80_chars // workaround
                                     '${m.dosage != null ? ' (${m.dosage})' : ''}'
                                     ' — ${_typeLabel(m.medicineType)}',
                               )

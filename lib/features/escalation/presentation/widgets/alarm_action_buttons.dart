@@ -10,6 +10,8 @@ class AlarmActionButtons extends StatelessWidget {
     required this.onDone,
     required this.onSnooze,
     this.medicineName,
+    this.doneLabel = "I've Done It",
+    this.snoozeLabel = 'Remind me in 10 min',
     this.snoozeDisabled = false,
     super.key,
   });
@@ -17,6 +19,8 @@ class AlarmActionButtons extends StatelessWidget {
   final VoidCallback onDone;
   final VoidCallback onSnooze;
   final String? medicineName;
+  final String doneLabel;
+  final String snoozeLabel;
   final bool snoozeDisabled;
 
   @override
@@ -37,7 +41,7 @@ class AlarmActionButtons extends StatelessWidget {
                 backgroundColor: AppColors.success,
                 foregroundColor: Colors.white,
                 icon: Icons.check_circle,
-                label: 'DONE',
+                label: doneLabel,
                 onPressed: onDone,
               ),
             ),
@@ -54,7 +58,7 @@ class AlarmActionButtons extends StatelessWidget {
                 backgroundColor: AppColors.warning,
                 foregroundColor: AppColors.textPrimary,
                 icon: Icons.snooze,
-                label: 'SNOOZE',
+                label: snoozeLabel,
                 onPressed: snoozeDisabled ? null : onSnooze,
               ),
             ),
@@ -149,8 +153,7 @@ class _BounceButtonState extends State<_BounceButton>
             color: isDisabled
                 ? widget.backgroundColor.withAlpha(100)
                 : widget.backgroundColor,
-            borderRadius:
-                BorderRadius.circular(AppSpacing.cardRadius),
+            borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,

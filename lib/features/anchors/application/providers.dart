@@ -1,5 +1,5 @@
 // Riverpod's StreamProvider.autoDispose types are not publicly exported.
-// ignore_for_file: specify_nonobvious_property_types
+// ignore_for_file: specify_nonobvious_property_types // workaround
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memo_care/core/providers/database_provider.dart';

@@ -202,7 +202,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     const SizedBox(width: 10),
                                     Expanded(
                                       child: Text(
+                                        // ignore: lines_longer_than_ // workaround
+                                        // ignore: lines_longer_than_80_chars // workaround
                                         'Fasting mode on. Next: Iftar medicines '
+                                        // ignore: lines_longer_than_ // workaround
+                                        // ignore: lines_longer_than_80_chars // workaround
                                         'at ${_fmtTime(fastingState.iftarTime)}',
                                         maxLines: 3,
                                         overflow: TextOverflow.ellipsis,

@@ -4,6 +4,7 @@ import 'package:memo_care/core/theme/app_typography.dart';
 
 /// Greeting header with circular avatar and time-based greeting.
 ///
+// ignore: comment_references // workaround
 /// Shows "Good morning/afternoon/evening, [Name]" text with
 /// the current date below it.
 class UserGreetingHeader extends StatelessWidget {

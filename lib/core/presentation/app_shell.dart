@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:memo_care/core/platform/permission_service.dart';
 import 'package:memo_care/core/presentation/widgets/memo_fab.dart';
 import 'package:memo_care/core/router/app_router.dart';
-import 'package:memo_care/core/theme/app_colors.dart';
 import 'package:memo_care/core/theme/app_spacing.dart';
+import 'package:memo_care/features/common/presentation/widgets/channel_disabled_banner.dart';
 
 /// Shell widget providing a 5-tab [NavigationBar] and centered FAB.
 ///
@@ -14,7 +15,7 @@ import 'package:memo_care/core/theme/app_spacing.dart';
 /// to a shell branch.
 ///
 /// Uses [StatefulNavigationShell] to preserve tab state.
-class AppShell extends StatelessWidget {
+class AppShell extends StatefulWidget {
   /// Creates an [AppShell] wrapping the given [navigationShell].
   const AppShell({
     required this.navigationShell,
@@ -23,6 +24,66 @@ class AppShell extends StatelessWidget {
 
   /// The stateful navigation shell that manages tab state.
   final StatefulNavigationShell navigationShell;
+
+  @override
+  State<AppShell> createState() => _AppShellState();
+}
+
+class _AppShellState extends State<AppShell> {
+  var _launchPermissionsChecked = false;
+  var _permissionFlowInProgress = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // ignore: discarded_futures // workaround
+      _requestMissingPermissionsOnLaunch();
+    });
+  }
+
+  Future<void> _requestMissingPermissionsOnLaunch() async {
+    if (!mounted || _launchPermissionsChecked || _permissionFlowInProgress) {
+      return;
+    }
+
+    _launchPermissionsChecked = true;
+    final permissionService = PermissionService();
+    final status = await permissionService.checkAllCritical();
+    if (!mounted || status.allGranted) return;
+
+    _permissionFlowInProgress = true;
+    try {
+      if (!status.notifications) {
+        await permissionService.requestNotificationPermission(
+          context: context,
+        );
+        if (!mounted) return;
+      }
+
+      if (!status.exactAlarms) {
+        await permissionService.requestExactAlarmPermission(
+          context: context,
+        );
+        if (!mounted) return;
+      }
+
+      if (!status.batteryOptimization) {
+        await permissionService.requestBatteryOptimization(
+          context: context,
+        );
+        if (!mounted) return;
+      }
+
+      if (!status.fullScreenIntent) {
+        await permissionService.requestFullScreenIntentPermission(
+          context: context,
+        );
+      }
+    } finally {
+      _permissionFlowInProgress = false;
+    }
+  }
 
   /// Maps a 5-tab destination index to a 4-branch shell index.
   ///
@@ -42,26 +103,32 @@ class AppShell extends StatelessWidget {
   void _onDestinationSelected(BuildContext context, int index) {
     if (index == 2) {
       // "Add" tab — navigate to add-reminder route
+      // ignore: discarded_futures // workaround
       context.push(AppRoutes.addReminder);
       return;
     }
     final branch = _toBranchIndex(index);
-    navigationShell.goBranch(
+    widget.navigationShell.goBranch(
       branch,
-      initialLocation: branch == navigationShell.currentIndex,
+      initialLocation: branch == widget.navigationShell.currentIndex,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: navigationShell,
+      body: Column(
+        children: [
+          const ChannelDisabledBanner(),
+          Expanded(child: widget.navigationShell),
+        ],
+      ),
       floatingActionButton: MemoFab(
         onPressed: () => context.push(AppRoutes.addReminder),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: NavigationBar(
-        selectedIndex: _toDestinationIndex(navigationShell.currentIndex),
+        selectedIndex: _toDestinationIndex(widget.navigationShell.currentIndex),
         onDestinationSelected: (index) =>
             _onDestinationSelected(context, index),
         height: AppSpacing.navBarHeight,

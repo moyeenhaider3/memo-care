@@ -10,7 +10,8 @@ enum ReminderType {
   activity(Icons.directions_run, 'Activity', Color(0xFFEA580C)),
   call(Icons.phone, 'Call', Color(0xFF8B5CF6)),
   exercise(Icons.fitness_center, 'Exercise', AppColors.accentTeal),
-  custom(Icons.edit, 'Custom', AppColors.skippedGrey);
+  custom(Icons.edit, 'Custom', AppColors.skippedGrey)
+  ;
 
   const ReminderType(this.icon, this.label, this.color);
   final IconData icon;
@@ -48,11 +49,8 @@ class ReminderTypeGrid extends StatelessWidget {
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               decoration: BoxDecoration(
-                color: isSelected
-                    ? type.color.withAlpha(20)
-                    : AppColors.cardBg,
-                borderRadius:
-                    BorderRadius.circular(AppSpacing.cardRadius),
+                color: isSelected ? type.color.withAlpha(20) : AppColors.cardBg,
+                borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
                 border: Border.all(
                   color: isSelected ? type.color : AppColors.border,
                   width: isSelected ? 2 : 1,
@@ -78,9 +76,7 @@ class ReminderTypeGrid extends StatelessWidget {
                   Text(
                     type.label,
                     style: AppTypography.labelMedium.copyWith(
-                      color: isSelected
-                          ? type.color
-                          : AppColors.textPrimary,
+                      color: isSelected ? type.color : AppColors.textPrimary,
                       fontWeight: isSelected
                           ? FontWeight.w600
                           : FontWeight.normal,

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:memo_care/core/platform/alarm_callback.dart';
 import 'package:memo_care/core/platform/audio_service.dart';
 import 'package:memo_care/core/platform/notification_service.dart';
@@ -24,9 +25,9 @@ class EscalationController {
     required NotificationService notificationService,
     AudioService? audioService,
     EscalationFSM? fsm,
-  })  : _notificationService = notificationService,
-        _audioService = audioService ?? AudioService(),
-        _fsm = fsm ?? EscalationFSM();
+  }) : _notificationService = notificationService,
+       _audioService = audioService ?? AudioService(),
+       _fsm = fsm ?? EscalationFSM();
 
   final NotificationService _notificationService;
   final AudioService _audioService;
@@ -36,6 +37,7 @@ class EscalationController {
   bool _canUseFullScreen = false;
   String _title = '';
   String _body = '';
+  List<AndroidNotificationAction> _actions = kReminderActions;
 
   /// The current escalation level.
   EscalationLevel get currentLevel => _fsm.current;
@@ -58,6 +60,7 @@ class EscalationController {
     required String title,
     required String body,
     required bool canUseFullScreen,
+    List<AndroidNotificationAction>? actions,
   }) async {
     // If already escalating a different reminder, acknowledge
     // the old one.
@@ -69,6 +72,7 @@ class EscalationController {
     _canUseFullScreen = canUseFullScreen;
     _title = title;
     _body = body;
+    _actions = actions ?? kReminderActions;
 
     // Show initial SILENT notification.
     await _showNotificationAtLevel(EscalationLevel.silent);
@@ -196,7 +200,7 @@ class EscalationController {
       body: _body,
       level: level,
       fullScreenIntent: fullScreenIntent,
-      actions: kReminderActions,
+      actions: _actions,
       payload: '{"reminderId": $reminderId}',
     );
   }

@@ -26,6 +26,7 @@ class CategoryFilterChips extends StatelessWidget {
           horizontal: AppSpacing.screenHorizontal,
         ),
         itemCount: categories.length,
+        // ignore: unnecessary_underscores // workaround
         separatorBuilder: (_, __) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
           final category = categories[index];

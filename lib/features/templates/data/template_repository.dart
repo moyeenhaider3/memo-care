@@ -23,8 +23,6 @@ class TemplateRepository {
 
   /// Returns packs matching the given [condition].
   List<TemplatePack> getByCondition(String condition) {
-    return kTemplatePacks
-        .where((p) => p.condition == condition)
-        .toList();
+    return kTemplatePacks.where((p) => p.condition == condition).toList();
   }
 }

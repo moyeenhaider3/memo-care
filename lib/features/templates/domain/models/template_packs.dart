@@ -1,8 +1,7 @@
-import 'package:memo_care/features/fasting/data/ramadan_template_pack.dart';
 import 'package:memo_care/features/reminders/domain/models/medicine_type.dart';
 import 'package:memo_care/features/templates/domain/models/template_pack.dart';
 
-/// All available template packs.
+/// All available template packs (7 per PlayStore Readiness Plan).
 const List<TemplatePack> kTemplatePacks = [
   kDiabeticPack,
   kBloodPressurePack,
@@ -11,7 +10,6 @@ const List<TemplatePack> kTemplatePacks = [
   kHeartPatientPack,
   kElderlyWellnessPack,
   kEyeCarePack,
-  kRamadanMedicinePack,
 ];
 
 /// TMPL-01: Diabetic Pack.

@@ -38,12 +38,10 @@ class PermissionStep extends ConsumerStatefulWidget {
   const PermissionStep({super.key});
 
   @override
-  ConsumerState<PermissionStep> createState() =>
-      _PermissionStepState();
+  ConsumerState<PermissionStep> createState() => _PermissionStepState();
 }
 
-class _PermissionStepState
-    extends ConsumerState<PermissionStep> {
+class _PermissionStepState extends ConsumerState<PermissionStep> {
   bool _notificationsGranted = false;
   bool _exactAlarmGranted = false;
   bool _batteryOptimizationGranted = false;
@@ -53,21 +51,24 @@ class _PermissionStepState
     _PermissionInfo(
       key: 'notifications',
       title: 'Notifications',
-      description: 'So we can remind you to take your '
+      description:
+          'So we can remind you to take your '
           'medicine on time.',
       icon: Icons.notifications_active,
     ),
     _PermissionInfo(
       key: 'exact_alarm',
       title: 'Exact Alarms',
-      description: 'To ring at the exact scheduled time, '
+      description:
+          'To ring at the exact scheduled time, '
           'even when your phone is idle.',
       icon: Icons.alarm,
     ),
     _PermissionInfo(
       key: 'battery',
       title: 'Battery Optimization',
-      description: 'To prevent your phone from silencing '
+      description:
+          'To prevent your phone from silencing '
           'reminders in the background.',
       icon: Icons.battery_saver,
     ),
@@ -93,7 +94,29 @@ class _PermissionStepState
     try {
       if (!kIsWeb && Platform.isAndroid) {
         final permService = PermissionService();
-        final result = await permService.requestAllMissing();
+        final initial = await permService.checkAllCritical();
+        if (!mounted) return;
+
+        if (!initial.notifications) {
+          await permService.requestNotificationPermission(context: context);
+          if (!mounted) return;
+        }
+        if (!initial.exactAlarms) {
+          await permService.requestExactAlarmPermission(context: context);
+          if (!mounted) return;
+        }
+        if (!initial.batteryOptimization) {
+          await permService.requestBatteryOptimization(context: context);
+          if (!mounted) return;
+        }
+        if (!initial.fullScreenIntent) {
+          await permService.requestFullScreenIntentPermission(
+            context: context,
+          );
+          if (!mounted) return;
+        }
+
+        final result = await permService.checkAllCritical();
         if (mounted) {
           setState(() {
             _notificationsGranted = result.notifications;
@@ -122,9 +145,7 @@ class _PermissionStepState
   }
 
   void _completeOnboarding() {
-    ref
-        .read(onboardingNotifierProvider.notifier)
-        .completeOnboarding();
+    ref.read(onboardingNotifierProvider.notifier).completeOnboarding();
     context.go(AppRoutes.home);
   }
 
@@ -151,10 +172,12 @@ class _PermissionStepState
         Expanded(
           child: ListView(
             children: _permissions
-                .map((perm) => _PermissionCard(
-                      info: perm,
-                      granted: _isGranted(perm.key),
-                    ))
+                .map(
+                  (perm) => _PermissionCard(
+                    info: perm,
+                    granted: _isGranted(perm.key),
+                  ),
+                )
                 .toList(),
           ),
         ),
@@ -163,8 +186,7 @@ class _PermissionStepState
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed:
-                  _isRequesting ? null : _requestAll,
+              onPressed: _isRequesting ? null : _requestAll,
               child: _isRequesting
                   ? const SizedBox(
                       height: 24,
@@ -180,7 +202,8 @@ class _PermissionStepState
           Center(
             child: Semantics(
               button: true,
-              label: 'Skip permissions and continue. '
+              label:
+                  'Skip permissions and continue. '
                   'Some features may not work properly.',
               child: TextButton(
                 onPressed: _completeOnboarding,
@@ -194,10 +217,8 @@ class _PermissionStepState
             child: ElevatedButton(
               onPressed: _completeOnboarding,
               style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    theme.colorScheme.primary,
-                foregroundColor:
-                    theme.colorScheme.onPrimary,
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
               ),
               child: const Text("All Set — Let's Go!"),
             ),
@@ -223,46 +244,39 @@ class _PermissionCard extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Semantics(
-      label: '${info.title}: ${info.description}. '
+      label:
+          '${info.title}: ${info.description}. '
           '${granted ? "Granted" : "Not granted yet"}.',
       child: Card(
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Row(
-            crossAxisAlignment:
-                CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(
                 info.icon,
                 size: 36,
                 color: granted
                     ? theme.colorScheme.primary
-                    : theme
-                        .colorScheme
-                        .onSurfaceVariant,
+                    : theme.colorScheme.onSurfaceVariant,
               ),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
                         Expanded(
                           child: Text(
                             info.title,
-                            style: theme
-                                .textTheme
-                                .titleSmall,
+                            style: theme.textTheme.titleSmall,
                           ),
                         ),
                         if (granted)
                           Icon(
                             Icons.check_circle,
-                            color: theme
-                                .colorScheme
-                                .primary,
+                            color: theme.colorScheme.primary,
                             size: 28,
                           ),
                       ],
@@ -270,8 +284,7 @@ class _PermissionCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       info.description,
-                      style:
-                          theme.textTheme.bodyMedium,
+                      style: theme.textTheme.bodyMedium,
                     ),
                   ],
                 ),

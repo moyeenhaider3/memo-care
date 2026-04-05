@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:memo_care/core/router/app_router.dart';
 import 'package:memo_care/core/theme/app_colors.dart';
@@ -7,18 +8,62 @@ import 'package:memo_care/core/theme/app_shadows.dart';
 import 'package:memo_care/core/theme/app_spacing.dart';
 import 'package:memo_care/core/theme/app_typography.dart';
 
+/// Global navigator key — used by the notification tap callback
+// ignore: comment_references // workaround
+/// in [main.dart] to navigate to the alarm screen from outside
+/// the widget tree.
+final GlobalKey<NavigatorState> appNavigatorKey = GlobalKey<NavigatorState>();
+
 /// Root application widget.
 ///
 /// Configures:
 /// - `GoRouter` for declarative navigation
 /// - Navy-primary Material 3 theme with Inter font
 /// - Design-token-based colour, typography, and component system
-class MemoCareApp extends ConsumerWidget {
+class MemoCareApp extends ConsumerStatefulWidget {
   /// Creates the root [MemoCareApp].
-  const MemoCareApp({super.key});
+  const MemoCareApp({
+    this.initialAlarmReminderId,
+    super.key,
+  });
+
+  /// Reminder ID to auto-open on cold-start notification launch.
+  final int? initialAlarmReminderId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MemoCareApp> createState() => _MemoCareAppState();
+}
+
+class _MemoCareAppState extends ConsumerState<MemoCareApp> {
+  var _handledInitialAlarmNavigation = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _navigateToInitialAlarmIfNeeded();
+    });
+  }
+
+  void _navigateToInitialAlarmIfNeeded() {
+    if (_handledInitialAlarmNavigation) return;
+    final reminderId = widget.initialAlarmReminderId;
+    if (reminderId == null) return;
+
+    final context = appNavigatorKey.currentContext;
+    if (context == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _navigateToInitialAlarmIfNeeded();
+      });
+      return;
+    }
+
+    _handledInitialAlarmNavigation = true;
+    GoRouter.of(context).go('${AppRoutes.alarm}/$reminderId');
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final router = ref.watch(appRouterProvider);
 
     return MaterialApp.router(

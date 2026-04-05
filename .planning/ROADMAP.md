@@ -15,9 +15,15 @@ MemoCare is built along its critical dependency path: data foundation → notifi
 - [x] **Phase 07: Daily View + History + Settings** - Home screen, schedule view, medication history, settings screen
 - [x] **Phase 08: Accessibility + TTS** - 18pt+ enforcement, high-contrast theme, TTS readout, TalkBack audit, undo bar
 - [x] **Phase 09: Integration Testing + OEM Validation** - Patrol tests, OEM device testing, alarm reliability, permission flows
-- [ ] **Phase 10: Design System + Core UI Revamp** - Navy theme, Inter font, bottom nav, Home/Schedule/Settings/History/Onboarding/Alert/Templates/Add Reminder revamp
-- [ ] **Phase 11: Kids Mode + Ramadan/Fasting** - Kids dashboard, rewards, mascot, Ramadan fasting mode with Sehri/Iftar timing
-- [ ] **Phase 12: Visual Chain Builder + Voice Mode** - Canvas node editor, drag-and-drop chains, speech-to-text add reminder, NLP parsing
+- [x] **Phase 10: Design System + Core UI Revamp** - Navy theme, Inter font, bottom nav, Home/Schedule/Settings/History/Onboarding/Alert/Templates/Add Reminder revamp
+- [ ] **Phase 11: Kids Mode** - Kids dashboard, rewards, mascot (Ramadan/Fasting REMOVED per PlayStore plan)
+- [ ] **Phase 12: Visual Chain Builder** - Canvas node editor, drag-and-drop chains (Voice Mode REMOVED — Say It locked as Coming Soon)
+- [ ] **Pre-Work: Scope Cleanup** - Remove Ramadan/Fasting, simplify caregiver to WhatsApp, lock Say It as Coming Soon
+- [ ] **PlayStore Phase 1: Plugin & Dependency Verification** - pubspec audit, plugin-by-plugin runtime test
+- [ ] **PlayStore Phase 2: Android Configuration** - build.gradle, Manifest, channels, battery, ProGuard
+- [ ] **PlayStore Phase 3: UI Audit** - Screen-by-screen verification on device
+- [ ] **PlayStore Phase 4: End-to-End Testing** - 9 functional scenarios on release build
+- [ ] **PlayStore Phase 5: Release Preparation** - Signing, bundle, store listing, permissions declaration
 
 ## Phase Details
 
@@ -209,11 +215,13 @@ Key decisions:
 - Course tracker (Day X of Y) badge on relevant templates
 - Empty state illustrations on schedule + history screens
 
-### Phase 11: Kids Mode + Ramadan/Fasting
+### Phase 11: Kids Mode
 
-**Goal:** Build two entirely new feature modules with independent visual themes: Kids Mode (purple #7C3AED theme, gamified dashboard, reward celebrations with mascot + confetti) and Ramadan/Fasting Mode (dark navy #0D1B2A theme, Sehri/Iftar timing, gold accents).
+**Goal:** Build the Kids Mode feature with independent purple theme, gamified dashboard, reward celebrations with mascot + confetti.
 **Depends on:** Phase 10
-**Requirements:** KIDS-01 through KIDS-05, FAST-01 through FAST-04
+**Requirements:** KIDS-01 through KIDS-05
+
+> **SCOPE CHANGE (March 2026):** Ramadan/Fasting Mode (plans 11-03, 11-04) has been **permanently removed** per the PlayStore Readiness Plan. All Ramadan code must be deleted in Pre-Work. Only Kids Mode (11-01, 11-02) remains.
 
 **Success Criteria** (what must be TRUE):
 
@@ -221,45 +229,38 @@ Key decisions:
 2. Kids Mode Reward (Mascot variant): Confetti animation (50 falling circles), gold star SVG with bounce animation, waving mascot robot SVG, "Amazing!" celebration text, 50 bonus points display, "Back to Dashboard" button
 3. Kids Mode Reward (Sound variant): Same celebration without mascot, cheerful fanfare audio playback
 4. Kids Bottom Nav: Custom nav bar (Quest/Prizes/Me), purple/10 border, rocket/events/face icons
-5. Ramadan/Fasting Mode: Dark forced theme (#0D1B2A bg), gold primary override (#F0A500), star-dot pattern background, moon icon header with "Day X of 30"
-6. Sehri/Iftar Twin Cards: Side-by-side time cards with colored top borders, countdown timers, prayer-time-aware scheduling
-7. Fasting Progress Bar: Gradient bar (sehri-blue → iftar-gold), position dot with glow, percentage label
-8. Sehri/Iftar Medicine Sections: Grouped medicine cards with offset labels, gradient timeline lines
-9. Mode toggle accessible from Settings (gold accent fasting toggle)
-10. Generated Screen / reward template variant renders correctly
+5. Parent View toggle requires PIN gate for switching between kids/parent views
 
-**Plans:** 4 plans
+**Plans:** 2 plans
 
 **Wave Structure:**
 
-- **Wave 1:** 11-01 (Kids Theme + Dashboard) and 11-03 (Ramadan Theme + Screen) — parallel (independent feature modules)
-- **Wave 2:** 11-02 (Kids Rewards) depends on 11-01; 11-04 (Fasting Logic) depends on 11-03 — parallel pair
+- **Wave 1:** 11-01 (Kids Theme + Dashboard)
+- **Wave 2:** 11-02 (Kids Rewards) depends on 11-01
 
 Plans:
 
 - [ ] 11-01: Kids Mode Theme + Dashboard — Purple theme override (#7C3AED), Kids bottom nav (Quest/Prizes/Me), morning quest progress bar, daily checklist with animated task cards, points display, mascot robot widget, star rating, parent view toggle (PIN protected), kids-specific route shell
 - [ ] 11-02: Kids Rewards + Animations — Reward screen (mascot variant): confetti animation (50 falling circles), gold star SVG bounce, waving mascot robot SVG, "Amazing!" celebration text, 50 bonus points display, "Back to Dashboard" button; Reward screen (sound variant): cheerful fanfare audio playback, same celebration without mascot
-- [ ] 11-03: Ramadan Theme + Screen — Dark forced theme (#0D1B2A bg), gold primary override (#F0A500), star-dot pattern background, moon icon header "Day X of 30", Sehri/Iftar twin countdown cards (side-by-side, colored top borders, countdown timers), fasting progress bar (gradient sehri-blue→iftar-gold, position dot with glow), Sehri/Iftar medicine sections (grouped cards, gradient timeline lines)
-- [ ] 11-04: Fasting Logic + Scheduling — Fasting mode toggle integration (Settings gold accent toggle), prayer-time-aware scheduling (location-based sehri/iftar auto-calc), daytime meal-linked reminder auto-suppress during fast hours, Ramadan Medicine Pack template, fasting-mode impact on existing screens (Schedule: gold divider lines, Home: fasting-aware hero card, Templates: include Ramadan pack), hydration reminder with daily counter
+- ~~11-03: Ramadan Theme + Screen~~ — **REMOVED** per PlayStore Readiness Plan
+- ~~11-04: Fasting Logic + Scheduling~~ — **REMOVED** per PlayStore Readiness Plan
 
 **Details:**
-Reference designs: `kids-mode-dashboard.html`, `kids-mode-reward-mascot.html`, `kids-mode-reward-sound.html`, `ramadan-fasting.html`, `generated-screen.html`
+Reference designs: `kids-mode-dashboard.html`, `kids-mode-reward-mascot.html`, `kids-mode-reward-sound.html`
 Kids Mode palette: #7C3AED (purple), #FBBF24 (yellow), #22C55E (green), #FB7185 (coral), #F87171 (red), bg #FDFCFE
-Ramadan palette: #F0A500 (gold), #0D1B2A (bg), #1A2E44 (card), #4A90E2 (sehri-blue), #F0A500 (iftar-gold)
-Animations: confetti-fall, star-pop, shimmer-effect, waving, bobbing (see Section 4.7 of comparison report)
-Rules: `.planning/PLANNING_RULES.md` — Rule 9 (template packs), Rule 14 (Ramadan impact on existing screens)
+Animations: confetti-fall, star-pop, shimmer-effect, waving, bobbing
 Key decisions:
 
-- Kids + Ramadan are independent modules — can be developed in parallel
-- Ramadan Medicine Pack is a new template (5th new pack, after 4 in Phase 10)
-- Hydration reminder with daily counter included here (from Blueprint 3.2)
 - Parent View toggle requires PIN gate for switching between kids/parent views
+- Kids quest data should be persisted to SharedPreferences or SQLite
 
-### Phase 12: Visual Chain Builder + Voice Mode
+### Phase 12: Visual Chain Builder
 
-**Goal:** Build the Visual Chain Builder (canvas-based node editor with drag-and-drop, mini-map, zoom controls, timeline simulation) and Add Reminder Voice Mode (speech-to-text with NLP parsing, waveform visualizer, parsed chain preview).
+**Goal:** Build the Visual Chain Builder (canvas-based node editor with drag-and-drop, mini-map, zoom controls, timeline simulation).
 **Depends on:** Phase 11
-**Requirements:** CHAIN-UI-01 through CHAIN-UI-05, VOICE-01 through VOICE-04
+**Requirements:** CHAIN-UI-01 through CHAIN-UI-05
+
+> **SCOPE CHANGE (March 2026):** Voice Mode / NLP (plans 12-03, 12-04) has been **permanently removed** per the PlayStore Readiness Plan. Say It tab is locked as "Coming Soon" with no functional voice input. Only Chain Builder (12-01, 12-02) remains.
 
 **Success Criteria** (what must be TRUE):
 
@@ -272,39 +273,25 @@ Key decisions:
 7. Zoom Controls: 3 circular buttons (zoom in, zoom out, center focus)
 8. Timeline Simulation Sheet: Bottom sheet with timeline items, colored dots, pause button
 9. "Save Chain" + "Test Run" header actions
-10. Voice Mode: Speech-to-text input with animated waveform visualizer (5 bars), mic button
-11. Example phrase chips for voice guidance
-12. Parsed Chain Preview Panel: Primary/5 bg, dotted connector line with teal-accent dots, parsed rows with times + medicine names
-13. "Looks right?" prompt with Edit + Confirm buttons
 
-**Plans:** 4 plans
+**Plans:** 2 plans
 
 **Wave Structure:**
 
-- **Wave 1:** 12-01 (Chain Builder Canvas + Nodes) and 12-03 (Voice Mode STT) — parallel (independent features)
-- **Wave 2:** 12-02 (Drag-and-Drop + Connectors) depends on 12-01; 12-04 (NLP Parsing + Preview) depends on 12-03 — parallel pair
+- **Wave 1:** 12-01 (Chain Builder Canvas + Nodes)
+- **Wave 2:** 12-02 (Drag-and-Drop + Connectors) depends on 12-01
 
 Plans:
 
 - [ ] 12-01: Chain Builder Canvas + Nodes — Dot-grid background (24px spacing), scrollable/pannable CustomPainter canvas, anchor node (gold #F0A500 pill with schedule icon, editable time, white border), chain nodes (320px wide cards with colored left strips: blue=medication, green=meal, grey=activity), offset badges, connector labels ("After Done"/"Always"), dashed connectors for "regardless" relationships, add step button (dashed border, accent-blue, add_circle icon)
 - [ ] 12-02: Drag-and-Drop + Connectors — GestureDetector drag-and-drop for nodes on canvas, snap-to-grid, mini-map (128×160px fixed bottom-right, simplified node preview), zoom controls (3 circular buttons: zoom in/out/center), timeline simulation bottom sheet (timeline items, colored dots, pause button), "Save Chain" + "Test Run" header actions
-- [ ] 12-03: Voice Mode Speech-to-Text — Say It tab in Add Reminder (segmented toggle), mic button with animated waveform visualizer (5 bars), speech_to_text package integration, example phrase chips for guidance ("Take metformin after breakfast"), real-time transcript display, error/retry handling
-- [ ] 12-04: NLP Parsing + Chain Preview — Natural language parser for medication reminders (extract medicine name, time, frequency, chain relationships), parsed chain preview panel (primary/5 bg, dotted connector line with teal-accent #2DD4BF dots), parsed rows with times + medicine names, "Looks right?" prompt with Edit + Confirm buttons, fallback to manual entry on parse failure
+- ~~12-03: Voice Mode Speech-to-Text~~ — **REMOVED** per PlayStore Readiness Plan (Say It = Coming Soon)
+- ~~12-04: NLP Parsing + Chain Preview~~ — **REMOVED** per PlayStore Readiness Plan
 
 **Details:**
-Reference designs: `visual-chain-builder.html`, `add-reminder-voice.html`
+Reference designs: `visual-chain-builder.html`
 Chain Builder colors: #F0A500 (anchor gold), #4A90D9 (accent blue), standard blue/green/slate for node types
-Voice Mode colors: #2DD4BF (teal-accent for parsed dots)
-High complexity: Canvas rendering, gesture handling, drag-and-drop, NLP integration
-NLP was deferred to v1.x in original architecture — this phase brings it forward
-Rules: `.planning/PLANNING_RULES.md` — Rule 7 (behavioral specs from docx fill Stitch gaps)
-Key decisions:
-
-- Chain Builder and Voice Mode are independent — can be developed in parallel
-- NLP scope: Extract medicine name, time, frequency, chain linking from natural language
-- Canvas: CustomPainter approach (not WebView or external library)
-- Voice: speech_to_text package (already in pubspec from Phase 08 evaluation)
-- Fallback: If NLP can't parse, prompt user to switch to Build It (manual) mode
+Canvas: CustomPainter approach (not WebView or external library)
 
 ## Progress
 
@@ -319,8 +306,19 @@ Key decisions:
 | 07. Daily View + History + Settings      | 5/5            | Done        | 2026-03-07 |
 | 08. Accessibility + TTS                  | 4/4            | Done        | 2026-03-08 |
 | 09. Integration Testing + OEM Validation | 5/5            | Done\*      | 2026-03-08 |
-| 10. Design System + Core UI Revamp       | 0/9            | Not started | —          |
-| 11. Kids Mode + Ramadan/Fasting          | 0/4            | Not started | —          |
-| 12. Visual Chain Builder + Voice Mode    | 0/4            | Not started | —          |
+| 10. Design System + Core UI Revamp       | 9/9            | Done        | 2026-03-14 |
+| 11. Kids Mode                            | 0/2            | Not started | —          |
+| 12. Visual Chain Builder                 | 0/2            | Not started | —          |
+| Pre-Work: Scope Cleanup                  | 0/1            | Not started | —          |
+| PlayStore Phase 1: Plugin Verification   | 0/1            | Not started | —          |
+| PlayStore Phase 2: Android Config        | 0/1            | Not started | —          |
+| PlayStore Phase 3: UI Audit              | 0/1            | Not started | —          |
+| PlayStore Phase 4: E2E Testing           | 0/1            | Not started | —          |
+| PlayStore Phase 5: Release Prep          | 0/1            | Not started | —          |
 
 \* Phase 09 Plan 09-05 (OEM Manual Testing) has checkpoint:human-verify — requires physical device test execution.
+
+**Scope changes (March 28, 2026):**
+- Phase 11: Plans 11-03 (Ramadan) and 11-04 (Fasting Logic) **REMOVED** — per PlayStore Readiness Plan
+- Phase 12: Plans 12-03 (Voice STT) and 12-04 (NLP Parsing) **REMOVED** — Say It locked as Coming Soon
+- Pre-Work + PlayStore Phases 1-5 added from `docs/MemoCare_PlayStore_Readiness_Plan.md`

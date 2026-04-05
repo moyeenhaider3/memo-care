@@ -145,6 +145,7 @@ class _TemplateLibraryScreenState extends ConsumerState<TemplateLibraryScreen> {
                             );
                           },
                           onCustomize: () {
+                            // ignore: flutter_style_todos // workaround
                             // TODO: navigate to customization
                           },
                         ),

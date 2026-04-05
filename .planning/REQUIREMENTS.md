@@ -109,6 +109,21 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **OFFL-02**: All reminder scheduling, chain evaluation, and confirmation logging work offline
 - [x] **OFFL-03**: No login/signup required — app is single-user, local-only
 
+### WhatsApp Caregiver Alert (CARE)
+
+- [ ] **CARE-01**: Settings field stores caregiver WhatsApp number in E.164 format
+- [ ] **CARE-02**: When reminder reaches MISSED state, app opens WhatsApp via deep link with pre-filled message: "Hi, [PatientName] missed their [MedicineName] reminder at [Time]. Please check on them."
+- [ ] **CARE-03**: `url_launcher` handles WhatsApp intent; falls back to browser `wa.me` if WhatsApp not installed
+- [ ] **CARE-04**: If no caregiver number set, MISSED state logs correctly but no WhatsApp message sent; user shown in-app notice
+
+### Say It Mode — Coming Soon (SAYIT)
+
+- [ ] **SAYIT-01**: Say It tab on Add Reminder shows Coming Soon state: centred illustration, "Voice Setup — Coming Soon" label, subtext
+- [ ] **SAYIT-02**: Mic icon is greyed out and non-interactive — tapping does nothing
+- [ ] **SAYIT-03**: `speech_to_text` and `tflite_flutter` removed from pubspec.yaml
+- [ ] **SAYIT-04**: `RECORD_AUDIO` permission removed from AndroidManifest
+- [ ] **SAYIT-05**: Default tab on Add Reminder screen is "Build It", not "Say It"
+
 ## v1.x Requirements
 
 Deferred to post-launch. Tracked for future roadmap.
@@ -144,47 +159,49 @@ Deferred to post-launch. Tracked for future roadmap.
 
 ## Out of Scope
 
-| Feature                                 | Reason                                                                 |
-| --------------------------------------- | ---------------------------------------------------------------------- |
-| Caregiver/family portal                 | Requires cloud backend, auth, permissions — v2                         |
-| Caregiver SMS / auto-call escalation    | Third-party telephony services — v2                                    |
-| Ramadan/fasting mode                    | Complex chain rewiring around Sehri/Iftar — v2                         |
-| Social/communication reminders          | Scope creep beyond medication focus — v2                               |
-| iOS / web / desktop                     | Android-only for v1                                                    |
-| Cloud sync / cross-device               | Offline-only for v1                                                    |
-| Kids dashboard                          | Multi-user model required — v2                                         |
-| Visual timeline builder (drag-and-drop) | Template + form is sufficient — v2                                     |
-| Drug interaction checker                | Licensed medical database, liability — never                           |
-| Pill identification (camera)            | Complex ML, orthogonal to core — never                                 |
-| Gamification (streaks, badges)          | Potentially patronizing for elderly audience — revisit v2              |
-| Vitals logging (weight, BP readings)    | Separate product category — v2+                                        |
-| Refill reminders                        | Inventory tracking adds data entry burden — v2                         |
-| Multilingual UI                         | English-only UI for v1; externalize strings from day 1 for future i18n |
+| Feature | Reason |
+| --- | --- |
+| Caregiver/family portal | Requires cloud backend, auth, permissions — v2 |
+| Caregiver SMS / auto-call escalation | Third-party telephony services — v2 |
+| **Ramadan/fasting mode** | **REMOVED per PlayStore Readiness Plan — not deferred, permanently out of v1** |
+| Social/communication reminders | Scope creep beyond medication focus — v2 |
+| iOS / web / desktop | Android-only for v1 |
+| Cloud sync / cross-device | Offline-only for v1 |
+| **Voice input / NLP (Say It Mode)** | **Locked as Coming Soon per PlayStore Readiness Plan — `speech_to_text` + `tflite_flutter` removed** |
+| Visual timeline builder (drag-and-drop) | Template + form is sufficient — v2 |
+| Drug interaction checker | Licensed medical database, liability — never |
+| Pill identification (camera) | Complex ML, orthogonal to core — never |
+| Gamification (streaks, badges) | Potentially patronizing for elderly audience — revisit v2 |
+| Vitals logging (weight, BP readings) | Separate product category — v2+ |
+| Refill reminders | Inventory tracking adds data entry burden — v2 |
+| Multilingual UI | English-only UI for v1; externalize strings from day 1 for future i18n |
 
 ## Traceability
 
-| Requirement  | Phase    | Status |
-| ------------ | -------- | ------ |
-| FNDN-01..05  | Phase 01 | Done   |
-| DATA-01..07  | Phase 02 | Done   |
-| NOTF-01..09  | Phase 03 | Done   |
-| ESCL-01..06  | Phase 03 | Done   |
-| CHAIN-01..06 | Phase 04 | Done   |
-| ANCR-01..05  | Phase 05 | Done   |
-| TMPL-01..05  | Phase 06 | Done   |
-| ONBD-01..05  | Phase 06 | Done   |
-| VIEW-01..05  | Phase 07 | Done   |
-| HIST-01..03  | Phase 07 | Done   |
-| A11Y-01..07  | Phase 08 | Done   |
-| OFFL-01..03  | Phase 09 | Done   |
+| Requirement | Phase | Status |
+| --- | --- | --- |
+| FNDN-01..05 | Phase 01 | Done |
+| DATA-01..07 | Phase 02 | Done |
+| NOTF-01..09 | Phase 03 | Done |
+| ESCL-01..06 | Phase 03 | Done |
+| CHAIN-01..06 | Phase 04 | Done |
+| ANCR-01..05 | Phase 05 | Done |
+| TMPL-01..05 | Phase 06 | Done |
+| ONBD-01..05 | Phase 06 | Done |
+| VIEW-01..05 | Phase 07 | Done |
+| HIST-01..03 | Phase 07 | Done |
+| A11Y-01..07 | Phase 08 | Done |
+| OFFL-01..03 | Phase 09 | Done |
+| CARE-01..04 | Pre-Work/PS1 | Pending |
+| SAYIT-01..05 | Pre-Work | Pending |
 
 **Coverage:**
 
-- v1.0 requirements: 62 total
-- Mapped to phases: 62
+- v1.0 requirements: 71 total (62 original + 4 CARE + 5 SAYIT)
+- Mapped to phases: 71
 - Unmapped: 0 ✓
 
 ---
 
 _Requirements defined: 2026-03-07_
-_Last updated: 2026-03-08 after all phases complete_
+_Last updated: 2026-03-28 — PlayStore Readiness Plan alignment_

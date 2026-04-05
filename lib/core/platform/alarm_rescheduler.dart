@@ -22,9 +22,9 @@ Future<void> rescheduleAlarmsOnBoot() async {
 
   final db = AppDatabase();
   try {
-    final allReminders = await (db.select(db.reminders)
-          ..where((r) => r.isActive.equals(true)))
-        .get();
+    final allReminders = await (db.select(
+      db.reminders,
+    )..where((r) => r.isActive.equals(true))).get();
 
     final now = DateTime.now().toUtc();
     final scheduler = AlarmScheduler();
@@ -53,12 +53,12 @@ Future<void> rescheduleAlarmsOnBoot() async {
 ///
 /// Uses a heartbeat timestamp to catch cases where the boot
 /// receiver failed or was killed by OEM battery management.
-// ignore: unreachable_from_main
+// ignore: unreachable_from_main // workaround
 class AlarmRescheduler {
   /// Checks if rescheduling is needed based on heartbeat gap.
   ///
   /// Returns true if last heartbeat is > [maxGap] ago.
-  // ignore: unreachable_from_main
+  // ignore: unreachable_from_main // workaround
   static Future<bool> isRescheduleNeeded({
     Duration maxGap = const Duration(minutes: 30),
   }) async {
@@ -68,7 +68,7 @@ class AlarmRescheduler {
 
   /// Records a heartbeat. Call on every successful alarm fire
   /// and on every app resume.
-  // ignore: unreachable_from_main
+  // ignore: unreachable_from_main // workaround
   static Future<void> recordHeartbeat() async {
     // TODO(phukon): Wire to SharedPreferences in Phase 04.
   }

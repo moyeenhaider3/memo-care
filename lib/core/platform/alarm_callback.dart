@@ -1,11 +1,14 @@
 import 'dart:convert';
+import 'dart:ui' show IsolateNameServer;
 
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:memo_care/core/database/app_database.dart';
 import 'package:memo_care/core/platform/alarm_scheduler.dart';
+import 'package:memo_care/core/platform/caregiver_service.dart';
 import 'package:memo_care/core/platform/notification_service.dart';
+import 'package:memo_care/core/platform/phone_call_service.dart';
 import 'package:memo_care/core/platform/tts_service.dart';
 import 'package:memo_care/features/chain_engine/domain/chain_engine.dart';
 import 'package:memo_care/features/chain_engine/domain/models/chain_edge.dart';
@@ -26,6 +29,9 @@ const String kActionSnooze = 'action_snooze';
 /// Action ID for the SKIP button on notification.
 const String kActionSkip = 'action_skip';
 
+/// Action ID for the CALL NOW button on notification.
+const String kActionCallNow = 'action_call_now';
+
 /// Notification action buttons shown on every medication reminder.
 const List<AndroidNotificationAction> kReminderActions = [
   // Actions work from the notification tray without opening the app
@@ -44,11 +50,40 @@ const List<AndroidNotificationAction> kReminderActions = [
   ),
 ];
 
+/// Action set for call reminders.
+///
+/// CALL NOW is first so Android can prioritize it on compact layouts.
+const List<AndroidNotificationAction> kCallReminderActions = [
+  AndroidNotificationAction(
+    kActionCallNow,
+    'CALL NOW',
+    showsUserInterface: true,
+  ),
+  ...kReminderActions,
+];
+
+/// Returns the action list to show for a reminder notification.
+List<AndroidNotificationAction> reminderActionsFor({
+  required String medicineName,
+  required String caregiverPhone,
+}) {
+  if (_isCallReminderName(medicineName) &&
+      CaregiverService.isValidE164(caregiverPhone)) {
+    return kCallReminderActions;
+  }
+  return kReminderActions;
+}
+
+bool _isCallReminderName(String medicineName) {
+  return medicineName.trim().toLowerCase().startsWith('call ');
+}
+
+/// Port name used to signal main isolate navigation on alarm trigger.
+const String kAlarmNavigationPortName = 'memo_care_alarm_navigation_port';
+
 /// Top-level callback fired by AndroidAlarmManager in a background
 /// isolate.
 ///
-/// This function:
-/// 1. Opens a fresh Drift database (isolate cannot share main DB)
 /// 2. Loads the reminder by [reminderId]
 /// 3. Shows a notification with DONE/SNOOZE/SKIP action buttons
 ///
@@ -64,6 +99,10 @@ Future<void> alarmFiredCallback(int reminderId) async {
     final reminder = await db.reminderDao.getReminderById(reminderId);
     if (reminder == null) return;
 
+    // If UI isolate is alive (foreground app), request immediate alarm
+    // screen navigation instead of waiting for user tap.
+    _notifyUiAlarmTriggered(reminderId);
+
     // Initialize notification service in this isolate.
     final notificationService = NotificationService();
     await notificationService.initialize(
@@ -78,14 +117,29 @@ Future<void> alarmFiredCallback(int reminderId) async {
     // Build payload with reminder ID for action handling.
     final payload = jsonEncode({'reminderId': reminderId});
 
-    // Show initial notification at SILENT tier.
-    // Escalation controller (Plan 08) progresses through tiers.
+    final settings = await SharedPreferences.getInstance();
+    final caregiverPhone = settings.getString('settings_caregiver_phone') ?? '';
+    final actions = reminderActionsFor(
+      medicineName: reminder.medicineName,
+      caregiverPhone: caregiverPhone,
+    );
+
+    // Post AUDIBLE notification with fullScreenIntent=true.
+    // This fires immediately at IMPORTANCE_HIGH with sound + vibration
+    // and launches the alarm screen over the lock screen.
+    // Background isolate cannot use Riverpod / EscalationFSM —
+    // the in-app EscalationController picks up once the screen launches.
+    final body = reminder.dosage != null
+        ? '${reminder.dosage} — Time to take your medication'
+        : 'Time to take your medication';
+
     await notificationService.show(
       id: reminderId,
-      title: reminder.medicineName,
-      body: 'Time to take your medication',
-      level: EscalationLevel.silent,
-      actions: kReminderActions,
+      title: '💊 ${reminder.medicineName}',
+      body: body,
+      level: EscalationLevel.fullscreen,
+      fullScreenIntent: true,
+      actions: actions,
       payload: payload,
     );
 
@@ -108,9 +162,17 @@ Future<void> alarmFiredCallback(int reminderId) async {
         '$e',
       );
     }
+  } on Object catch (e, st) {
+    debugPrint('MemoCare alarmFiredCallback failed: $e');
+    debugPrint('MemoCare alarmFiredCallback stack: $st');
   } finally {
     await db.close();
   }
+}
+
+void _notifyUiAlarmTriggered(int reminderId) {
+  final port = IsolateNameServer.lookupPortByName(kAlarmNavigationPortName);
+  port?.send(reminderId);
 }
 
 /// Background handler for notification action button taps.
@@ -131,13 +193,66 @@ Future<void> onNotificationAction(NotificationResponse response) async {
   final reminderId = data['reminderId'] as int?;
   if (reminderId == null) return;
 
-  switch (actionId) {
-    case kActionDone:
-      await _handleDone(reminderId);
-    case kActionSnooze:
-      await _handleSnooze(reminderId);
-    case kActionSkip:
-      await _handleSkip(reminderId);
+  try {
+    await _stopTtsBestEffort();
+
+    switch (actionId) {
+      case kActionDone:
+        await _handleDone(reminderId);
+      case kActionSnooze:
+        await _handleSnooze(reminderId);
+      case kActionSkip:
+        await _handleSkip(reminderId);
+      case kActionCallNow:
+        await _handleCallNow();
+    }
+  } on Object catch (e, st) {
+    debugPrint('MemoCare onNotificationAction failed: $e');
+    debugPrint('MemoCare onNotificationAction stack: $st');
+  }
+}
+
+Future<void> _stopTtsBestEffort() async {
+  final tts = TTSService();
+  try {
+    await tts.stop();
+  } on Object catch (e) {
+    debugPrint('MemoCare TTS stop failed: $e');
+  }
+}
+
+Future<void> _runDbWriteWithRetry(Future<void> Function() operation) async {
+  var attempt = 0;
+  while (true) {
+    try {
+      await operation();
+      return;
+    } on Object catch (e) {
+      attempt += 1;
+      final err = e.toString().toLowerCase();
+      final isLocked =
+          err.contains('database is locked') || err.contains('code 5');
+      if (!isLocked || attempt >= 3) rethrow;
+
+      // Transient lock from concurrent isolates; retry shortly.
+      await Future<void>.delayed(Duration(milliseconds: 120 * attempt));
+    }
+  }
+}
+
+Future<void> _handleCallNow() async {
+  final settings = await SharedPreferences.getInstance();
+  final caregiverPhone = settings.getString('settings_caregiver_phone') ?? '';
+  if (!CaregiverService.isValidE164(caregiverPhone)) {
+    debugPrint('MemoCare call action ignored: caregiver number is not set');
+    return;
+  }
+
+  final launched = await PhoneCallService.openDialer(
+    phoneNumber: caregiverPhone,
+  );
+  if (!launched) {
+    debugPrint('MemoCare call action failed: no dialer available');
   }
 }
 
@@ -148,13 +263,15 @@ Future<void> _handleDone(int reminderId) async {
 
   final db = AppDatabase();
   try {
-    await db.confirmationDao.insertConfirmation(
-      ConfirmationsCompanion.insert(
-        reminderId: reminderId,
-        state: 'done',
-        confirmedAt: DateTime.now().toUtc(),
-      ),
-    );
+    await _runDbWriteWithRetry(() {
+      return db.confirmationDao.insertConfirmation(
+        ConfirmationsCompanion.insert(
+          reminderId: reminderId,
+          state: 'done',
+          confirmedAt: DateTime.now().toUtc(),
+        ),
+      );
+    });
 
     // Evaluate chain engine to activate downstream reminders.
     await _evaluateChainOnDone(db, reminderId);
@@ -175,14 +292,16 @@ Future<void> _handleSnooze(int reminderId) async {
 
   final db = AppDatabase();
   try {
-    await db.confirmationDao.insertConfirmation(
-      ConfirmationsCompanion.insert(
-        reminderId: reminderId,
-        state: 'snoozed',
-        confirmedAt: DateTime.now().toUtc(),
-        snoozeUntil: Value(snoozeUntil),
-      ),
-    );
+    await _runDbWriteWithRetry(() {
+      return db.confirmationDao.insertConfirmation(
+        ConfirmationsCompanion.insert(
+          reminderId: reminderId,
+          state: 'snoozed',
+          confirmedAt: DateTime.now().toUtc(),
+          snoozeUntil: Value(snoozeUntil),
+        ),
+      );
+    });
   } finally {
     await db.close();
   }
@@ -203,13 +322,15 @@ Future<void> _handleSkip(int reminderId) async {
 
   final db = AppDatabase();
   try {
-    await db.confirmationDao.insertConfirmation(
-      ConfirmationsCompanion.insert(
-        reminderId: reminderId,
-        state: 'skipped',
-        confirmedAt: DateTime.now().toUtc(),
-      ),
-    );
+    await _runDbWriteWithRetry(() {
+      return db.confirmationDao.insertConfirmation(
+        ConfirmationsCompanion.insert(
+          reminderId: reminderId,
+          state: 'skipped',
+          confirmedAt: DateTime.now().toUtc(),
+        ),
+      );
+    });
 
     // Evaluate chain engine to suspend downstream reminders.
     await _evaluateChainOnSkip(db, reminderId);
@@ -286,18 +407,20 @@ Future<void> _evaluateChainOnDone(
   final scheduler = AlarmScheduler();
   for (final reminder in downstream) {
     // Activate the downstream reminder.
-    await db.reminderDao.updateReminder(
-      RemindersCompanion(
-        id: Value(reminder.id),
-        chainId: Value(reminder.chainId),
-        medicineName: Value(reminder.medicineName),
-        medicineType: Value(reminder.medicineType.dbValue),
-        dosage: Value(reminder.dosage),
-        scheduledAt: Value(reminder.scheduledAt),
-        isActive: const Value(true),
-        gapHours: Value(reminder.gapHours),
-      ),
-    );
+    await _runDbWriteWithRetry(() {
+      return db.reminderDao.updateReminder(
+        RemindersCompanion(
+          id: Value(reminder.id),
+          chainId: Value(reminder.chainId),
+          medicineName: Value(reminder.medicineName),
+          medicineType: Value(reminder.medicineType.dbValue),
+          dosage: Value(reminder.dosage),
+          scheduledAt: Value(reminder.scheduledAt),
+          isActive: const Value(true),
+          gapHours: Value(reminder.gapHours),
+        ),
+      );
+    });
 
     // Schedule alarm if the reminder has a scheduled time.
     if (reminder.scheduledAt != null) {
@@ -333,18 +456,20 @@ Future<void> _evaluateChainOnSkip(
   final scheduler = AlarmScheduler();
   for (final reminder in suspended) {
     // Deactivate the downstream reminder.
-    await db.reminderDao.updateReminder(
-      RemindersCompanion(
-        id: Value(reminder.id),
-        chainId: Value(reminder.chainId),
-        medicineName: Value(reminder.medicineName),
-        medicineType: Value(reminder.medicineType.dbValue),
-        dosage: Value(reminder.dosage),
-        scheduledAt: Value(reminder.scheduledAt),
-        isActive: const Value(false),
-        gapHours: Value(reminder.gapHours),
-      ),
-    );
+    await _runDbWriteWithRetry(() {
+      return db.reminderDao.updateReminder(
+        RemindersCompanion(
+          id: Value(reminder.id),
+          chainId: Value(reminder.chainId),
+          medicineName: Value(reminder.medicineName),
+          medicineType: Value(reminder.medicineType.dbValue),
+          dosage: Value(reminder.dosage),
+          scheduledAt: Value(reminder.scheduledAt),
+          isActive: const Value(false),
+          gapHours: Value(reminder.gapHours),
+        ),
+      );
+    });
 
     // Cancel the alarm.
     await scheduler.cancel(reminder.id);

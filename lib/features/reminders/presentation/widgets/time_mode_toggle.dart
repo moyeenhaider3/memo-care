@@ -221,11 +221,12 @@ class _LinkedEventInput extends StatelessWidget {
                 decoration: InputDecoration(
                   suffixText: 'min',
                   border: OutlineInputBorder(
-                    borderRadius:
-                        BorderRadius.circular(AppSpacing.inputRadius),
+                    borderRadius: BorderRadius.circular(AppSpacing.inputRadius),
                   ),
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 8,
+                  ),
                 ),
               ),
             ),

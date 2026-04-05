@@ -14,7 +14,7 @@ import 'package:memo_care/features/escalation/presentation/widgets/pulsing_gradi
 /// - Pulsing radial gradient background (2s breathing cycle)
 /// - 64px time hero + 32px medicine name
 /// - White content card with chain step indicator
-/// - 88px DONE/SNOOZE buttons with spring bounce
+/// - 88px DONE/SNOOZE/SKIP buttons with spring bounce
 /// - Caregiver escalation warning
 class FullScreenAlarmScreen extends StatelessWidget {
   const FullScreenAlarmScreen({
@@ -23,11 +23,17 @@ class FullScreenAlarmScreen extends StatelessWidget {
     required this.dosage,
     required this.scheduledTime,
     required this.onDone,
+    required this.onSnooze,
     required this.onSkip,
+    this.dateText,
+    this.instructionText,
+    this.warningText,
     this.chainStep,
     this.chainTotal,
     this.showCaregiverWarning = false,
     this.caregiverMinutesRemaining = 5,
+    this.doneButtonLabel = "I've Done It",
+    this.snoozeButtonLabel = 'Remind me in 10 min',
     super.key,
   });
 
@@ -35,12 +41,24 @@ class FullScreenAlarmScreen extends StatelessWidget {
   final String medicineName;
   final String dosage;
   final String scheduledTime;
+  final String? dateText;
+  final String? instructionText;
+  final String? warningText;
   final VoidCallback onDone;
+
+  /// Called when the user taps the SNOOZE button — re-alerts after snooze
+  /// duration.
+  final VoidCallback onSnooze;
+
+  /// Called when the user taps the SKIP button (missed intentionally).
   final VoidCallback onSkip;
+
   final int? chainStep;
   final int? chainTotal;
   final bool showCaregiverWarning;
   final int caregiverMinutesRemaining;
+  final String doneButtonLabel;
+  final String snoozeButtonLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +82,9 @@ class FullScreenAlarmScreen extends StatelessWidget {
                 return SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(vertical: 32),
                   child: ConstrainedBox(
-                    constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
+                    ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -73,12 +93,15 @@ class FullScreenAlarmScreen extends StatelessWidget {
                         AlarmTimeHero(
                           time: scheduledTime,
                           medicineName: medicineName,
+                          dateText: dateText,
                         ),
                         const SizedBox(height: 24),
                         // Content card
                         AlarmContentCard(
                           medicineName: medicineName,
                           dosage: dosage,
+                          instructions: instructionText,
+                          warningText: warningText,
                           chainStep: chainStep,
                           chainTotal: chainTotal,
                         ),
@@ -90,17 +113,33 @@ class FullScreenAlarmScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 16),
                         ],
-                        // Action buttons
+                        // Action buttons (DONE + SNOOZE)
                         AlarmActionButtons(
                           medicineName: medicineName,
+                          doneLabel: doneButtonLabel,
+                          snoozeLabel: snoozeButtonLabel,
                           onDone: () {
                             _restoreSystemUI();
                             onDone();
                           },
                           onSnooze: () {
                             _restoreSystemUI();
+                            onSnooze();
+                          },
+                        ),
+                        // Skip text button below main actions
+                        TextButton(
+                          onPressed: () {
+                            _restoreSystemUI();
                             onSkip();
                           },
+                          child: Text(
+                            'Skip this reminder',
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.7),
+                              fontSize: 14,
+                            ),
+                          ),
                         ),
                         const SizedBox(height: 16),
                       ],

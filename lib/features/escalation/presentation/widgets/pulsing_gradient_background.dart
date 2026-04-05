@@ -23,7 +23,9 @@ class _PulsingGradientBackgroundState extends State<PulsingGradientBackground>
   void initState() {
     super.initState();
     final bindingName = SchedulerBinding.instance.runtimeType.toString();
-    final isWidgetTestBinding = bindingName.contains('TestWidgetsFlutterBinding');
+    final isWidgetTestBinding = bindingName.contains(
+      'TestWidgetsFlutterBinding',
+    );
 
     _controller = AnimationController(
       vsync: this,
@@ -33,6 +35,7 @@ class _PulsingGradientBackgroundState extends State<PulsingGradientBackground>
     if (isWidgetTestBinding) {
       _controller.value = 1;
     } else {
+      // ignore: discarded_futures // workaround
       _controller.repeat(reverse: true);
     }
 

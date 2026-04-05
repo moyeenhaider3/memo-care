@@ -15,6 +15,7 @@ _AppSettings _$AppSettingsFromJson(Map<String, dynamic> json) => _AppSettings(
   vibrationEnabled: json['vibrationEnabled'] as bool? ?? true,
   largeText: json['largeText'] as bool? ?? false,
   highContrast: json['highContrast'] as bool? ?? false,
+  darkMode: json['darkMode'] as bool? ?? false,
   caregiverPhone: json['caregiverPhone'] as String? ?? '',
 );
 
@@ -28,5 +29,6 @@ Map<String, dynamic> _$AppSettingsToJson(_AppSettings instance) =>
       'vibrationEnabled': instance.vibrationEnabled,
       'largeText': instance.largeText,
       'highContrast': instance.highContrast,
+      'darkMode': instance.darkMode,
       'caregiverPhone': instance.caregiverPhone,
     };

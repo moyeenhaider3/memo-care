@@ -21,6 +21,7 @@ class _KidsRewardSoundScreenState extends State<KidsRewardSoundScreen> {
   @override
   void initState() {
     super.initState();
+    // ignore: discarded_futures // workaround
     _playFanfare();
   }
 
@@ -28,6 +29,7 @@ class _KidsRewardSoundScreenState extends State<KidsRewardSoundScreen> {
     try {
       await _player.setAsset('assets/audio/cheer_fanfare.wav');
       await _player.play();
+    // ignore: avoid_catches_without_on_clauses // workaround
     } catch (_) {
       // Keep celebration flow resilient when audio is unavailable.
     }
@@ -35,6 +37,7 @@ class _KidsRewardSoundScreenState extends State<KidsRewardSoundScreen> {
 
   @override
   void dispose() {
+    // ignore: discarded_futures // workaround
     _player.dispose();
     super.dispose();
   }

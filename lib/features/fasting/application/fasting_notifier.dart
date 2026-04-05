@@ -21,6 +21,7 @@ class FastingNotifier extends Notifier<FastingState> {
   @override
   FastingState build() {
     ref.onDispose(() => _progressTimer?.cancel());
+    // ignore: cascade_invocations // workaround
     ref.onDispose(() => _reminderSub?.cancel());
     final prefs = _readPrefsOrNull();
 
@@ -37,6 +38,7 @@ class FastingNotifier extends Notifier<FastingState> {
     }
 
     // Subscribe to the user's real reminders from the database.
+    // ignore: discarded_futures // workaround
     _reminderSub?.cancel();
     final repo = ref.read(reminderRepositoryProvider);
     _reminderSub = repo.watchActive().listen((reminders) {
@@ -50,8 +52,6 @@ class FastingNotifier extends Notifier<FastingState> {
       isActive: isActive,
       sehriTime: sehri,
       iftarTime: iftar,
-      sehriMedicines: const [],
-      iftarMedicines: const [],
       locationName: 'Select Location',
       progressPercent: isActive ? _calcProgressWith(sehri, iftar) : 0,
     );
@@ -156,6 +156,7 @@ class FastingNotifier extends Notifier<FastingState> {
   SharedPreferences? _readPrefsOrNull() {
     try {
       return ref.read(sharedPreferencesProvider);
+    // ignore: avoid_catches_without_on_clauses // workaround
     } catch (_) {
       return null;
     }
@@ -165,17 +166,21 @@ class FastingNotifier extends Notifier<FastingState> {
   /// Includes medicines taken before meals or on an empty stomach.
   List<FastingMedicine> _sehriMedicinesFrom(List<Reminder> reminders) {
     return reminders
-        .where((r) =>
-            r.medicineType == MedicineType.beforeMeal ||
-            r.medicineType == MedicineType.emptyStomach)
-        .map((r) => FastingMedicine(
-              id: 'r_${r.id}',
-              name: r.medicineName,
-              dosage: r.dosage ?? '',
-              notes: r.medicineType.ttsContext,
-              section: FastingSection.sehri,
-              scheduledTime: _formatScheduledTime(r.scheduledAt),
-            ))
+        .where(
+          (r) =>
+              r.medicineType == MedicineType.beforeMeal ||
+              r.medicineType == MedicineType.emptyStomach,
+        )
+        .map(
+          (r) => FastingMedicine(
+            id: 'r_${r.id}',
+            name: r.medicineName,
+            dosage: r.dosage ?? '',
+            notes: r.medicineType.ttsContext,
+            section: FastingSection.sehri,
+            scheduledTime: _formatScheduledTime(r.scheduledAt),
+          ),
+        )
         .toList();
   }
 
@@ -184,14 +189,16 @@ class FastingNotifier extends Notifier<FastingState> {
   List<FastingMedicine> _iftarMedicinesFrom(List<Reminder> reminders) {
     return reminders
         .where((r) => r.medicineType == MedicineType.afterMeal)
-        .map((r) => FastingMedicine(
-              id: 'r_${r.id}',
-              name: r.medicineName,
-              dosage: r.dosage ?? '',
-              notes: r.medicineType.ttsContext,
-              section: FastingSection.iftar,
-              scheduledTime: _formatScheduledTime(r.scheduledAt),
-            ))
+        .map(
+          (r) => FastingMedicine(
+            id: 'r_${r.id}',
+            name: r.medicineName,
+            dosage: r.dosage ?? '',
+            notes: r.medicineType.ttsContext,
+            section: FastingSection.iftar,
+            scheduledTime: _formatScheduledTime(r.scheduledAt),
+          ),
+        )
         .toList();
   }
 

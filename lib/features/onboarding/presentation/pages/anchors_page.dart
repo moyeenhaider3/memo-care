@@ -23,8 +23,8 @@ const _meals = [
 
 const _defaults = {
   'breakfast': 480, // 08:00
-  'lunch': 780,     // 13:00
-  'dinner': 1140,   // 19:00
+  'lunch': 780, // 13:00
+  'dinner': 1140, // 19:00
 };
 
 /// Page 4 — Meal anchor time configuration.
@@ -66,6 +66,7 @@ class _AnchorsPageState extends ConsumerState<AnchorsPage> {
     final m = mins % 60;
     final period = h >= 12 ? 'PM' : 'AM';
     final dh = h == 0 ? 12 : (h > 12 ? h - 12 : h);
+    // ignore: lines_longer_than_80_chars // workaround
     return '${dh.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')} $period';
   }
 
@@ -76,7 +77,9 @@ class _AnchorsPageState extends ConsumerState<AnchorsPage> {
       helpText: 'Set ${key[0].toUpperCase()}${key.substring(1)} time',
     );
     if (picked != null && mounted) {
-      ref.read(onboardingNotifierProvider.notifier).setMealAnchor(
+      ref
+          .read(onboardingNotifierProvider.notifier)
+          .setMealAnchor(
             key,
             picked.hour * 60 + picked.minute,
           );
@@ -160,20 +163,16 @@ class _AnchorsPageState extends ConsumerState<AnchorsPage> {
                                     vertical: 10,
                                   ),
                                   decoration: BoxDecoration(
-                                    color:
-                                        theme.colorScheme.primaryContainer,
-                                    borderRadius:
-                                        BorderRadius.circular(8),
+                                    color: theme.colorScheme.primaryContainer,
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Text(
                                     _fmt(
-                                      anchors[meal.key] ??
-                                          _defaults[meal.key]!,
+                                      anchors[meal.key] ?? _defaults[meal.key]!,
                                     ),
-                                    style: theme.textTheme.titleSmall
-                                        ?.copyWith(
-                                      color: theme
-                                          .colorScheme.onPrimaryContainer,
+                                    style: theme.textTheme.titleSmall?.copyWith(
+                                      color:
+                                          theme.colorScheme.onPrimaryContainer,
                                     ),
                                   ),
                                 ),

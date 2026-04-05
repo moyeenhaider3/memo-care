@@ -54,6 +54,8 @@ class _SehriIftarCardsState extends State<SehriIftarCards> {
     final m = dt.minute;
     final ampm = h < 12 ? 'AM' : 'PM';
     final hour = h == 0 ? 12 : (h > 12 ? h - 12 : h);
+    // ignore: lines_longer_than_ // workaround
+    // ignore: lines_longer_than_80_chars // workaround
     return '${hour.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')} $ampm';
   }
 

@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memo_care/core/theme/app_colors.dart';
 import 'package:memo_care/core/theme/app_spacing.dart';
 import 'package:memo_care/core/theme/app_typography.dart';
-import 'package:memo_care/features/reminders/application/providers.dart';
 import 'package:memo_care/features/daily_schedule/presentation/widgets/reminder_list_tile.dart';
+import 'package:memo_care/features/reminders/application/providers.dart';
 
 /// Screen listing all active reminders (Tab placeholder until full list view).
 class ReminderListScreen extends ConsumerWidget {
@@ -60,6 +60,7 @@ class ReminderListScreen extends ConsumerWidget {
           return ListView.separated(
             padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
             itemCount: reminders.length,
+            // ignore: unnecessary_underscores // workaround
             separatorBuilder: (_, __) =>
                 const SizedBox(height: AppSpacing.cardGap),
             itemBuilder: (context, index) {

@@ -1,20 +1,21 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:memo_care/app.dart';
 import 'package:memo_care/core/presentation/app_shell.dart';
 import 'package:memo_care/features/daily_schedule/presentation/chain_context_screen.dart';
 import 'package:memo_care/features/daily_schedule/presentation/home_screen.dart';
 import 'package:memo_care/features/daily_schedule/presentation/todays_full_schedule_screen.dart';
+import 'package:memo_care/features/escalation/presentation/alarm_screen_loader.dart';
 import 'package:memo_care/features/fasting/presentation/ramadan_screen.dart';
 import 'package:memo_care/features/history/presentation/history_screen.dart';
 import 'package:memo_care/features/kids_mode/presentation/kids_dashboard_screen.dart';
 import 'package:memo_care/features/kids_mode/presentation/kids_reward_screen.dart';
 import 'package:memo_care/features/kids_mode/presentation/kids_reward_sound_screen.dart';
-import 'package:memo_care/features/settings/application/settings_providers.dart';
 import 'package:memo_care/features/onboarding/presentation/onboarding_page_view.dart';
 import 'package:memo_care/features/reminders/presentation/add_reminder_screen.dart';
+import 'package:memo_care/features/settings/application/settings_providers.dart';
 import 'package:memo_care/features/settings/presentation/settings_screen.dart';
 import 'package:memo_care/features/templates/presentation/template_library_screen.dart';
-import 'package:memo_care/features/templates/presentation/template_picker_screen.dart';
 
 /// Route path constants used across the app.
 abstract final class AppRoutes {
@@ -47,6 +48,10 @@ abstract final class AppRoutes {
   /// Ramadan / Fasting Mode route.
   static const ramadan = '/ramadan';
 
+  /// Fullscreen alarm screen — launched by notification tap or
+  /// full-screen intent. Bypasses all redirect guards.
+  static const alarm = '/alarm';
+
   /// Legacy alias — redirects to /profile.
   @Deprecated('Use AppRoutes.profile')
   static const settings = '/settings';
@@ -67,13 +72,18 @@ abstract final class AppRoutes {
 ///  - `/settings` redirects to `/profile`.
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
+    navigatorKey: appNavigatorKey,
     initialLocation: AppRoutes.home,
     redirect: (context, state) {
+      // Alarm screen must ALWAYS be shown — never redirect away from it.
+      if (state.uri.path.startsWith(AppRoutes.alarm)) return null;
+
       final prefs = ref.read(sharedPreferencesProvider);
       final isOnboarding = state.uri.path.startsWith(AppRoutes.onboarding);
       final isComplete = prefs.getBool('onboarding_complete') ?? false;
 
       // Legacy /settings → /profile redirect.
+      // ignore: deprecated_member_use_from_same_package // workaround
       if (state.uri.path == AppRoutes.settings) {
         return AppRoutes.profile;
       }
@@ -197,6 +207,21 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.ramadan,
         name: 'ramadan',
         builder: (context, state) => const RamadanScreen(),
+      ),
+
+      // --- Fullscreen Alarm Screen ---
+      // Launched by notification tap (onDidReceiveNotificationResponse)
+      // or Android full-screen intent when device is locked.
+      // Bypasses auth/onboarding redirect guard (handled above).
+      GoRoute(
+        path: '${AppRoutes.alarm}/:reminderId',
+        name: 'alarm',
+        builder: (context, state) {
+          final id = int.parse(
+            state.pathParameters['reminderId']!,
+          );
+          return AlarmScreenLoader(reminderId: id);
+        },
       ),
     ],
   );

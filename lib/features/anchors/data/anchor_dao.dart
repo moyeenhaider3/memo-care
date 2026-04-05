@@ -16,8 +16,9 @@ class AnchorDao extends DatabaseAccessor<AppDatabase> with _$AnchorDaoMixin {
 
   /// Watch a specific anchor by meal type.
   Stream<MealAnchorRow?> watchAnchorByMealType(String mealType) {
-    return (select(mealAnchors)..where((a) => a.mealType.equals(mealType)))
-        .watchSingleOrNull();
+    return (select(
+      mealAnchors,
+    )..where((a) => a.mealType.equals(mealType))).watchSingleOrNull();
   }
 
   /// Insert a new meal anchor.

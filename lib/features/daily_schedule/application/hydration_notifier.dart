@@ -80,6 +80,7 @@ class HydrationNotifier extends Notifier<HydrationState> {
   SharedPreferences? _readPrefsOrNull() {
     try {
       return ref.read(sharedPreferencesProvider);
+    // ignore: avoid_catches_without_on_clauses // workaround
     } catch (_) {
       return null;
     }

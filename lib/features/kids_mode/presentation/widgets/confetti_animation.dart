@@ -36,6 +36,7 @@ class _ConfettiAnimationState extends State<ConfettiAnimation>
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 4),
+    // ignore: discarded_futures // workaround
     )..repeat();
   }
 

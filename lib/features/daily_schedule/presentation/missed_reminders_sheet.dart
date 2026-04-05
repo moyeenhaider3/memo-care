@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:memo_care/core/theme/app_colors.dart';
-import 'package:memo_care/core/theme/app_spacing.dart';
-import 'package:memo_care/core/theme/app_typography.dart';
 import 'package:memo_care/features/confirmation/application/confirmation_notifier.dart';
 import 'package:memo_care/features/confirmation/domain/models/confirmation_state.dart';
 import 'package:memo_care/features/daily_schedule/application/daily_schedule_providers.dart';

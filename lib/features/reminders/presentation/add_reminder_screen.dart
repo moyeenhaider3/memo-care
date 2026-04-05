@@ -248,7 +248,7 @@ class AddReminderScreen extends ConsumerWidget {
               child: FilledButton(
                 onPressed: state.isValid && !state.isSaving
                     ? () async {
-                        final success = await notifier.save();
+                        final success = await notifier.save(context);
                         if (success && context.mounted) {
                           context.pop();
                         }

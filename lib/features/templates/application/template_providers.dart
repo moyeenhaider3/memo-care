@@ -10,8 +10,7 @@ import 'package:memo_care/features/templates/domain/template_service.dart';
 /// Provides the [TemplateRepository].
 ///
 /// In-memory, no dependencies — always available.
-final templateRepositoryProvider =
-    Provider<TemplateRepository>((ref) {
+final templateRepositoryProvider = Provider<TemplateRepository>((ref) {
   return const TemplateRepository();
 });
 
@@ -19,15 +18,13 @@ final templateRepositoryProvider =
 ///
 /// Depends on chain + reminder repositories, chain validator,
 /// and alarm scheduler from earlier phases.
-final templateServiceProvider =
-    Provider<TemplateService>((ref) {
+final templateServiceProvider = Provider<TemplateService>((ref) {
   return TemplateService(
-    chainRepository:
-        ref.watch(chain_providers.chainRepositoryProvider),
-    reminderRepository:
-        ref.watch(reminder_providers.reminderRepositoryProvider),
-    chainValidator:
-        ref.watch(chain_providers.chainValidatorProvider),
+    chainRepository: ref.watch(chain_providers.chainRepositoryProvider),
+    reminderRepository: ref.watch(
+      reminder_providers.reminderRepositoryProvider,
+    ),
+    chainValidator: ref.watch(chain_providers.chainValidatorProvider),
     alarmScheduler: ref.watch(alarmSchedulerProvider),
   );
 });

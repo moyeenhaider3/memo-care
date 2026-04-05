@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:memo_care/core/router/app_router.dart';
-import 'package:memo_care/features/fasting/application/fasting_notifier.dart';
+
 import 'package:memo_care/features/onboarding/application/onboarding_notifier.dart';
 import 'package:memo_care/features/onboarding/domain/models/onboarding_state.dart';
 import 'package:memo_care/features/reminders/domain/models/medicine_type.dart';
@@ -78,7 +78,6 @@ class _ReviewStepState extends ConsumerState<ReviewStep> {
   ) async {
     final templateService = ref.read(templateServiceProvider);
     final templateRepo = ref.read(templateRepositoryProvider);
-    final fasting = ref.read(fastingNotifierProvider);
     final pack = templateRepo.getById(state.selectedTemplateId!);
 
     if (pack == null) {
@@ -98,9 +97,6 @@ class _ReviewStepState extends ConsumerState<ReviewStep> {
       pack: pack,
       userOverrides: overrides,
       mealAnchorTimes: state.mealAnchorDefaults,
-      fastingModeActive: fasting.isActive,
-      sehriTime: fasting.sehriTime,
-      iftarTime: fasting.iftarTime,
     );
 
     result.match(
@@ -116,14 +112,10 @@ class _ReviewStepState extends ConsumerState<ReviewStep> {
     OnboardingState state,
   ) async {
     final templateService = ref.read(templateServiceProvider);
-    final fasting = ref.read(fastingNotifierProvider);
     final syntheticPack = _buildSyntheticPack(state);
     final result = await templateService.apply(
       pack: syntheticPack,
       mealAnchorTimes: state.mealAnchorDefaults,
-      fastingModeActive: fasting.isActive,
-      sehriTime: fasting.sehriTime,
-      iftarTime: fasting.iftarTime,
     );
     result.match(
       (error) => _showError(

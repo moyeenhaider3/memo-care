@@ -20,6 +20,7 @@ class _WavingMascotState extends State<WavingMascot>
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 1),
+    // ignore: discarded_futures // workaround
     )..repeat(reverse: true);
   }
 

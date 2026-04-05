@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:memo_care/core/platform/oem_detector.dart';
+import 'package:memo_care/core/theme/app_colors.dart';
 import 'package:memo_care/core/theme/app_theme.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -206,7 +207,7 @@ class _StepCard extends StatelessWidget {
                       step.subInstruction!,
                       style: const TextStyle(
                         fontSize: 14,
-                        color: LegacyAppColors.skippedGrey,
+                        color: AppColors.skippedGrey,
                       ),
                     ),
                   ],

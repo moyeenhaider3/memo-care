@@ -113,8 +113,7 @@ class ConditionPage extends ConsumerWidget {
                       child: Card(
                         child: InkWell(
                           borderRadius: BorderRadius.circular(16),
-                          onTap: () =>
-                              _onTap(context, ref, cond),
+                          onTap: () => _onTap(context, ref, cond),
                           child: Padding(
                             padding: const EdgeInsets.all(20),
                             child: Row(
@@ -137,8 +136,7 @@ class ConditionPage extends ConsumerWidget {
                                       const SizedBox(height: 4),
                                       Text(
                                         cond.description,
-                                        style:
-                                            theme.textTheme.bodyMedium,
+                                        style: theme.textTheme.bodyMedium,
                                       ),
                                     ],
                                   ),

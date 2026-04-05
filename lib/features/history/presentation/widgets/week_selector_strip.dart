@@ -49,11 +49,13 @@ class WeekSelectorStrip extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: days.map((day) {
-                final isSelected = selectedDay != null &&
+                final isSelected =
+                    selectedDay != null &&
                     day.year == selectedDay!.year &&
                     day.month == selectedDay!.month &&
                     day.day == selectedDay!.day;
-                final isToday = day.year == today.year &&
+                final isToday =
+                    day.year == today.year &&
                     day.month == today.month &&
                     day.day == today.day;
 
@@ -63,11 +65,10 @@ class WeekSelectorStrip extends StatelessWidget {
                     width: 40,
                     padding: const EdgeInsets.symmetric(vertical: 6),
                     decoration: BoxDecoration(
-                      color: isSelected
-                          ? AppColors.accent
-                          : Colors.transparent,
-                      borderRadius:
-                          BorderRadius.circular(AppSpacing.cardRadius),
+                      color: isSelected ? AppColors.accent : Colors.transparent,
+                      borderRadius: BorderRadius.circular(
+                        AppSpacing.cardRadius,
+                      ),
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -87,8 +88,8 @@ class WeekSelectorStrip extends StatelessWidget {
                             color: isSelected
                                 ? Colors.white
                                 : isToday
-                                    ? AppColors.accent
-                                    : AppColors.textPrimary,
+                                ? AppColors.accent
+                                : AppColors.textPrimary,
                             fontWeight: isToday || isSelected
                                 ? FontWeight.w700
                                 : FontWeight.w500,

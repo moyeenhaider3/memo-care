@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memo_care/core/platform/alarm_callback.dart';
+import 'package:memo_care/core/platform/permission_service.dart';
 import 'package:memo_care/core/providers/alarm_providers.dart';
 import 'package:memo_care/features/chain_engine/application/providers.dart';
 import 'package:memo_care/features/fasting/application/fasting_notifier.dart';
@@ -47,7 +48,7 @@ class AddReminderNotifier extends Notifier<AddReminderState> {
   void toggleChainLink() => state = state.copyWith(chainLink: !state.chainLink);
 
   /// Persist the reminder. Returns `true` on success.
-  Future<bool> save() async {
+  Future<bool> save(BuildContext context) async {
     if (!state.isValid) {
       state = state.copyWith(
         errorMessage: 'Please fill in all required fields.',
@@ -64,17 +65,7 @@ class AddReminderNotifier extends Notifier<AddReminderState> {
 
       // Compute scheduled time from form state.
       var suppressedDueToFasting = false;
-      DateTime? scheduledAt;
-      if (state.timeMode == TimeMode.fixed && state.fixedTime != null) {
-        final now = DateTime.now();
-        scheduledAt = DateTime(
-          now.year,
-          now.month,
-          now.day,
-          state.fixedTime!.hour,
-          state.fixedTime!.minute,
-        );
-      }
+      var scheduledAt = _computeInitialScheduledAt();
 
       if (scheduledAt != null) {
         final shouldSuppress = fastingNotifier.isSuppressedDuringFast(
@@ -85,6 +76,19 @@ class AddReminderNotifier extends Notifier<AddReminderState> {
           // Keep the reminder but do not arm a daytime fasting alarm.
           scheduledAt = null;
           suppressedDueToFasting = true;
+        } else {
+          final hasCriticalPermissions = await _ensureCriticalPermissions(
+            context: context,
+          );
+          if (!hasCriticalPermissions) {
+            state = state.copyWith(
+              isSaving: false,
+              errorMessage:
+                  'Notification and Exact Alarm permissions are required '
+                  'to ring reminders on time.',
+            );
+            return false;
+          }
         }
       }
 
@@ -107,11 +111,17 @@ class AddReminderNotifier extends Notifier<AddReminderState> {
       // Schedule the alarm so it actually fires at the right time.
       if (scheduledAt != null) {
         final scheduler = ref.read(alarmSchedulerProvider);
-        await scheduler.schedule(
+        final scheduled = await scheduler.schedule(
           reminderId: reminderId,
           fireAt: scheduledAt,
           callbackHandle: alarmFiredCallback,
         );
+        if (!scheduled) {
+          throw StateError(
+            'Could not schedule reminder alarm. '
+            'Please check Exact Alarm permission in system settings.',
+          );
+        }
       }
 
       state = state.copyWith(
@@ -121,6 +131,7 @@ class AddReminderNotifier extends Notifier<AddReminderState> {
             : null,
       );
       return true;
+      // ignore: avoid_catches_without_on_clauses // workaround
     } catch (e) {
       state = state.copyWith(
         isSaving: false,
@@ -128,6 +139,81 @@ class AddReminderNotifier extends Notifier<AddReminderState> {
       );
       return false;
     }
+  }
+
+  DateTime? _computeInitialScheduledAt() {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    if (state.timeMode == TimeMode.fixed) {
+      final fixed = state.fixedTime;
+      if (fixed == null) return null;
+
+      var fireAt = DateTime(
+        today.year,
+        today.month,
+        today.day,
+        fixed.hour,
+        fixed.minute,
+      );
+
+      // If today's slot already passed, arm the next-day occurrence.
+      if (!fireAt.isAfter(now)) {
+        fireAt = fireAt.add(const Duration(days: 1));
+      }
+
+      return fireAt;
+    }
+
+    final event = state.linkedEvent.toLowerCase();
+    final anchorMinutes = _anchorMinutesForLinkedEvent(event);
+    if (anchorMinutes == null) return null;
+
+    final offset = Duration(minutes: state.offsetMinutes);
+    var fireAt = today.add(Duration(minutes: anchorMinutes));
+    if (event.contains('before')) {
+      fireAt = fireAt.subtract(offset);
+    } else {
+      fireAt = fireAt.add(offset);
+    }
+
+    if (!fireAt.isAfter(now)) {
+      fireAt = fireAt.add(const Duration(days: 1));
+    }
+
+    return fireAt;
+  }
+
+  int? _anchorMinutesForLinkedEvent(String event) {
+    if (event.contains('breakfast')) return 8 * 60;
+    if (event.contains('lunch')) return 13 * 60;
+    if (event.contains('dinner')) return 19 * 60;
+    if (event.contains('bedtime')) return 22 * 60;
+    return null;
+  }
+
+  Future<bool> _ensureCriticalPermissions({
+    required BuildContext context,
+  }) async {
+    final permService = PermissionService();
+
+    var notificationsGranted = await permService
+        .isNotificationPermissionGranted();
+    if (!notificationsGranted) {
+      if (!context.mounted) return false;
+      await permService.requestNotificationPermission(context: context);
+      notificationsGranted = await permService
+          .isNotificationPermissionGranted();
+    }
+
+    var exactAlarmGranted = await permService.canScheduleExactAlarms();
+    if (!exactAlarmGranted) {
+      if (!context.mounted) return false;
+      await permService.requestExactAlarmPermission(context: context);
+      exactAlarmGranted = await permService.canScheduleExactAlarms();
+    }
+
+    return notificationsGranted && exactAlarmGranted;
   }
 
   /// Reset form to initial state.

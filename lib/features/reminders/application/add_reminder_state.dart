@@ -41,7 +41,9 @@ class AddReminderState {
   bool get isValid =>
       name.trim().isNotEmpty &&
       selectedDays.isNotEmpty &&
-      (reminderType != ReminderType.medicine || dose.trim().isNotEmpty);
+      (reminderType != ReminderType.medicine || dose.trim().isNotEmpty) &&
+      (timeMode == TimeMode.linked || fixedTime != null) &&
+      (timeMode != TimeMode.linked || linkedEvent.trim().isNotEmpty);
 
   /// Map the UI ReminderType + TimeMode to a domain MedicineType.
   MedicineType get medicineType {

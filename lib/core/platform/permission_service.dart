@@ -2,6 +2,7 @@ import 'dart:io' show Platform;
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 /// Result of checking all critical permissions.
@@ -70,6 +71,36 @@ class PermissionService {
     return _sdkVersion!;
   }
 
+  Future<bool> _showPrePermissionPopup({
+    required BuildContext context,
+    required String title,
+    required String description,
+    String positiveLabel = 'Allow',
+  }) async {
+    final agreed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(description),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(positiveLabel),
+            ),
+          ],
+        );
+      },
+    );
+
+    return agreed ?? false;
+  }
+
   // ── Notification Permission (Android 13+ / API 33) ─────────────
 
   /// Checks if POST_NOTIFICATIONS permission is granted.
@@ -86,9 +117,24 @@ class PermissionService {
   ///
   /// Returns the resulting [PermissionStatus].
   /// On Android < 13, always returns [PermissionStatus.granted].
-  Future<PermissionStatus> requestNotificationPermission() async {
+  Future<PermissionStatus> requestNotificationPermission({
+    BuildContext? context,
+  }) async {
     final sdk = await sdkVersion;
     if (sdk < 33) return PermissionStatus.granted;
+    if (context != null && !context.mounted) return PermissionStatus.denied;
+
+    if (context != null) {
+      final agreed = await _showPrePermissionPopup(
+        context: context,
+        title: 'Allow notifications?',
+        description:
+            'MemoCare needs notification permission so reminders can appear '
+            'on time, even when the app is in background.',
+      );
+      if (!agreed) return PermissionStatus.denied;
+    }
+
     return Permission.notification.request();
   }
 
@@ -104,8 +150,25 @@ class PermissionService {
   /// Opens system settings for exact alarm permission.
   ///
   /// This is NOT a runtime dialog — it opens the Settings app.
-  Future<void> requestExactAlarmPermission() async {
+  Future<bool> requestExactAlarmPermission({BuildContext? context}) async {
+    final sdk = await sdkVersion;
+    if (sdk < 31) return true;
+    if (context != null && !context.mounted) return false;
+
+    if (context != null) {
+      final agreed = await _showPrePermissionPopup(
+        context: context,
+        title: 'Allow exact alarm scheduling?',
+        description:
+            'MemoCare uses exact alarms so medication reminders ring at the '
+            'precise scheduled minute.',
+        positiveLabel: 'Agree',
+      );
+      if (!agreed) return false;
+    }
+
     await Permission.scheduleExactAlarm.request();
+    return canScheduleExactAlarms();
   }
 
   // ── Full-Screen Intent (Android 14+ / API 34) ──────────────────
@@ -131,8 +194,27 @@ class PermissionService {
   }
 
   /// Opens system settings for full-screen intent permission.
-  Future<void> requestFullScreenIntentPermission() async {
+  Future<bool> requestFullScreenIntentPermission({
+    BuildContext? context,
+  }) async {
+    final sdk = await sdkVersion;
+    if (sdk < 34) return true;
+    if (context != null && !context.mounted) return false;
+
+    if (context != null) {
+      final agreed = await _showPrePermissionPopup(
+        context: context,
+        title: 'Allow full-screen alerts?',
+        description:
+            'This lets MemoCare show urgent lock-screen reminder alerts when '
+            'a dose is missed.',
+        positiveLabel: 'Agree',
+      );
+      if (!agreed) return false;
+    }
+
     await openAppSettings();
+    return true;
   }
 
   // ── Battery Optimization ───────────────────────────────────────
@@ -146,7 +228,23 @@ class PermissionService {
   /// Requests battery optimization exemption.
   ///
   /// Shows a system dialog (not app Settings).
-  Future<PermissionStatus> requestBatteryOptimization() async {
+  Future<PermissionStatus> requestBatteryOptimization({
+    BuildContext? context,
+  }) async {
+    if (context != null && !context.mounted) return PermissionStatus.denied;
+
+    if (context != null) {
+      final agreed = await _showPrePermissionPopup(
+        context: context,
+        title: 'Allow battery optimization exemption?',
+        description:
+            'Some phones stop background alarms. Exempting MemoCare helps '
+            'reminders ring reliably.',
+        positiveLabel: 'Agree',
+      );
+      if (!agreed) return PermissionStatus.denied;
+    }
+
     return Permission.ignoreBatteryOptimizations.request();
   }
 

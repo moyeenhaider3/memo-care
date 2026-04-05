@@ -6,8 +6,7 @@ import 'package:just_audio/just_audio.dart';
 /// acknowledges.
 class AudioService {
   /// Creates an [AudioService].
-  AudioService({AudioPlayer? player})
-      : _player = player ?? AudioPlayer();
+  AudioService({AudioPlayer? player}) : _player = player ?? AudioPlayer();
 
   final AudioPlayer _player;
   bool _playing = false;
@@ -25,8 +24,7 @@ class AudioService {
     try {
       await _player.setLoopMode(LoopMode.one);
 
-      final source =
-          assetPath ?? 'assets/sounds/alarm_tone.mp3';
+      final source = assetPath ?? 'assets/audio/cheer_fanfare.wav';
       await _player.setAsset(source);
       await _player.play();
       _playing = true;

@@ -6,13 +6,11 @@ import 'package:memo_care/core/platform/caregiver_service.dart';
 import 'package:memo_care/core/theme/app_colors.dart';
 import 'package:memo_care/core/theme/app_spacing.dart';
 import 'package:memo_care/core/theme/app_typography.dart';
-import 'package:memo_care/features/fasting/application/fasting_notifier.dart';
 import 'package:memo_care/features/settings/application/settings_providers.dart';
 import 'package:memo_care/features/settings/domain/models/app_settings.dart';
 import 'package:memo_care/features/settings/presentation/widgets/caregiver_section.dart';
 import 'package:memo_care/features/settings/presentation/widgets/data_export_section.dart';
 import 'package:memo_care/features/settings/presentation/widgets/display_settings_section.dart';
-import 'package:memo_care/features/settings/presentation/widgets/fasting_toggle_tile.dart';
 import 'package:memo_care/features/settings/presentation/widgets/profile_header.dart';
 
 /// Revamped Settings & Profile screen (VIEW-05, 10-04).
@@ -22,10 +20,9 @@ import 'package:memo_care/features/settings/presentation/widgets/profile_header.
 /// 2. Display Settings — text size, high contrast, dark mode
 /// 3. Notification Preferences — toggles
 /// 4. Snooze & Escalation — sliders
-/// 5. Fasting Mode — gold accent toggle
-/// 6. Caregiver — linked phone management
-/// 7. Data Export — PDF/CSV
-/// 8. App Info
+/// 5. Caregiver — linked phone management
+/// 6. Data Export — PDF/CSV
+/// 7. App Info
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
@@ -55,10 +52,119 @@ class _SettingsBody extends ConsumerWidget {
   const _SettingsBody({required this.settings});
   final AppSettings settings;
 
+  Future<void> _showCaregiverPhoneDialog(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final repo = ref.read(settingsRepositoryProvider);
+    final controller = TextEditingController(text: settings.caregiverPhone);
+    String? errorText;
+
+    final normalizedPhone = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (dialogContext, setDialogState) {
+            return AlertDialog(
+              title: Text(
+                settings.caregiverPhone.isEmpty
+                    ? 'Add Caregiver WhatsApp'
+                    : 'Edit Caregiver WhatsApp',
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    controller: controller,
+                    keyboardType: TextInputType.phone,
+                    autofillHints: const [AutofillHints.telephoneNumber],
+                    decoration: InputDecoration(
+                      labelText: 'WhatsApp number',
+                      hintText: '+923001234567',
+                      errorText: errorText,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Use E.164 format with country code (e.g. +923001234567).',
+                    style: AppTypography.bodySmall.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  child: const Text('Cancel'),
+                ),
+                FilledButton(
+                  onPressed: () {
+                    final normalized = CaregiverService.normalizeE164Phone(
+                      controller.text,
+                    );
+                    if (!CaregiverService.isValidE164(normalized)) {
+                      setDialogState(() {
+                        errorText = 'Enter a valid number like +923001234567';
+                      });
+                      return;
+                    }
+                    Navigator.of(dialogContext).pop(normalized);
+                  },
+                  child: const Text('Save'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    controller.dispose();
+    if (normalizedPhone == null) return;
+
+    await repo.setCaregiverPhone(normalizedPhone);
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Caregiver WhatsApp number saved.')),
+    );
+  }
+
+  Future<void> _sendTestAlert(BuildContext context) async {
+    final phone = settings.caregiverPhone;
+    if (phone.isEmpty) return;
+
+    final hasNetwork = await CaregiverService.hasNetworkConnection();
+    if (!hasNetwork) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'No internet connection. Connect to the internet and try again.',
+          ),
+        ),
+      );
+      return;
+    }
+
+    final launched = await CaregiverService.sendTestAlert(phoneNumber: phone);
+    if (!context.mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          launched
+              ? 'Opening WhatsApp test alert.'
+              : 'Could not open WhatsApp. Check installation and try again.',
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final repo = ref.read(settingsRepositoryProvider);
-    final fastingState = ref.watch(fastingNotifierProvider);
 
     return ListView(
       padding: EdgeInsets.zero,
@@ -73,12 +179,18 @@ class _SettingsBody extends ConsumerWidget {
 
         // ─── DISPLAY SETTINGS ───
         DisplaySettingsSection(
-          textScale: 1,
-          highContrast: false,
-          darkMode: false,
-          onTextScaleChanged: (_) {},
-          onHighContrastChanged: (_) {},
-          onDarkModeChanged: (_) {},
+          textScale: settings.largeText ? 1.3 : 1,
+          highContrast: settings.highContrast,
+          darkMode: settings.darkMode,
+          onTextScaleChanged: (v) => unawaited(
+            repo.setLargeText(v > 1.05),
+          ),
+          onHighContrastChanged: (v) => unawaited(
+            repo.setHighContrast(v),
+          ),
+          onDarkModeChanged: (v) => unawaited(
+            repo.setDarkMode(v),
+          ),
         ),
 
         const Divider(height: 32, indent: 16, endIndent: 16),
@@ -154,35 +266,19 @@ class _SettingsBody extends ConsumerWidget {
 
         const Divider(height: 32, indent: 16, endIndent: 16),
 
-        // ─── FASTING MODE ───
-        FastingToggleTile(
-          enabled: fastingState.isActive,
-          onChanged: (value) {
-            ref.read(fastingNotifierProvider.notifier).setActive(active: value);
-          },
-        ),
-
-        const Divider(height: 32, indent: 16, endIndent: 16),
-
         // ─── CAREGIVER ───
         CaregiverSection(
           caregiverPhone: settings.caregiverPhone.isEmpty
               ? null
               : settings.caregiverPhone,
-          onAddCaregiver: () {
-            // TODO: show phone input dialog
-          },
+          onAddCaregiver: () => unawaited(
+            _showCaregiverPhoneDialog(context, ref),
+          ),
           onRemoveCaregiver: () {
             unawaited(repo.setCaregiverPhone(''));
           },
           onSendTestAlert: () {
-            if (settings.caregiverPhone.isNotEmpty) {
-              unawaited(
-                CaregiverService.sendTestAlert(
-                  phoneNumber: settings.caregiverPhone,
-                ),
-              );
-            }
+            unawaited(_sendTestAlert(context));
           },
         ),
 
@@ -191,9 +287,11 @@ class _SettingsBody extends ConsumerWidget {
         // ─── DATA EXPORT ───
         DataExportSection(
           onExportPdf: () {
+            // ignore: flutter_style_todos // workaround
             // TODO: generate & share PDF
           },
           onExportCsv: () {
+            // ignore: flutter_style_todos // workaround
             // TODO: generate & share CSV
           },
         ),

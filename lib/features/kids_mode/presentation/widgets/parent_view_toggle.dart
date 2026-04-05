@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:memo_care/core/theme/app_colors.dart';
 
+// ignore: lines_longer_than_ // workaround
+// ignore: lines_longer_than_80_chars // workaround
 /// Button to switch from Kids View back to the Parent (standard adult) dashboard.
 ///
 /// Protected by a 4-digit PIN dialog. If no PIN is set, a simple confirmation

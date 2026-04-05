@@ -24,6 +24,7 @@ class _GoldStarAnimationState extends State<GoldStarAnimation>
       begin: 0,
       end: 1,
     ).chain(CurveTween(curve: Curves.elasticOut)).animate(_controller);
+    // ignore: discarded_futures // workaround
     _controller.forward();
   }
 

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memo_care/core/platform/caregiver_service.dart';
 import 'package:memo_care/features/onboarding/application/onboarding_notifier.dart';
 
-/// Page 7 — Optional caregiver link.
+/// Page 7 — Optional caregiver WhatsApp link.
 ///
-/// User enters a caregiver's phone number. Tapping "Send
-/// Invitation" stores the number and advances. "Maybe Later"
+/// User enters a caregiver's WhatsApp number. Tapping "Save Number"
+/// stores the number and advances. "Maybe Later"
 /// skips without storing a number.
 class CaregiverPage extends ConsumerStatefulWidget {
   /// Creates a [CaregiverPage].
@@ -71,7 +72,7 @@ class _CaregiverPageState extends ConsumerState<CaregiverPage> {
                   Semantics(
                     header: true,
                     child: Text(
-                      'Caregiver Link',
+                      'Caregiver WhatsApp',
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -79,8 +80,8 @@ class _CaregiverPageState extends ConsumerState<CaregiverPage> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Add a family member or nurse to help track your '
-                    'medications.',
+                    'Add a caregiver WhatsApp number so MemoCare can '
+                    'open a missed-dose alert message quickly.',
                     style: theme.textTheme.bodyLarge?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -92,8 +93,8 @@ class _CaregiverPageState extends ConsumerState<CaregiverPage> {
                     controller: _ctrl,
                     keyboardType: TextInputType.phone,
                     decoration: InputDecoration(
-                      labelText: "Caregiver's Phone Number",
-                      hintText: '(555) 000-0000',
+                      labelText: 'Caregiver WhatsApp Number',
+                      hintText: '+919876543210',
                       prefixIcon: const Icon(Icons.call_outlined),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -102,8 +103,8 @@ class _CaregiverPageState extends ConsumerState<CaregiverPage> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'They will receive an invitation link via SMS. '
-                    'You can skip this and add it later in Settings.',
+                    'Use international format (E.164). You can skip this '
+                    'and add it later in Settings.',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -122,9 +123,21 @@ class _CaregiverPageState extends ConsumerState<CaregiverPage> {
                 onPressed: () {
                   final phone = _ctrl.text.trim();
                   if (phone.isNotEmpty) {
+                    if (!CaregiverService.isValidE164(phone)) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Enter a valid WhatsApp number in E.164 format.',
+                          ),
+                        ),
+                      );
+                      return;
+                    }
                     ref
                         .read(onboardingNotifierProvider.notifier)
-                        .setCaregiverPhone(phone);
+                        .setCaregiverPhone(
+                          CaregiverService.normalizeE164Phone(phone),
+                        );
                   }
                   widget.onNext();
                 },
@@ -137,7 +150,7 @@ class _CaregiverPageState extends ConsumerState<CaregiverPage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                child: const Text('Send Invitation'),
+                child: const Text('Save Number'),
               ),
             ),
           ),

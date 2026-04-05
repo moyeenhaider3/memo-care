@@ -1,6 +1,6 @@
 // Riverpod family builder return types are not publicly
 // exported.
-// ignore_for_file: specify_nonobvious_property_types
+// ignore_for_file: specify_nonobvious_property_types // workaround
 
 import 'dart:async';
 

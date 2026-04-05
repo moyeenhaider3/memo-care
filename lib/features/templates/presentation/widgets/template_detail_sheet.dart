@@ -41,8 +41,7 @@ class TemplateDetailSheet extends StatelessWidget {
         initialChildSize: 0.6,
         maxChildSize: 0.9,
         minChildSize: 0.4,
-        builder: (context, scrollController) =>
-            SingleChildScrollView(
+        builder: (context, scrollController) => SingleChildScrollView(
           controller: scrollController,
           child: TemplateDetailSheet(
             pack: pack,
@@ -166,8 +165,7 @@ class TemplateDetailSheet extends StatelessWidget {
                 backgroundColor: AppColors.accent,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius:
-                      BorderRadius.circular(AppSpacing.buttonRadius),
+                  borderRadius: BorderRadius.circular(AppSpacing.buttonRadius),
                 ),
               ),
               child: Text(
@@ -193,8 +191,7 @@ class TemplateDetailSheet extends StatelessWidget {
                 foregroundColor: AppColors.accent,
                 side: const BorderSide(color: AppColors.accent),
                 shape: RoundedRectangleBorder(
-                  borderRadius:
-                      BorderRadius.circular(AppSpacing.buttonRadius),
+                  borderRadius: BorderRadius.circular(AppSpacing.buttonRadius),
                 ),
               ),
               child: Text(
