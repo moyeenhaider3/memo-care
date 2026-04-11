@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memo_care/core/debug/bootstrap_trace.dart';
 import 'package:memo_care/core/theme/app_colors.dart';
 
 // ignore: lines_longer_than_ // workaround
@@ -79,7 +80,9 @@ class ParentViewToggle extends StatelessWidget {
           ],
         ),
       );
-      if (confirmed ?? false) onUnlocked();
+      if (confirmed ?? false) {
+        traceSync('ui', 'ParentViewToggle.unlock', onUnlocked);
+      }
     } else {
       await _showPinDialog(context);
     }
@@ -132,6 +135,8 @@ class ParentViewToggle extends StatelessWidget {
       ),
     );
 
-    if (entered != null) onUnlocked();
+    if (entered != null) {
+      traceSync('ui', 'ParentViewToggle.unlock', onUnlocked);
+    }
   }
 }

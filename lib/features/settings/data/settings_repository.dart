@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:memo_care/core/debug/bootstrap_trace.dart';
 import 'package:memo_care/features/settings/domain/models/app_settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -49,69 +50,89 @@ class SettingsRepository {
 
   /// Updates snooze duration.
   Future<void> setSnoozeDuration(int minutes) async {
-    await _prefs.setInt(_kSnoozeDuration, minutes);
-    _notify();
+    await traceAsync('settings', 'setSnoozeDuration', () async {
+      await _prefs.setInt(_kSnoozeDuration, minutes);
+      _notify();
+    });
   }
 
   /// Updates silent tier timeout.
   Future<void> setSilentTimeout(int minutes) async {
-    await _prefs.setInt(_kSilentTimeout, minutes);
-    _notify();
+    await traceAsync('settings', 'setSilentTimeout', () async {
+      await _prefs.setInt(_kSilentTimeout, minutes);
+      _notify();
+    });
   }
 
   /// Updates audible tier timeout.
   Future<void> setAudibleTimeout(int minutes) async {
-    await _prefs.setInt(_kAudibleTimeout, minutes);
-    _notify();
+    await traceAsync('settings', 'setAudibleTimeout', () async {
+      await _prefs.setInt(_kAudibleTimeout, minutes);
+      _notify();
+    });
   }
 
   /// Updates notification enabled state.
   Future<void> setNotificationsEnabled({
     required bool enabled,
   }) async {
-    await _prefs.setBool(_kNotificationsEnabled, enabled);
-    _notify();
+    await traceAsync('settings', 'setNotificationsEnabled', () async {
+      await _prefs.setBool(_kNotificationsEnabled, enabled);
+      _notify();
+    });
   }
 
   /// Updates sound enabled state.
   Future<void> setSoundEnabled({required bool enabled}) async {
-    await _prefs.setBool(_kSoundEnabled, enabled);
-    _notify();
+    await traceAsync('settings', 'setSoundEnabled', () async {
+      await _prefs.setBool(_kSoundEnabled, enabled);
+      _notify();
+    });
   }
 
   /// Updates vibration enabled state.
   Future<void> setVibrationEnabled({
     required bool enabled,
   }) async {
-    await _prefs.setBool(_kVibrationEnabled, enabled);
-    _notify();
+    await traceAsync('settings', 'setVibrationEnabled', () async {
+      await _prefs.setBool(_kVibrationEnabled, enabled);
+      _notify();
+    });
   }
 
   /// Updates large text mode.
   // ignore: avoid_positional_boolean_parameters // workaround
   Future<void> setLargeText(bool enabled) async {
-    await _prefs.setBool(_kLargeText, enabled);
-    _notify();
+    await traceAsync('settings', 'setLargeText', () async {
+      await _prefs.setBool(_kLargeText, enabled);
+      _notify();
+    });
   }
 
   /// Updates high contrast mode.
   // ignore: avoid_positional_boolean_parameters // workaround
   Future<void> setHighContrast(bool enabled) async {
-    await _prefs.setBool(_kHighContrast, enabled);
-    _notify();
+    await traceAsync('settings', 'setHighContrast', () async {
+      await _prefs.setBool(_kHighContrast, enabled);
+      _notify();
+    });
   }
 
   /// Updates dark mode.
   // ignore: avoid_positional_boolean_parameters // workaround
   Future<void> setDarkMode(bool enabled) async {
-    await _prefs.setBool(_kDarkMode, enabled);
-    _notify();
+    await traceAsync('settings', 'setDarkMode', () async {
+      await _prefs.setBool(_kDarkMode, enabled);
+      _notify();
+    });
   }
 
   /// Sets the caregiver phone number.
   Future<void> setCaregiverPhone(String phone) async {
-    await _prefs.setString(_kCaregiverPhone, phone);
-    _notify();
+    await traceAsync('settings', 'setCaregiverPhone', () async {
+      await _prefs.setString(_kCaregiverPhone, phone);
+      _notify();
+    });
   }
 
   /// Returns the current caregiver phone number (empty if none).
@@ -119,18 +140,20 @@ class SettingsRepository {
 
   /// Returns reminder IDs that already triggered a caregiver alert.
   Set<int> getAlertedMissedReminderIds() {
-    final raw = _prefs.getStringList(_kCaregiverAlertedMissedIds) ??
-        const <String>[];
+    final raw =
+        _prefs.getStringList(_kCaregiverAlertedMissedIds) ?? const <String>[];
     return raw.map(int.tryParse).whereType<int>().toSet();
   }
 
   /// Marks a reminder as already alerted to avoid duplicate WhatsApp opens.
   Future<void> markMissedReminderAlerted(int reminderId) async {
-    final ids = getAlertedMissedReminderIds()..add(reminderId);
-    await _prefs.setStringList(
-      _kCaregiverAlertedMissedIds,
-      ids.map((id) => id.toString()).toList(),
-    );
+    await traceAsync('settings', 'markMissedReminderAlerted', () async {
+      final ids = getAlertedMissedReminderIds()..add(reminderId);
+      await _prefs.setStringList(
+        _kCaregiverAlertedMissedIds,
+        ids.map((id) => id.toString()).toList(),
+      );
+    });
   }
 
   /// Retains only alert IDs that are still currently missed.
@@ -138,46 +161,50 @@ class SettingsRepository {
   /// Prevents stale IDs from growing forever and allows future reminders
   /// with different IDs to alert normally.
   Future<void> retainAlertedMissedReminderIds(Set<int> activeMissedIds) async {
-    final retained = getAlertedMissedReminderIds()
-        .where(activeMissedIds.contains)
-        .toSet();
-    await _prefs.setStringList(
-      _kCaregiverAlertedMissedIds,
-      retained.map((id) => id.toString()).toList(),
-    );
+    await traceAsync('settings', 'retainAlertedMissedReminderIds', () async {
+      final retained = getAlertedMissedReminderIds()
+          .where(activeMissedIds.contains)
+          .toSet();
+      await _prefs.setStringList(
+        _kCaregiverAlertedMissedIds,
+        retained.map((id) => id.toString()).toList(),
+      );
+    });
   }
 
   /// Bulk update all settings at once.
   Future<void> update(AppSettings settings) async {
-    await _prefs.setInt(
-      _kSnoozeDuration,
-      settings.snoozeDurationMinutes,
-    );
-    await _prefs.setInt(
-      _kSilentTimeout,
-      settings.silentTimeoutMinutes,
-    );
-    await _prefs.setInt(
-      _kAudibleTimeout,
-      settings.audibleTimeoutMinutes,
-    );
-    await _prefs.setBool(
-      _kNotificationsEnabled,
-      settings.notificationsEnabled,
-    );
-    await _prefs.setBool(
-      _kSoundEnabled,
-      settings.soundEnabled,
-    );
-    await _prefs.setBool(
-      _kVibrationEnabled,
-      settings.vibrationEnabled,
-    );
-    await _prefs.setBool(_kLargeText, settings.largeText);
-    await _prefs.setBool(_kHighContrast, settings.highContrast);
-    await _prefs.setBool(_kDarkMode, settings.darkMode);
-    await _prefs.setString(_kCaregiverPhone, settings.caregiverPhone);
-    _notify();
+    await traceAsync('settings', 'updateAll', () async {
+      await _prefs.setInt(
+        _kSnoozeDuration,
+        settings.snoozeDurationMinutes,
+      );
+      await _prefs.setInt(
+        _kSilentTimeout,
+        settings.silentTimeoutMinutes,
+      );
+      await _prefs.setInt(
+        _kAudibleTimeout,
+        settings.audibleTimeoutMinutes,
+      );
+      await _prefs.setBool(
+        _kNotificationsEnabled,
+        settings.notificationsEnabled,
+      );
+      await _prefs.setBool(
+        _kSoundEnabled,
+        settings.soundEnabled,
+      );
+      await _prefs.setBool(
+        _kVibrationEnabled,
+        settings.vibrationEnabled,
+      );
+      await _prefs.setBool(_kLargeText, settings.largeText);
+      await _prefs.setBool(_kHighContrast, settings.highContrast);
+      await _prefs.setBool(_kDarkMode, settings.darkMode);
+      await _prefs.setString(_kCaregiverPhone, settings.caregiverPhone);
+      _notify();
+    });
   }
 
   AppSettings _load() {

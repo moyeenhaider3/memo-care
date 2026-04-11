@@ -2,6 +2,7 @@ import 'dart:async' show unawaited;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memo_care/core/debug/bootstrap_trace.dart';
 import 'package:memo_care/core/theme/app_colors.dart';
 import 'package:memo_care/core/theme/app_typography.dart';
 import 'package:memo_care/features/history/application/history_export_service.dart';
@@ -112,10 +113,14 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
 
     setState(() => _isExportingPdf = true);
     try {
-      await HistoryExportService.exportPdf(
-        entries: visibleEntries,
-        weekStart: _weekStart,
-        selectedDay: _selectedDay,
+      await traceAsync(
+        'ui',
+        'HistoryScreen.exportPdf',
+        () => HistoryExportService.exportPdf(
+          entries: visibleEntries,
+          weekStart: _weekStart,
+          selectedDay: _selectedDay,
+        ),
       );
     } on Exception catch (e) {
       if (!mounted) return;

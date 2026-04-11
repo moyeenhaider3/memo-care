@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:memo_care/core/debug/bootstrap_trace.dart';
 import 'package:memo_care/core/theme/app_colors.dart';
 import 'package:memo_care/features/confirmation/application/confirmation_notifier.dart';
 import 'package:memo_care/features/confirmation/domain/models/confirmation_state.dart';
@@ -34,14 +35,16 @@ class _MissedRemindersSheetState extends ConsumerState<MissedRemindersSheet> {
 
   void _markDone(Reminder reminder) {
     unawaited(
-      ref
-          .read(confirmationNotifierProvider.notifier)
-          .confirm(
-            reminderId: reminder.id,
-            chainId: reminder.chainId,
-            confirmState: ConfirmationState.done,
-            medicineName: reminder.medicineName,
-          ),
+      traceAsync('ui', 'MissedSheet.done', () async {
+        await ref
+            .read(confirmationNotifierProvider.notifier)
+            .confirm(
+              reminderId: reminder.id,
+              chainId: reminder.chainId,
+              confirmState: ConfirmationState.done,
+              medicineName: reminder.medicineName,
+            );
+      }),
     );
     setState(() => _resolvedIds.add(reminder.id));
     _checkAllResolved();
@@ -49,14 +52,16 @@ class _MissedRemindersSheetState extends ConsumerState<MissedRemindersSheet> {
 
   void _markSkip(Reminder reminder) {
     unawaited(
-      ref
-          .read(confirmationNotifierProvider.notifier)
-          .confirm(
-            reminderId: reminder.id,
-            chainId: reminder.chainId,
-            confirmState: ConfirmationState.skipped,
-            medicineName: reminder.medicineName,
-          ),
+      traceAsync('ui', 'MissedSheet.skip', () async {
+        await ref
+            .read(confirmationNotifierProvider.notifier)
+            .confirm(
+              reminderId: reminder.id,
+              chainId: reminder.chainId,
+              confirmState: ConfirmationState.skipped,
+              medicineName: reminder.medicineName,
+            );
+      }),
     );
     setState(() => _resolvedIds.add(reminder.id));
     _checkAllResolved();

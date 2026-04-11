@@ -6,6 +6,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:memo_care/core/debug/bootstrap_trace.dart';
 import 'package:memo_care/features/chain_engine/application/providers.dart';
 import 'package:memo_care/features/chain_engine/domain/models/chain_edge.dart';
 import 'package:memo_care/features/chain_engine/domain/models/chain_error.dart';
@@ -70,43 +71,47 @@ class ChainNotifier extends AsyncNotifier<ChainState> {
     required int sourceId,
     required int targetId,
   }) async {
-    final currentState = await future;
-    final validator = ref.read(chainValidatorProvider);
-    final repo = ref.read(chainRepositoryProvider);
+    return traceAsync('ui', 'ChainNotifier.addEdge', () async {
+      final currentState = await future;
+      final validator = ref.read(chainValidatorProvider);
+      final repo = ref.read(chainRepositoryProvider);
 
-    // Tentatively add the edge and validate the new graph.
-    final newEdges = [
-      ...currentState.edges.map(
-        (e) => (sourceId: e.sourceId, targetId: e.targetId),
-      ),
-      (sourceId: sourceId, targetId: targetId),
-    ];
-    final nodeIds = currentState.reminders.map((r) => r.id).toList();
+      // Tentatively add the edge and validate the new graph.
+      final newEdges = [
+        ...currentState.edges.map(
+          (e) => (sourceId: e.sourceId, targetId: e.targetId),
+        ),
+        (sourceId: sourceId, targetId: targetId),
+      ];
+      final nodeIds = currentState.reminders.map((r) => r.id).toList();
 
-    final validation = validator.validate(
-      nodeIds: nodeIds,
-      edges: newEdges,
-    );
+      final validation = validator.validate(
+        nodeIds: nodeIds,
+        edges: newEdges,
+      );
 
-    return validation.fold(
-      left,
-      (_) async {
-        await repo.createEdge(
-          chainId: currentState.chain.id,
-          sourceId: sourceId,
-          targetId: targetId,
-        );
-        ref.invalidateSelf();
-        return right<ChainError, void>(null);
-      },
-    );
+      return validation.fold(
+        left,
+        (_) async {
+          await repo.createEdge(
+            chainId: currentState.chain.id,
+            sourceId: sourceId,
+            targetId: targetId,
+          );
+          ref.invalidateSelf();
+          return right<ChainError, void>(null);
+        },
+      );
+    });
   }
 
   /// Removes an edge from the chain.
   Future<void> removeEdge(int edgeId) async {
-    final repo = ref.read(chainRepositoryProvider);
-    await repo.deleteEdge(edgeId);
-    ref.invalidateSelf();
+    await traceAsync('ui', 'ChainNotifier.removeEdge', () async {
+      final repo = ref.read(chainRepositoryProvider);
+      await repo.deleteEdge(edgeId);
+      ref.invalidateSelf();
+    });
   }
 }
 

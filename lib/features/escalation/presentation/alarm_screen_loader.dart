@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:memo_care/core/debug/bootstrap_trace.dart';
 import 'package:memo_care/core/platform/alarm_callback.dart';
-import 'package:memo_care/core/platform/audio_service.dart';
-import 'package:memo_care/core/platform/permission_service.dart';
-import 'package:memo_care/core/providers/notification_providers.dart';
+import 'package:memo_care/core/providers/alarm_providers.dart';
+import 'package:memo_care/core/providers/notification_providers.dart'
+    show notificationServiceProvider, permissionServiceProvider;
 import 'package:memo_care/core/providers/tts_providers.dart';
 import 'package:memo_care/features/chain_engine/application/chain_context_providers.dart';
 import 'package:memo_care/features/confirmation/application/confirmation_notifier.dart';
@@ -57,130 +58,136 @@ class _AlarmScreenLoaderState extends ConsumerState<AlarmScreenLoader> {
 
   Future<void> _startEscalation() async {
     if (_escalationStarted || !mounted) return;
-    _escalationStarted = true;
 
-    final notifService = ref.read(notificationServiceProvider);
-    final settings = ref.read(settingsRepositoryProvider).current;
+    await traceAsync('ui', 'AlarmScreen.startEscalation', () async {
+      _escalationStarted = true;
 
-    final fsm = EscalationFSM(
-      timeouts: {
-        EscalationLevel.silent: Duration(
-          minutes: settings.silentTimeoutMinutes,
+      final notifService = ref.read(notificationServiceProvider);
+      final settings = ref.read(settingsRepositoryProvider).current;
+
+      final fsm = EscalationFSM(
+        timeouts: {
+          EscalationLevel.silent: Duration(
+            minutes: settings.silentTimeoutMinutes,
+          ),
+          EscalationLevel.audible: Duration(
+            minutes: settings.audibleTimeoutMinutes,
+          ),
+        },
+      );
+
+      final controller = EscalationController(
+        notificationService: notifService,
+        audioService: ref.read(audioServiceProvider),
+        fsm: fsm,
+      );
+      _controller = controller;
+
+      final reminderSnapshot = await ref
+          .read(reminderRepositoryProvider)
+          .getById(widget.reminderId);
+
+      if (reminderSnapshot == null || !mounted) return;
+
+      final permService = ref.read(permissionServiceProvider);
+      final canFullScreen = await permService.canUseFullScreenIntent();
+
+      await controller.startEscalation(
+        reminderId: widget.reminderId,
+        title: '💊 ${reminderSnapshot.medicineName}',
+        body: reminderSnapshot.dosage != null
+            ? '${reminderSnapshot.dosage} — Time to take your medication'
+            : 'Time to take your medication',
+        canUseFullScreen: canFullScreen,
+        actions: reminderActionsFor(
+          medicineName: reminderSnapshot.medicineName,
+          caregiverPhone: settings.caregiverPhone,
         ),
-        EscalationLevel.audible: Duration(
-          minutes: settings.audibleTimeoutMinutes,
-        ),
-      },
-    );
-
-    final controller = EscalationController(
-      notificationService: notifService,
-      audioService: AudioService(),
-      fsm: fsm,
-    );
-    _controller = controller;
-
-    // Read current reminder snapshot.
-    final reminderSnapshot = await ref
-        .read(reminderRepositoryProvider)
-        .watchById(widget.reminderId)
-        .first;
-
-    if (reminderSnapshot == null || !mounted) return;
-
-    final permService = PermissionService();
-    final canFullScreen = await permService.canUseFullScreenIntent();
-
-    await controller.startEscalation(
-      reminderId: widget.reminderId,
-      title: '💊 ${reminderSnapshot.medicineName}',
-      body: reminderSnapshot.dosage != null
-          ? '${reminderSnapshot.dosage} — Time to take your medication'
-          : 'Time to take your medication',
-      canUseFullScreen: canFullScreen,
-      actions: reminderActionsFor(
-        medicineName: reminderSnapshot.medicineName,
-        caregiverPhone: settings.caregiverPhone,
-      ),
-    );
+      );
+    });
   }
 
   Future<void> _acknowledge() async {
     if (_acknowledged) return;
     _acknowledged = true;
-    try {
-      await ref.read(ttsServiceProvider).stop();
-    } on Object catch (_) {
-      // Non-fatal: continue acknowledgement flow even if stop fails.
-    }
-    await _controller?.acknowledge();
+    await traceAsync('ui', 'AlarmScreen.acknowledge', () async {
+      try {
+        await ref.read(ttsServiceProvider).stop();
+      } on Object catch (_) {
+        // Non-fatal: continue acknowledgement flow even if stop fails.
+      }
+      await _controller?.acknowledge();
+    });
   }
 
   Future<void> _handleDone() async {
-    await _acknowledge();
-    final reminder = await _loadReminder();
-    if (reminder == null) {
+    await traceAsync('ui', 'AlarmScreen.done', () async {
+      await _acknowledge();
+      final reminder = await _loadReminder();
+      if (reminder == null) {
+        if (mounted) context.pop();
+        return;
+      }
+      await ref
+          .read(confirmationNotifierProvider.notifier)
+          .confirm(
+            reminderId: widget.reminderId,
+            chainId: reminder.chainId,
+            confirmState: ConfirmationState.done,
+            medicineName: reminder.medicineName,
+          );
       if (mounted) context.pop();
-      return;
-    }
-    await ref
-        .read(confirmationNotifierProvider.notifier)
-        .confirm(
-          reminderId: widget.reminderId,
-          chainId: reminder.chainId,
-          confirmState: ConfirmationState.done,
-          medicineName: reminder.medicineName,
-        );
-    if (mounted) context.pop();
+    });
   }
 
   Future<void> _handleSnooze() async {
-    await _acknowledge();
-    final reminder = await _loadReminder();
-    if (reminder == null) {
-      if (mounted) context.pop();
-      return;
-    }
-    final settings = ref.read(settingsRepositoryProvider).current;
-    final snoozeUntil = DateTime.now().toUtc().add(
-      Duration(minutes: settings.snoozeDurationMinutes),
-    );
+    await traceAsync('ui', 'AlarmScreen.snooze', () async {
+      await _acknowledge();
+      final reminder = await _loadReminder();
+      if (reminder == null) {
+        if (mounted) context.pop();
+        return;
+      }
+      final settings = ref.read(settingsRepositoryProvider).current;
+      final snoozeUntil = DateTime.now().toUtc().add(
+        Duration(minutes: settings.snoozeDurationMinutes),
+      );
 
-    await ref
-        .read(confirmationNotifierProvider.notifier)
-        .confirm(
-          reminderId: widget.reminderId,
-          chainId: reminder.chainId,
-          confirmState: ConfirmationState.snoozed,
-          medicineName: reminder.medicineName,
-          snoozeUntil: snoozeUntil,
-        );
-    if (mounted) context.pop();
+      await ref
+          .read(confirmationNotifierProvider.notifier)
+          .confirm(
+            reminderId: widget.reminderId,
+            chainId: reminder.chainId,
+            confirmState: ConfirmationState.snoozed,
+            medicineName: reminder.medicineName,
+            snoozeUntil: snoozeUntil,
+          );
+      if (mounted) context.pop();
+    });
   }
 
   Future<void> _handleSkip() async {
-    await _acknowledge();
-    final reminder = await _loadReminder();
-    if (reminder == null) {
+    await traceAsync('ui', 'AlarmScreen.skip', () async {
+      await _acknowledge();
+      final reminder = await _loadReminder();
+      if (reminder == null) {
+        if (mounted) context.pop();
+        return;
+      }
+      await ref
+          .read(confirmationNotifierProvider.notifier)
+          .confirm(
+            reminderId: widget.reminderId,
+            chainId: reminder.chainId,
+            confirmState: ConfirmationState.skipped,
+            medicineName: reminder.medicineName,
+          );
       if (mounted) context.pop();
-      return;
-    }
-    await ref
-        .read(confirmationNotifierProvider.notifier)
-        .confirm(
-          reminderId: widget.reminderId,
-          chainId: reminder.chainId,
-          confirmState: ConfirmationState.skipped,
-          medicineName: reminder.medicineName,
-        );
-    if (mounted) context.pop();
+    });
   }
 
   Future<Reminder?> _loadReminder() {
-    return ref
-        .read(reminderRepositoryProvider)
-        .watchById(widget.reminderId)
-        .first;
+    return ref.read(reminderRepositoryProvider).getById(widget.reminderId);
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:memo_care/core/debug/bootstrap_trace.dart';
 import 'package:memo_care/core/theme/app_colors.dart';
 import 'package:memo_care/core/theme/app_spacing.dart';
 import 'package:memo_care/core/theme/app_typography.dart';
@@ -117,7 +118,11 @@ class _TemplateLibraryScreenState extends ConsumerState<TemplateLibraryScreen> {
                             final service = ref.read(
                               templateServiceProvider,
                             );
-                            final result = await service.apply(pack: pack);
+                            final result = await traceAsync(
+                              'ui',
+                              'TemplateLibrary.apply',
+                              () => service.apply(pack: pack),
+                            );
                             result.fold(
                               (error) {
                                 if (context.mounted) {

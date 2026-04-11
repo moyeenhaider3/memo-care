@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memo_care/core/debug/bootstrap_trace.dart';
 import 'package:memo_care/core/platform/caregiver_service.dart';
 import 'package:memo_care/core/theme/app_colors.dart';
 import 'package:memo_care/core/theme/app_spacing.dart';
@@ -132,34 +133,38 @@ class _SettingsBody extends ConsumerWidget {
   }
 
   Future<void> _sendTestAlert(BuildContext context) async {
-    final phone = settings.caregiverPhone;
-    if (phone.isEmpty) return;
+    await traceAsync('ui', 'SettingsScreen.sendTestAlert', () async {
+      final phone = settings.caregiverPhone;
+      if (phone.isEmpty) return;
 
-    final hasNetwork = await CaregiverService.hasNetworkConnection();
-    if (!hasNetwork) {
+      final hasNetwork = await CaregiverService.hasNetworkConnection();
+      if (!hasNetwork) {
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'No internet connection. Connect to the internet '
+              'and try again.',
+            ),
+          ),
+        );
+        return;
+      }
+
+      final launched =
+          await CaregiverService.sendTestAlert(phoneNumber: phone);
       if (!context.mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
-            'No internet connection. Connect to the internet and try again.',
+            launched
+                ? 'Opening WhatsApp test alert.'
+                : 'Could not open WhatsApp. Check installation and try again.',
           ),
         ),
       );
-      return;
-    }
-
-    final launched = await CaregiverService.sendTestAlert(phoneNumber: phone);
-    if (!context.mounted) return;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          launched
-              ? 'Opening WhatsApp test alert.'
-              : 'Could not open WhatsApp. Check installation and try again.',
-        ),
-      ),
-    );
+    });
   }
 
   @override
@@ -287,12 +292,10 @@ class _SettingsBody extends ConsumerWidget {
         // ─── DATA EXPORT ───
         DataExportSection(
           onExportPdf: () {
-            // ignore: flutter_style_todos // workaround
-            // TODO: generate & share PDF
+            traceSync('ui', 'SettingsScreen.exportPdf.stub', () {});
           },
           onExportCsv: () {
-            // ignore: flutter_style_todos // workaround
-            // TODO: generate & share CSV
+            traceSync('ui', 'SettingsScreen.exportCsv.stub', () {});
           },
         ),
 

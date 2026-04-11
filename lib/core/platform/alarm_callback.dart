@@ -5,6 +5,7 @@ import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:memo_care/core/database/app_database.dart';
+import 'package:memo_care/core/debug/bootstrap_trace.dart';
 import 'package:memo_care/core/platform/alarm_scheduler.dart';
 import 'package:memo_care/core/platform/caregiver_service.dart';
 import 'package:memo_care/core/platform/notification_service.dart';
@@ -17,6 +18,31 @@ import 'package:memo_care/features/escalation/domain/escalation_level.dart';
 import 'package:memo_care/features/reminders/domain/models/medicine_type.dart';
 import 'package:memo_care/features/reminders/domain/models/reminder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+/// Optional factories for tests (in-memory DB, fake notification / scheduler).
+/// Unset in production — each call site uses defaults below.
+@visibleForTesting
+class AlarmCallbackOverrides {
+  AlarmCallbackOverrides._();
+
+  static AppDatabase Function()? createDatabase;
+  static NotificationService Function()? createNotificationService;
+  static AlarmScheduler Function()? createScheduler;
+
+  /// When false, tray handlers skip [AppDatabase.close] (tests assert then
+  /// close in tearDown). Default true.
+  static bool closeTrayDatabase = true;
+}
+
+AppDatabase _alarmDb() =>
+    AlarmCallbackOverrides.createDatabase?.call() ?? AppDatabase();
+
+NotificationService _alarmNotificationService() =>
+    AlarmCallbackOverrides.createNotificationService?.call() ??
+    NotificationService();
+
+AlarmScheduler _alarmScheduler() =>
+    AlarmCallbackOverrides.createScheduler?.call() ?? AlarmScheduler();
 
 // ── Action ID constants ──────────────────────────────────────────
 
@@ -91,8 +117,10 @@ const String kAlarmNavigationPortName = 'memo_care_alarm_navigation_port';
 /// android_alarm_manager_plus because it runs in a separate isolate.
 @pragma('vm:entry-point')
 Future<void> alarmFiredCallback(int reminderId) async {
+  traceEnter('alarm', 'alarmFiredCallback');
   // Background isolate — must create fresh instances.
-  final db = AppDatabase();
+  final db = _alarmDb();
+  Object? traceErr;
 
   try {
     // Load reminder from DB.
@@ -104,7 +132,7 @@ Future<void> alarmFiredCallback(int reminderId) async {
     _notifyUiAlarmTriggered(reminderId);
 
     // Initialize notification service in this isolate.
-    final notificationService = NotificationService();
+    final notificationService = _alarmNotificationService();
     await notificationService.initialize(
       onBackgroundResponse: onNotificationAction,
     );
@@ -163,10 +191,12 @@ Future<void> alarmFiredCallback(int reminderId) async {
       );
     }
   } on Object catch (e, st) {
+    traceErr = e;
     debugPrint('MemoCare alarmFiredCallback failed: $e');
     debugPrint('MemoCare alarmFiredCallback stack: $st');
   } finally {
     await db.close();
+    traceExit('alarm', 'alarmFiredCallback', traceErr);
   }
 }
 
@@ -193,6 +223,8 @@ Future<void> onNotificationAction(NotificationResponse response) async {
   final reminderId = data['reminderId'] as int?;
   if (reminderId == null) return;
 
+  traceEnter('alarm', 'onNotificationAction');
+  Object? traceErr;
   try {
     await _stopTtsBestEffort();
 
@@ -207,8 +239,11 @@ Future<void> onNotificationAction(NotificationResponse response) async {
         await _handleCallNow();
     }
   } on Object catch (e, st) {
+    traceErr = e;
     debugPrint('MemoCare onNotificationAction failed: $e');
     debugPrint('MemoCare onNotificationAction stack: $st');
+  } finally {
+    traceExit('alarm', 'onNotificationAction', traceErr);
   }
 }
 
@@ -257,86 +292,100 @@ Future<void> _handleCallNow() async {
 }
 
 Future<void> _handleDone(int reminderId) async {
-  final notifService = NotificationService();
-  await notifService.initialize();
-  await notifService.cancel(reminderId);
+  await traceAsync('alarm', 'handleDone', () async {
+    final notifService = _alarmNotificationService();
+    await notifService.initialize();
+    await notifService.cancel(reminderId);
 
-  final db = AppDatabase();
-  try {
-    await _runDbWriteWithRetry(() {
-      return db.confirmationDao.insertConfirmation(
-        ConfirmationsCompanion.insert(
-          reminderId: reminderId,
-          state: 'done',
-          confirmedAt: DateTime.now().toUtc(),
-        ),
-      );
-    });
+    final db = _alarmDb();
+    try {
+      await _runDbWriteWithRetry(() {
+        return db.confirmationDao.insertConfirmation(
+          ConfirmationsCompanion.insert(
+            reminderId: reminderId,
+            state: 'done',
+            confirmedAt: DateTime.now().toUtc(),
+          ),
+        );
+      });
 
-    // Evaluate chain engine to activate downstream reminders.
-    await _evaluateChainOnDone(db, reminderId);
-  } finally {
-    await db.close();
-  }
+      // Evaluate chain engine to activate downstream reminders.
+      await _evaluateChainOnDone(db, reminderId);
+    } finally {
+      if (AlarmCallbackOverrides.closeTrayDatabase) {
+        await db.close();
+      }
+    }
+  });
 }
 
 Future<void> _handleSnooze(int reminderId) async {
-  final notifService = NotificationService();
-  await notifService.initialize();
-  await notifService.cancel(reminderId);
+  await traceAsync('alarm', 'handleSnooze', () async {
+    final notifService = _alarmNotificationService();
+    await notifService.initialize();
+    await notifService.cancel(reminderId);
 
-  // Read snooze duration from user settings.
-  final prefs = await SharedPreferences.getInstance();
-  final snoozeMins = prefs.getInt('settings_snooze_duration_minutes') ?? 5;
-  final snoozeUntil = DateTime.now().toUtc().add(Duration(minutes: snoozeMins));
+    // Read snooze duration from user settings.
+    final prefs = await SharedPreferences.getInstance();
+    final snoozeMins = prefs.getInt('settings_snooze_duration_minutes') ?? 5;
+    final snoozeUntil = DateTime.now().toUtc().add(
+      Duration(minutes: snoozeMins),
+    );
 
-  final db = AppDatabase();
-  try {
-    await _runDbWriteWithRetry(() {
-      return db.confirmationDao.insertConfirmation(
-        ConfirmationsCompanion.insert(
-          reminderId: reminderId,
-          state: 'snoozed',
-          confirmedAt: DateTime.now().toUtc(),
-          snoozeUntil: Value(snoozeUntil),
-        ),
-      );
-    });
-  } finally {
-    await db.close();
-  }
+    final db = _alarmDb();
+    try {
+      await _runDbWriteWithRetry(() {
+        return db.confirmationDao.insertConfirmation(
+          ConfirmationsCompanion.insert(
+            reminderId: reminderId,
+            state: 'snoozed',
+            confirmedAt: DateTime.now().toUtc(),
+            snoozeUntil: Value(snoozeUntil),
+          ),
+        );
+      });
+    } finally {
+      if (AlarmCallbackOverrides.closeTrayDatabase) {
+        await db.close();
+      }
+    }
 
-  // Reschedule alarm to fire after snooze duration.
-  final scheduler = AlarmScheduler();
-  await scheduler.schedule(
-    reminderId: reminderId,
-    fireAt: snoozeUntil,
-    callbackHandle: alarmFiredCallback,
-  );
+    // Reschedule alarm to fire after snooze duration.
+    final scheduler = _alarmScheduler();
+    await scheduler.schedule(
+      reminderId: reminderId,
+      fireAt: snoozeUntil,
+      callbackHandle: alarmFiredCallback,
+    );
+  });
 }
 
 Future<void> _handleSkip(int reminderId) async {
-  final notifService = NotificationService();
-  await notifService.initialize();
-  await notifService.cancel(reminderId);
+  await traceAsync('alarm', 'handleSkip', () async {
+    final notifService = _alarmNotificationService();
+    await notifService.initialize();
+    await notifService.cancel(reminderId);
 
-  final db = AppDatabase();
-  try {
-    await _runDbWriteWithRetry(() {
-      return db.confirmationDao.insertConfirmation(
-        ConfirmationsCompanion.insert(
-          reminderId: reminderId,
-          state: 'skipped',
-          confirmedAt: DateTime.now().toUtc(),
-        ),
-      );
-    });
+    final db = _alarmDb();
+    try {
+      await _runDbWriteWithRetry(() {
+        return db.confirmationDao.insertConfirmation(
+          ConfirmationsCompanion.insert(
+            reminderId: reminderId,
+            state: 'skipped',
+            confirmedAt: DateTime.now().toUtc(),
+          ),
+        );
+      });
 
-    // Evaluate chain engine to suspend downstream reminders.
-    await _evaluateChainOnSkip(db, reminderId);
-  } finally {
-    await db.close();
-  }
+      // Evaluate chain engine to suspend downstream reminders.
+      await _evaluateChainOnSkip(db, reminderId);
+    } finally {
+      if (AlarmCallbackOverrides.closeTrayDatabase) {
+        await db.close();
+      }
+    }
+  });
 }
 
 // ── Chain engine helpers for background isolate ────────────────
@@ -389,48 +438,50 @@ Future<void> _evaluateChainOnDone(
   AppDatabase db,
   int reminderId,
 ) async {
-  final data = await _loadChainData(db, reminderId);
-  if (data == null || data.edges.isEmpty) return;
+  await traceAsync('alarm', 'evaluateChainOnDone', () async {
+    final data = await _loadChainData(db, reminderId);
+    if (data == null || data.edges.isEmpty) return;
 
-  const engine = ChainEngine();
-  final result = engine.evaluate(
-    reminders: data.reminders,
-    edges: data.edges,
-    confirmedId: reminderId,
-    state: ConfirmationState.done,
-  );
+    const engine = ChainEngine();
+    final result = engine.evaluate(
+      reminders: data.reminders,
+      edges: data.edges,
+      confirmedId: reminderId,
+      state: ConfirmationState.done,
+    );
 
-  // Use getOrElse to extract the list; fold doesn't await async.
-  if (result.isLeft()) return;
-  final downstream = result.getOrElse((_) => []);
+    // Use getOrElse to extract the list; fold doesn't await async.
+    if (result.isLeft()) return;
+    final downstream = result.getOrElse((_) => []);
 
-  final scheduler = AlarmScheduler();
-  for (final reminder in downstream) {
-    // Activate the downstream reminder.
-    await _runDbWriteWithRetry(() {
-      return db.reminderDao.updateReminder(
-        RemindersCompanion(
-          id: Value(reminder.id),
-          chainId: Value(reminder.chainId),
-          medicineName: Value(reminder.medicineName),
-          medicineType: Value(reminder.medicineType.dbValue),
-          dosage: Value(reminder.dosage),
-          scheduledAt: Value(reminder.scheduledAt),
-          isActive: const Value(true),
-          gapHours: Value(reminder.gapHours),
-        ),
-      );
-    });
+    final scheduler = _alarmScheduler();
+    for (final reminder in downstream) {
+      // Activate the downstream reminder.
+      await _runDbWriteWithRetry(() {
+        return db.reminderDao.updateReminder(
+          RemindersCompanion(
+            id: Value(reminder.id),
+            chainId: Value(reminder.chainId),
+            medicineName: Value(reminder.medicineName),
+            medicineType: Value(reminder.medicineType.dbValue),
+            dosage: Value(reminder.dosage),
+            scheduledAt: Value(reminder.scheduledAt),
+            isActive: const Value(true),
+            gapHours: Value(reminder.gapHours),
+          ),
+        );
+      });
 
-    // Schedule alarm if the reminder has a scheduled time.
-    if (reminder.scheduledAt != null) {
-      await scheduler.schedule(
-        reminderId: reminder.id,
-        fireAt: reminder.scheduledAt!,
-        callbackHandle: alarmFiredCallback,
-      );
+      // Schedule alarm if the reminder has a scheduled time.
+      if (reminder.scheduledAt != null) {
+        await scheduler.schedule(
+          reminderId: reminder.id,
+          fireAt: reminder.scheduledAt!,
+          callbackHandle: alarmFiredCallback,
+        );
+      }
     }
-  }
+  });
 }
 
 /// On SKIP: suspend all transitive downstream reminders and
@@ -439,41 +490,43 @@ Future<void> _evaluateChainOnSkip(
   AppDatabase db,
   int reminderId,
 ) async {
-  final data = await _loadChainData(db, reminderId);
-  if (data == null || data.edges.isEmpty) return;
+  await traceAsync('alarm', 'evaluateChainOnSkip', () async {
+    final data = await _loadChainData(db, reminderId);
+    if (data == null || data.edges.isEmpty) return;
 
-  const engine = ChainEngine();
-  final result = engine.evaluate(
-    reminders: data.reminders,
-    edges: data.edges,
-    confirmedId: reminderId,
-    state: ConfirmationState.skipped,
-  );
+    const engine = ChainEngine();
+    final result = engine.evaluate(
+      reminders: data.reminders,
+      edges: data.edges,
+      confirmedId: reminderId,
+      state: ConfirmationState.skipped,
+    );
 
-  if (result.isLeft()) return;
-  final suspended = result.getOrElse((_) => []);
+    if (result.isLeft()) return;
+    final suspended = result.getOrElse((_) => []);
 
-  final scheduler = AlarmScheduler();
-  for (final reminder in suspended) {
-    // Deactivate the downstream reminder.
-    await _runDbWriteWithRetry(() {
-      return db.reminderDao.updateReminder(
-        RemindersCompanion(
-          id: Value(reminder.id),
-          chainId: Value(reminder.chainId),
-          medicineName: Value(reminder.medicineName),
-          medicineType: Value(reminder.medicineType.dbValue),
-          dosage: Value(reminder.dosage),
-          scheduledAt: Value(reminder.scheduledAt),
-          isActive: const Value(false),
-          gapHours: Value(reminder.gapHours),
-        ),
-      );
-    });
+    final scheduler = _alarmScheduler();
+    for (final reminder in suspended) {
+      // Deactivate the downstream reminder.
+      await _runDbWriteWithRetry(() {
+        return db.reminderDao.updateReminder(
+          RemindersCompanion(
+            id: Value(reminder.id),
+            chainId: Value(reminder.chainId),
+            medicineName: Value(reminder.medicineName),
+            medicineType: Value(reminder.medicineType.dbValue),
+            dosage: Value(reminder.dosage),
+            scheduledAt: Value(reminder.scheduledAt),
+            isActive: const Value(false),
+            gapHours: Value(reminder.gapHours),
+          ),
+        );
+      });
 
-    // Cancel the alarm.
-    await scheduler.cancel(reminder.id);
-  }
+      // Cancel the alarm.
+      await scheduler.cancel(reminder.id);
+    }
+  });
 }
 
 class _ChainData {

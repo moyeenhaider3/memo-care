@@ -10,6 +10,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:memo_care/app.dart';
+import 'package:memo_care/core/debug/bootstrap_trace.dart';
 import 'package:memo_care/core/platform/alarm_callback.dart';
 import 'package:memo_care/core/platform/alarm_rescheduler.dart'
     as boot_rescheduler;
@@ -103,61 +104,90 @@ Future<void> rescheduleAlarmsOnBoot() {
 }
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  traceSync(
+    'main',
+    'WidgetsFlutterBinding.ensureInitialized',
+    WidgetsFlutterBinding.ensureInitialized,
+  );
 
   // Initialize AndroidAlarmManager before any scheduling.
   // Only available on Android — skip on iOS/other platforms.
   if (!kIsWeb && Platform.isAndroid) {
-    await AlarmScheduler.initialize();
+    await traceAsync(
+      'main',
+      'AlarmScheduler.initialize',
+      AlarmScheduler.initialize,
+    );
   }
 
   // Initialize SharedPreferences before any provider reads it.
-  final prefs = await SharedPreferences.getInstance();
+  final prefs = await traceAsync(
+    'main',
+    'SharedPreferences.getInstance',
+    SharedPreferences.getInstance,
+  );
 
   // Initialize NotificationService in the FOREGROUND app so:
   // 1. Notification taps navigate to the alarm screen.
   // 2. Notification action buttons (DONE/SNOOZE/SKIP) work from the tray.
   // 3. The escalation controller can post/update notifications.
   final notifService = NotificationService();
-  await notifService.initialize(
-    onResponse: _onNotificationTap,
-    onBackgroundResponse: onNotificationAction,
-  );
+  await traceAsync('main', 'NotificationService.initialize', () {
+    return notifService.initialize(
+      onResponse: _onNotificationTap,
+      onBackgroundResponse: onNotificationAction,
+    );
+  });
 
   // Listen for alarm callback events from background isolate so the
   // foreground app opens the reminder screen immediately.
-  _registerAlarmNavigationBridge();
+  traceSync(
+    'main',
+    'alarmNavigationBridge.register',
+    _registerAlarmNavigationBridge,
+  );
 
   // Handle app cold-start from notification tap/full-screen intent.
   // onDidReceiveNotificationResponse is not called for a terminated app.
-  int? launchReminderId;
-  final launchDetails = await notifService.plugin
-      .getNotificationAppLaunchDetails();
-  if (launchDetails?.didNotificationLaunchApp ?? false) {
-    final launchResponse = launchDetails?.notificationResponse;
-    if (launchResponse != null) {
-      if (launchResponse.actionId?.isNotEmpty ?? false) {
-        // Action button launched the app — execute action first.
-        await onNotificationAction(launchResponse);
-      } else {
-        launchReminderId = _extractReminderIdFromPayload(
-          launchResponse.payload,
-        );
+  final launchReminderId = await traceAsync(
+    'main',
+    'coldStartFromNotification',
+    () async {
+      int? id;
+      final launchDetails = await notifService.plugin
+          .getNotificationAppLaunchDetails();
+      if (launchDetails?.didNotificationLaunchApp ?? false) {
+        final launchResponse = launchDetails?.notificationResponse;
+        if (launchResponse != null) {
+          if (launchResponse.actionId?.isNotEmpty ?? false) {
+            // Action button launched the app — execute action first.
+            await onNotificationAction(launchResponse);
+          } else {
+            id = _extractReminderIdFromPayload(
+              launchResponse.payload,
+            );
+          }
+        }
       }
-    }
-  }
+      return id;
+    },
+  );
 
   // Pre-initialize TTS to avoid 300-800ms cold-start
   // delay on first speech request (PITFALLS.md §4).
   final ttsService = TTSService();
+  traceEnter('main', 'TTSService.initialize');
   try {
     await ttsService.initialize();
+    traceExit('main', 'TTSService.initialize');
   } on Exception catch (e) {
+    traceExit('main', 'TTSService.initialize', e);
     debugPrint(
       'TTS pre-initialization failed (non-fatal): $e',
     );
   }
 
+  traceEnter('main', 'runApp');
   runApp(
     ProviderScope(
       overrides: [
@@ -170,4 +200,7 @@ Future<void> main() async {
       child: MemoCareApp(initialAlarmReminderId: launchReminderId),
     ),
   );
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    traceExit('main', 'runApp_firstFrame');
+  });
 }

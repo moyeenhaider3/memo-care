@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memo_care/core/debug/bootstrap_trace.dart';
 import 'package:memo_care/features/onboarding/domain/models/onboarding_state.dart';
 import 'package:memo_care/features/settings/application/settings_providers.dart';
 
@@ -103,12 +104,14 @@ class OnboardingNotifier extends Notifier<OnboardingState> {
 
   /// Mark onboarding as complete and persist to SharedPreferences.
   void completeOnboarding() {
-    // ignore: discarded_futures // workaround
-    ref.read(sharedPreferencesProvider).setBool('onboarding_complete', true);
-    state = state.copyWith(
-      currentStep: OnboardingStep.complete,
-      isComplete: true,
-    );
+    traceSync('ui', 'Onboarding.completeOnboarding', () {
+      // ignore: discarded_futures // workaround
+      ref.read(sharedPreferencesProvider).setBool('onboarding_complete', true);
+      state = state.copyWith(
+        currentStep: OnboardingStep.complete,
+        isComplete: true,
+      );
+    });
   }
 
   /// Reset all onboarding state (for testing or

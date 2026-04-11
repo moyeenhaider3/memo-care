@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memo_care/core/debug/bootstrap_trace.dart';
 import 'package:memo_care/core/platform/alarm_callback.dart';
 import 'package:memo_care/core/providers/alarm_providers.dart';
 import 'package:memo_care/features/anchors/application/providers.dart';
@@ -40,59 +41,61 @@ class AnchorNotifier extends AsyncNotifier<List<MealAnchor>> {
     required String mealType,
     required DateTime confirmedAt,
   }) async {
-    state = const AsyncLoading<List<MealAnchor>>();
-    state = await AsyncValue.guard(() async {
-      final anchorRepo = ref.read(anchorRepositoryProvider);
-      final reminderRepo = ref.read(
-        reminder_providers.reminderRepositoryProvider,
-      );
-      final resolver = ref.read(anchorResolverProvider);
-      final scheduler = ref.read(alarmSchedulerProvider);
-
-      // 1. Get current anchor and update confirmedAt.
-      final anchors = await anchorRepo.watchAll().first;
-      final anchor = anchors.firstWhere(
-        (a) => a.mealType == mealType,
-        orElse: () => throw ArgumentError('Unknown meal type: $mealType'),
-      );
-      final updatedAnchor = anchor.copyWith(
-        confirmedAt: confirmedAt,
-      );
-      await anchorRepo.updateAnchor(updatedAnchor);
-
-      // 2. Query active reminders, filter to meal-dependent.
-      final allReminders = await reminderRepo.watchActive().first;
-      final dependents = allReminders.where(_isMealDependent).toList();
-
-      if (dependents.isNotEmpty) {
-        // 3. Resolve new fire times.
-        final updates = resolver.resolve(
-          anchor: updatedAnchor,
-          confirmedAt: confirmedAt,
-          dependents: dependents,
+    await traceAsync('ui', 'AnchorNotifier.confirmMeal', () async {
+      state = const AsyncLoading<List<MealAnchor>>();
+      state = await AsyncValue.guard(() async {
+        final anchorRepo = ref.read(anchorRepositoryProvider);
+        final reminderRepo = ref.read(
+          reminder_providers.reminderRepositoryProvider,
         );
+        final resolver = ref.read(anchorResolverProvider);
+        final scheduler = ref.read(alarmSchedulerProvider);
 
-        // 4 & 5. Update Drift + reschedule alarms.
-        for (final update in updates) {
-          final reminder = dependents.cast<Reminder?>().firstWhere(
-            (r) => r!.id == update.reminderId,
-            orElse: () => null,
+        // 1. Get current anchor and update confirmedAt.
+        final anchors = await anchorRepo.watchAll().first;
+        final anchor = anchors.firstWhere(
+          (a) => a.mealType == mealType,
+          orElse: () => throw ArgumentError('Unknown meal type: $mealType'),
+        );
+        final updatedAnchor = anchor.copyWith(
+          confirmedAt: confirmedAt,
+        );
+        await anchorRepo.updateAnchor(updatedAnchor);
+
+        // 2. Query active reminders, filter to meal-dependent.
+        final allReminders = await reminderRepo.watchActive().first;
+        final dependents = allReminders.where(_isMealDependent).toList();
+
+        if (dependents.isNotEmpty) {
+          // 3. Resolve new fire times.
+          final updates = resolver.resolve(
+            anchor: updatedAnchor,
+            confirmedAt: confirmedAt,
+            dependents: dependents,
           );
-          if (reminder == null) continue;
-          final updated = reminder.copyWith(
-            scheduledAt: update.scheduledAt,
-          );
-          await reminderRepo.updateReminder(updated);
-          await scheduler.schedule(
-            reminderId: update.reminderId,
-            fireAt: update.scheduledAt,
-            callbackHandle: alarmFiredCallback,
-          );
+
+          // 4 & 5. Update Drift + reschedule alarms.
+          for (final update in updates) {
+            final reminder = dependents.cast<Reminder?>().firstWhere(
+              (r) => r!.id == update.reminderId,
+              orElse: () => null,
+            );
+            if (reminder == null) continue;
+            final updated = reminder.copyWith(
+              scheduledAt: update.scheduledAt,
+            );
+            await reminderRepo.updateReminder(updated);
+            await scheduler.schedule(
+              reminderId: update.reminderId,
+              fireAt: update.scheduledAt,
+              callbackHandle: alarmFiredCallback,
+            );
+          }
         }
-      }
 
-      // Return updated anchors for state.
-      return anchorRepo.watchAll().first;
+        // Return updated anchors for state.
+        return anchorRepo.watchAll().first;
+      });
     });
   }
 
@@ -106,66 +109,68 @@ class AnchorNotifier extends AsyncNotifier<List<MealAnchor>> {
     required String mealType,
     required int minutesFromMidnight,
   }) async {
-    state = const AsyncLoading<List<MealAnchor>>();
-    state = await AsyncValue.guard(() async {
-      final anchorRepo = ref.read(anchorRepositoryProvider);
-      final reminderRepo = ref.read(
-        reminder_providers.reminderRepositoryProvider,
-      );
-      final resolver = ref.read(anchorResolverProvider);
-      final scheduler = ref.read(alarmSchedulerProvider);
+    await traceAsync('ui', 'AnchorNotifier.updateDefaultTime', () async {
+      state = const AsyncLoading<List<MealAnchor>>();
+      state = await AsyncValue.guard(() async {
+        final anchorRepo = ref.read(anchorRepositoryProvider);
+        final reminderRepo = ref.read(
+          reminder_providers.reminderRepositoryProvider,
+        );
+        final resolver = ref.read(anchorResolverProvider);
+        final scheduler = ref.read(alarmSchedulerProvider);
 
-      // 1. Get current anchor and update default time.
-      final anchors = await anchorRepo.watchAll().first;
-      final anchor = anchors.firstWhere(
-        (a) => a.mealType == mealType,
-        orElse: () => throw ArgumentError('Unknown meal type: $mealType'),
-      );
-      final updatedAnchor = anchor.copyWith(
-        defaultTimeMinutes: minutesFromMidnight,
-      );
-      await anchorRepo.updateAnchor(updatedAnchor);
+        // 1. Get current anchor and update default time.
+        final anchors = await anchorRepo.watchAll().first;
+        final anchor = anchors.firstWhere(
+          (a) => a.mealType == mealType,
+          orElse: () => throw ArgumentError('Unknown meal type: $mealType'),
+        );
+        final updatedAnchor = anchor.copyWith(
+          defaultTimeMinutes: minutesFromMidnight,
+        );
+        await anchorRepo.updateAnchor(updatedAnchor);
 
-      // 2. Build reference time from the new default.
-      final now = DateTime.now().toUtc();
-      final referenceTime = DateTime.utc(
-        now.year,
-        now.month,
-        now.day,
-        minutesFromMidnight ~/ 60,
-        minutesFromMidnight % 60,
-      );
-
-      // 3. Cascade recalculation to dependents.
-      final allReminders = await reminderRepo.watchActive().first;
-      final dependents = allReminders.where(_isMealDependent).toList();
-
-      if (dependents.isNotEmpty) {
-        final updates = resolver.resolve(
-          anchor: updatedAnchor,
-          confirmedAt: referenceTime,
-          dependents: dependents,
+        // 2. Build reference time from the new default.
+        final now = DateTime.now().toUtc();
+        final referenceTime = DateTime.utc(
+          now.year,
+          now.month,
+          now.day,
+          minutesFromMidnight ~/ 60,
+          minutesFromMidnight % 60,
         );
 
-        for (final update in updates) {
-          final reminder = dependents.cast<Reminder?>().firstWhere(
-            (r) => r!.id == update.reminderId,
-            orElse: () => null,
-          );
-          if (reminder == null) continue;
-          final updated = reminder.copyWith(
-            scheduledAt: update.scheduledAt,
-          );
-          await reminderRepo.updateReminder(updated);
-          await scheduler.schedule(
-            reminderId: update.reminderId,
-            fireAt: update.scheduledAt,
-            callbackHandle: alarmFiredCallback,
-          );
-        }
-      }
+        // 3. Cascade recalculation to dependents.
+        final allReminders = await reminderRepo.watchActive().first;
+        final dependents = allReminders.where(_isMealDependent).toList();
 
-      return anchorRepo.watchAll().first;
+        if (dependents.isNotEmpty) {
+          final updates = resolver.resolve(
+            anchor: updatedAnchor,
+            confirmedAt: referenceTime,
+            dependents: dependents,
+          );
+
+          for (final update in updates) {
+            final reminder = dependents.cast<Reminder?>().firstWhere(
+              (r) => r!.id == update.reminderId,
+              orElse: () => null,
+            );
+            if (reminder == null) continue;
+            final updated = reminder.copyWith(
+              scheduledAt: update.scheduledAt,
+            );
+            await reminderRepo.updateReminder(updated);
+            await scheduler.schedule(
+              reminderId: update.reminderId,
+              fireAt: update.scheduledAt,
+              callbackHandle: alarmFiredCallback,
+            );
+          }
+        }
+
+        return anchorRepo.watchAll().first;
+      });
     });
   }
 

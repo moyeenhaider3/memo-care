@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:memo_care/core/debug/bootstrap_trace.dart';
 import 'package:memo_care/core/theme/app_colors.dart';
 import 'package:memo_care/core/theme/app_typography.dart';
 import 'package:memo_care/features/confirmation/application/confirmation_notifier.dart';
@@ -84,19 +85,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ConfirmationState state, {
     DateTime? snoozeUntil,
   }) async {
-    final result = await ref
-        .read(confirmationNotifierProvider.notifier)
-        .confirm(
-          reminderId: reminder.id,
-          chainId: reminder.chainId,
-          confirmState: state,
-          medicineName: reminder.medicineName,
-          snoozeUntil: snoozeUntil,
-        );
+    await traceAsync('ui', 'HomeScreen.confirm.${state.name}', () async {
+      final result = await ref
+          .read(confirmationNotifierProvider.notifier)
+          .confirm(
+            reminderId: reminder.id,
+            chainId: reminder.chainId,
+            confirmState: state,
+            medicineName: reminder.medicineName,
+            snoozeUntil: snoozeUntil,
+          );
 
-    if (result != null && mounted) {
-      setState(() => _undoable = result);
-    }
+      if (result != null && mounted) {
+        setState(() => _undoable = result);
+      }
+    });
   }
 
   void _dismissUndo() {
@@ -135,7 +138,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               return SafeArea(
                 child: RefreshIndicator(
                   onRefresh: () async {
-                    ref.invalidate(dailyScheduleNotifierProvider);
+                    await traceAsync('ui', 'HomeScreen.refresh', () async {
+                      ref.invalidate(dailyScheduleNotifierProvider);
+                    });
                   },
                   child: CustomScrollView(
                     slivers: [

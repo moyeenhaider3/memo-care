@@ -34,6 +34,12 @@ class ReminderRepository {
         );
   }
 
+  /// One-shot fetch by ID (no reactive stream).
+  Future<Reminder?> getById(int id) async {
+    final row = await _dao.getReminderById(id);
+    return row == null ? null : _fromRow(row);
+  }
+
   /// Create a new reminder. Returns the auto-generated ID.
   Future<int> createReminder({
     required int chainId,

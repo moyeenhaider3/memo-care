@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memo_care/core/debug/bootstrap_trace.dart';
 import 'package:memo_care/core/theme/app_colors.dart';
 import 'package:memo_care/core/theme/app_theme.dart';
 import 'package:memo_care/features/confirmation/application/providers.dart';
@@ -68,31 +69,33 @@ class _UndoConfirmationBarState extends ConsumerState<UndoConfirmationBar>
     setState(() => _undoing = true);
     _controller.stop();
 
-    final service = ref.read(undoConfirmationServiceProvider);
-    final result = await service.undo(widget.undoable);
+    await traceAsync('ui', 'UndoConfirmationBar.undo', () async {
+      final service = ref.read(undoConfirmationServiceProvider);
+      final result = await service.undo(widget.undoable);
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    switch (result) {
-      case UndoSucceeded():
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '${widget.undoable.medicineName} undone',
+      switch (result) {
+        case UndoSucceeded():
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                '${widget.undoable.medicineName} undone',
+              ),
+              duration: const Duration(seconds: 2),
             ),
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      case UndoFailed(:final reason):
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Undo failed: $reason'),
-            backgroundColor: AppColors.danger,
-          ),
-        );
-    }
+          );
+        case UndoFailed(:final reason):
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Undo failed: $reason'),
+              backgroundColor: AppColors.danger,
+            ),
+          );
+      }
 
-    widget.onDismissed();
+      widget.onDismissed();
+    });
   }
 
   @override

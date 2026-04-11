@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memo_care/core/debug/bootstrap_trace.dart';
 import 'package:memo_care/features/kids_mode/application/kids_mode_notifier.dart';
 
 /// Reward flow state used to trigger one-time celebration navigation.
@@ -40,14 +41,18 @@ class RewardNotifier extends Notifier<RewardState> {
   }
 
   void consumeTrigger() {
-    if (state.rewardTriggered) {
-      state = state.copyWith(rewardTriggered: false);
-    }
+    traceSync('ui', 'RewardNotifier.consumeTrigger', () {
+      if (state.rewardTriggered) {
+        state = state.copyWith(rewardTriggered: false);
+      }
+    });
   }
 
   // ignore: avoid_positional_boolean_parameters // workaround
   void setUseSoundVariant(bool useSoundVariant) {
-    state = state.copyWith(useSoundVariant: useSoundVariant);
+    traceSync('ui', 'RewardNotifier.setUseSoundVariant', () {
+      state = state.copyWith(useSoundVariant: useSoundVariant);
+    });
   }
 }
 

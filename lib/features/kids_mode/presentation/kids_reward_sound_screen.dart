@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:memo_care/core/debug/bootstrap_trace.dart';
 import 'package:memo_care/core/theme/app_colors.dart';
 import 'package:memo_care/core/theme/kids_theme.dart';
 import 'package:memo_care/features/kids_mode/presentation/widgets/bonus_points_display.dart';
@@ -26,13 +27,15 @@ class _KidsRewardSoundScreenState extends State<KidsRewardSoundScreen> {
   }
 
   Future<void> _playFanfare() async {
-    try {
-      await _player.setAsset('assets/audio/cheer_fanfare.wav');
-      await _player.play();
-    // ignore: avoid_catches_without_on_clauses // workaround
-    } catch (_) {
-      // Keep celebration flow resilient when audio is unavailable.
-    }
+    await traceAsync('ui', 'KidsRewardSound.playFanfare', () async {
+      try {
+        await _player.setAsset('assets/audio/cheer_fanfare.wav');
+        await _player.play();
+        // ignore: avoid_catches_without_on_clauses // workaround
+      } catch (_) {
+        // Keep celebration flow resilient when audio is unavailable.
+      }
+    });
   }
 
   @override

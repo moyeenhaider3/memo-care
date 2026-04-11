@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:memo_care/core/debug/bootstrap_trace.dart';
 import 'package:memo_care/core/platform/caregiver_service.dart';
 import 'package:memo_care/core/platform/permission_service.dart';
 import 'package:memo_care/core/router/app_router.dart';
@@ -121,10 +122,14 @@ class _CelebrationPageState extends ConsumerState<CelebrationPage> {
     for (var i = 0; i < state.customMedicines.length; i++) {
       overrides[i] = state.customMedicines[i];
     }
-    final result = await svc.apply(
-      pack: pack,
-      userOverrides: overrides,
-      mealAnchorTimes: state.mealAnchorDefaults,
+    final result = await traceAsync(
+      'ui',
+      'Celebration.applyFromTemplate',
+      () => svc.apply(
+        pack: pack,
+        userOverrides: overrides,
+        mealAnchorTimes: state.mealAnchorDefaults,
+      ),
     );
     result.match(
       (err) => _showError('Could not create schedule: ${err.message}'),
@@ -161,9 +166,13 @@ class _CelebrationPageState extends ConsumerState<CelebrationPage> {
       medicines: meds,
       edges: const [],
     );
-    final result = await svc.apply(
-      pack: pack,
-      mealAnchorTimes: state.mealAnchorDefaults,
+    final result = await traceAsync(
+      'ui',
+      'Celebration.applyManual',
+      () => svc.apply(
+        pack: pack,
+        mealAnchorTimes: state.mealAnchorDefaults,
+      ),
     );
     result.match(
       (err) => _showError('Could not create schedule: ${err.message}'),

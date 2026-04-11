@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:memo_care/core/debug/bootstrap_trace.dart';
 import 'package:memo_care/core/router/app_router.dart';
 
 import 'package:memo_care/features/onboarding/application/onboarding_notifier.dart';
@@ -93,10 +94,14 @@ class _ReviewStepState extends ConsumerState<ReviewStep> {
       overrides[i] = state.customMedicines[i];
     }
 
-    final result = await templateService.apply(
-      pack: pack,
-      userOverrides: overrides,
-      mealAnchorTimes: state.mealAnchorDefaults,
+    final result = await traceAsync(
+      'ui',
+      'OnboardingReview.applyFromTemplate',
+      () => templateService.apply(
+        pack: pack,
+        userOverrides: overrides,
+        mealAnchorTimes: state.mealAnchorDefaults,
+      ),
     );
 
     result.match(
@@ -113,9 +118,13 @@ class _ReviewStepState extends ConsumerState<ReviewStep> {
   ) async {
     final templateService = ref.read(templateServiceProvider);
     final syntheticPack = _buildSyntheticPack(state);
-    final result = await templateService.apply(
-      pack: syntheticPack,
-      mealAnchorTimes: state.mealAnchorDefaults,
+    final result = await traceAsync(
+      'ui',
+      'OnboardingReview.applyManual',
+      () => templateService.apply(
+        pack: syntheticPack,
+        mealAnchorTimes: state.mealAnchorDefaults,
+      ),
     );
     result.match(
       (error) => _showError(

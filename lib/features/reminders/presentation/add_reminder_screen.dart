@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:memo_care/core/debug/bootstrap_trace.dart';
 import 'package:memo_care/core/theme/app_colors.dart';
 import 'package:memo_care/core/theme/app_spacing.dart';
 import 'package:memo_care/core/theme/app_typography.dart';
@@ -248,10 +249,16 @@ class AddReminderScreen extends ConsumerWidget {
               child: FilledButton(
                 onPressed: state.isValid && !state.isSaving
                     ? () async {
-                        final success = await notifier.save(context);
-                        if (success && context.mounted) {
-                          context.pop();
-                        }
+                        await traceAsync(
+                          'ui',
+                          'AddReminderScreen.save',
+                          () async {
+                            final success = await notifier.save(context);
+                            if (success && context.mounted) {
+                              context.pop();
+                            }
+                          },
+                        );
                       }
                     : null,
                 style: FilledButton.styleFrom(

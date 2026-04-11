@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memo_care/core/debug/bootstrap_trace.dart';
 import 'package:memo_care/features/settings/application/settings_providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -57,24 +58,28 @@ class HydrationNotifier extends Notifier<HydrationState> {
   }
 
   Future<void> addGlass() async {
-    final prefs = _readPrefsOrNull();
-    final updated = (state.glasses + 1).clamp(0, 99);
-    state = state.copyWith(
-      glasses: updated,
-      lastUpdated: DateTime.now(),
-    );
-    if (prefs != null) {
-      await prefs.setInt(_kHydrationCount, state.glasses);
-    }
+    await traceAsync('ui', 'HydrationNotifier.addGlass', () async {
+      final prefs = _readPrefsOrNull();
+      final updated = (state.glasses + 1).clamp(0, 99);
+      state = state.copyWith(
+        glasses: updated,
+        lastUpdated: DateTime.now(),
+      );
+      if (prefs != null) {
+        await prefs.setInt(_kHydrationCount, state.glasses);
+      }
+    });
   }
 
   Future<void> setTarget(int target) async {
-    final prefs = _readPrefsOrNull();
-    final normalized = target.clamp(1, 20);
-    state = state.copyWith(target: normalized);
-    if (prefs != null) {
-      await prefs.setInt(_kHydrationTarget, normalized);
-    }
+    await traceAsync('ui', 'HydrationNotifier.setTarget', () async {
+      final prefs = _readPrefsOrNull();
+      final normalized = target.clamp(1, 20);
+      state = state.copyWith(target: normalized);
+      if (prefs != null) {
+        await prefs.setInt(_kHydrationTarget, normalized);
+      }
+    });
   }
 
   SharedPreferences? _readPrefsOrNull() {

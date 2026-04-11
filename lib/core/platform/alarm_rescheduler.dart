@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:memo_care/core/database/app_database.dart';
+import 'package:memo_care/core/debug/bootstrap_trace.dart';
 import 'package:memo_care/core/platform/alarm_callback.dart';
 import 'package:memo_care/core/platform/alarm_scheduler.dart';
 
@@ -17,9 +18,14 @@ import 'package:memo_care/core/platform/alarm_scheduler.dart';
 /// release builds.
 @pragma('vm:entry-point')
 Future<void> rescheduleAlarmsOnBoot() async {
-  // Ensure Flutter binding is initialized in headless mode.
-  WidgetsFlutterBinding.ensureInitialized();
+  traceSync(
+    'boot',
+    'WidgetsFlutterBinding.ensureInitialized',
+    WidgetsFlutterBinding.ensureInitialized,
+  );
 
+  traceEnter('boot', 'rescheduleAlarmsOnBoot');
+  Object? traceErr;
   final db = AppDatabase();
   try {
     final allReminders = await (db.select(
@@ -41,11 +47,13 @@ Future<void> rescheduleAlarmsOnBoot() async {
 
     debugPrint('MemoCare: Boot rescheduler completed');
   } on Exception catch (e, st) {
+    traceErr = e;
     debugPrint(
       'MemoCare: Boot rescheduler failed: $e\n$st',
     );
   } finally {
     await db.close();
+    traceExit('boot', 'rescheduleAlarmsOnBoot', traceErr);
   }
 }
 

@@ -4,6 +4,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memo_care/core/debug/bootstrap_trace.dart';
 import 'package:memo_care/core/platform/alarm_callback.dart';
 import 'package:memo_care/core/providers/alarm_providers.dart';
 import 'package:memo_care/features/chain_engine/application/chain_notifier.dart';
@@ -47,74 +48,76 @@ class ConfirmationNotifier extends AsyncNotifier<void> {
     required String medicineName,
     DateTime? snoozeUntil,
   }) async {
-    state = const AsyncLoading<void>();
+    return traceAsync('ui', 'ConfirmationNotifier.confirm', () async {
+      state = const AsyncLoading<void>();
 
-    try {
-      final service = ref.read(confirmationServiceProvider);
-      final scheduler = ref.read(alarmSchedulerProvider);
-      final reminderRepo = ref.read(reminderRepositoryProvider);
+      try {
+        final service = ref.read(confirmationServiceProvider);
+        final scheduler = ref.read(alarmSchedulerProvider);
+        final reminderRepo = ref.read(reminderRepositoryProvider);
 
-      final result = await service.confirm(
-        reminderId: reminderId,
-        chainId: chainId,
-        state: confirmState,
-        snoozeUntil: snoozeUntil,
-      );
+        final result = await service.confirm(
+          reminderId: reminderId,
+          chainId: chainId,
+          state: confirmState,
+          snoozeUntil: snoozeUntil,
+        );
 
-      final outcome = result.outcome;
+        final outcome = result.outcome;
 
-      switch (outcome) {
-        case ActivateDownstream(:final reminders):
-          await _scheduleReminders(reminders);
-          await _setActive(reminders, reminderRepo);
+        switch (outcome) {
+          case ActivateDownstream(:final reminders):
+            await _scheduleReminders(reminders);
+            await _setActive(reminders, reminderRepo);
 
-        case SuspendDownstream(:final reminders):
-          await _cancelReminders(reminders);
-          await _setInactive(reminders, reminderRepo);
+          case SuspendDownstream(:final reminders):
+            await _cancelReminders(reminders);
+            await _setInactive(reminders, reminderRepo);
 
-        case RescheduleSnooze(
-          :final reminder,
-          remainingSnoozes: _,
-        ):
-          if (snoozeUntil != null) {
-            await scheduler.schedule(
-              reminderId: reminder.id,
-              fireAt: snoozeUntil,
-              callbackHandle: alarmFiredCallback,
+          case RescheduleSnooze(
+            :final reminder,
+            remainingSnoozes: _,
+          ):
+            if (snoozeUntil != null) {
+              await scheduler.schedule(
+                reminderId: reminder.id,
+                fireAt: snoozeUntil,
+                callbackHandle: alarmFiredCallback,
+              );
+            }
+
+          case AutoSkipped(:final suspendedReminders):
+            await _cancelReminders(suspendedReminders);
+            await _setInactive(
+              suspendedReminders,
+              reminderRepo,
             );
-          }
 
-        case AutoSkipped(:final suspendedReminders):
-          await _cancelReminders(suspendedReminders);
-          await _setInactive(
-            suspendedReminders,
-            reminderRepo,
-          );
+          case ConfirmationFailed(:final error):
+            state = AsyncError<void>(error, StackTrace.current);
+            return null;
+        }
 
-        case ConfirmationFailed(:final error):
-          state = AsyncError<void>(error, StackTrace.current);
-          return null;
+        // Refresh chain state for watchers.
+        ref.invalidate(chainNotifierProvider(chainId));
+        // Refresh history so it picks up the new confirmation.
+        // ignore: cascade_invocations // workaround
+        ref.invalidate(historyNotifierProvider);
+        state = const AsyncData<void>(null);
+
+        return UndoableConfirmation(
+          confirmationId: result.confirmationId,
+          reminderId: reminderId,
+          chainId: chainId,
+          medicineName: medicineName,
+          confirmState: confirmState,
+          outcome: outcome,
+        );
+      } on Exception catch (e, st) {
+        state = AsyncError<void>(e, st);
+        return null;
       }
-
-      // Refresh chain state for watchers.
-      ref.invalidate(chainNotifierProvider(chainId));
-      // Refresh history so it picks up the new confirmation.
-      // ignore: cascade_invocations // workaround
-      ref.invalidate(historyNotifierProvider);
-      state = const AsyncData<void>(null);
-
-      return UndoableConfirmation(
-        confirmationId: result.confirmationId,
-        reminderId: reminderId,
-        chainId: chainId,
-        medicineName: medicineName,
-        confirmState: confirmState,
-        outcome: outcome,
-      );
-    } on Exception catch (e, st) {
-      state = AsyncError<void>(e, st);
-      return null;
-    }
+    });
   }
 
   // ----------- private helpers ----------- //

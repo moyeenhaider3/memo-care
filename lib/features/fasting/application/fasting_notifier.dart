@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:memo_care/core/debug/bootstrap_trace.dart';
 import 'package:memo_care/features/fasting/application/fasting_state.dart';
 import 'package:memo_care/features/fasting/application/prayer_time_service.dart';
 import 'package:memo_care/features/fasting/domain/fasting_models.dart';
@@ -59,24 +60,28 @@ class FastingNotifier extends Notifier<FastingState> {
 
   /// Activate/deactivate fasting mode and start progress timer.
   void setActive({required bool active}) {
-    final prefs = _readPrefsOrNull();
-    if (prefs != null) {
-      unawaited(prefs.setBool(_kFastingModeEnabled, active));
-    }
+    traceSync('ui', 'FastingNotifier.setActive', () {
+      final prefs = _readPrefsOrNull();
+      if (prefs != null) {
+        unawaited(prefs.setBool(_kFastingModeEnabled, active));
+      }
 
-    if (active) {
-      _startProgressTimer();
-    } else {
-      _progressTimer?.cancel();
-    }
-    state = state.copyWith(
-      isActive: active,
-      progressPercent: active ? _calcProgress() : 0.0,
-    );
+      if (active) {
+        _startProgressTimer();
+      } else {
+        _progressTimer?.cancel();
+      }
+      state = state.copyWith(
+        isActive: active,
+        progressPercent: active ? _calcProgress() : 0.0,
+      );
+    });
   }
 
   void toggleFastingMode() {
-    setActive(active: !state.isActive);
+    traceSync('ui', 'FastingNotifier.toggleFastingMode', () {
+      setActive(active: !state.isActive);
+    });
   }
 
   bool isSuppressedDuringFast({
@@ -113,20 +118,24 @@ class FastingNotifier extends Notifier<FastingState> {
 
   /// Mark a sehri medicine as taken.
   void markSehriMedicineTaken(String id) {
-    state = state.copyWith(
-      sehriMedicines: state.sehriMedicines.map((m) {
-        return m.id == id ? m.copyWith(isTaken: true) : m;
-      }).toList(),
-    );
+    traceSync('ui', 'FastingNotifier.markSehriMedicineTaken', () {
+      state = state.copyWith(
+        sehriMedicines: state.sehriMedicines.map((m) {
+          return m.id == id ? m.copyWith(isTaken: true) : m;
+        }).toList(),
+      );
+    });
   }
 
   /// Mark an iftar medicine as taken.
   void markIftarMedicineTaken(String id) {
-    state = state.copyWith(
-      iftarMedicines: state.iftarMedicines.map((m) {
-        return m.id == id ? m.copyWith(isTaken: true) : m;
-      }).toList(),
-    );
+    traceSync('ui', 'FastingNotifier.markIftarMedicineTaken', () {
+      state = state.copyWith(
+        iftarMedicines: state.iftarMedicines.map((m) {
+          return m.id == id ? m.copyWith(isTaken: true) : m;
+        }).toList(),
+      );
+    });
   }
 
   void _startProgressTimer() {
