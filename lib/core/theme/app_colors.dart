@@ -36,7 +36,7 @@ abstract final class AppColors {
   static const Color skippedGrey = Color(0xFF94A3B8);
 
   // ── Accent variants ───────────────────────────────────
-  /// Gold — fasting toggles, Ramadan accents, reward badges.
+  /// Gold — reward badges, highlights.
   static const Color accentGold = Color(0xFFD4AF37);
 
   /// Teal — caregiver actions, NLP confirmation buttons.
@@ -66,13 +66,4 @@ abstract final class KidsColors {
   static const Color playfulGreen = Color(0xFF22C55E);
   static const Color coralPink = Color(0xFFFB7185);
   static const Color background = Color(0xFFFDFCFE);
-}
-
-/// Ramadan / Fasting Mode colour palette (Phase 11).
-abstract final class RamadanColors {
-  static const Color primaryGold = Color(0xFFF0A500);
-  static const Color background = Color(0xFF0D1B2A);
-  static const Color cardBg = Color(0xFF1A2E44);
-  static const Color sehriBlue = Color(0xFF4A90E2);
-  static const Color iftarGold = Color(0xFFF0A500);
 }

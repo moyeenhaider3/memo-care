@@ -202,6 +202,8 @@ class NotificationService {
         channelDescription: NotificationChannels.criticalDescription,
         importance: Importance.max,
         priority: Priority.max,
+        category: AndroidNotificationCategory.alarm,
+        visibility: NotificationVisibility.public,
         sound: const RawResourceAndroidNotificationSound(
           NotificationChannels.customSoundFile,
         ),

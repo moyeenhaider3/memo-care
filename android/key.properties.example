@@ -1,0 +1,16 @@
+# Copy to key.properties in this directory (android/) and set values.
+# NEVER commit key.properties or memocare.jks.
+#
+# Generate a new keystore (run from android/):
+#   PASS="$(openssl rand -hex 24)"
+#   keytool -genkeypair -v -keystore memocare.jks -alias memocare \
+#     -keyalg RSA -keysize 2048 -validity 10000 -storepass "$PASS" \
+#     -dname "CN=MemoCare Release, OU=Mobile, O=YourName, L=City, ST=State, C=US"
+#
+# PKCS12 keystores use one password for both store and key — use the SAME value
+# for storePassword and keyPassword below.
+
+storePassword=YOUR_STORE_PASSWORD
+keyPassword=YOUR_STORE_PASSWORD
+keyAlias=memocare
+storeFile=memocare.jks

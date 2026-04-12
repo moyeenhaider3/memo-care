@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:just_audio/just_audio.dart';
 
 /// Service for playing alarm sounds with loop support.
@@ -28,10 +29,10 @@ class AudioService {
       await _player.setAsset(source);
       await _player.play();
       _playing = true;
-    } on Exception {
-      // Audio failure should not prevent the reminder
-      // from working.
+      debugPrint('🔔 [AUDIO] Alarm ringing started ($source)');
+    } on Exception catch (e, st) {
       _playing = false;
+      debugPrint('❌ [AUDIO] Alarm start failed: $e\n$st');
     }
   }
 
@@ -40,6 +41,7 @@ class AudioService {
     if (!_playing) return;
     await _player.stop();
     _playing = false;
+    debugPrint('🔕 [AUDIO] Alarm ringing stopped');
   }
 
   /// Releases all resources held by the audio player.

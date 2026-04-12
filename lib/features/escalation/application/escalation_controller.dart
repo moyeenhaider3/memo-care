@@ -131,6 +131,9 @@ class EscalationController {
             EscalationLevel.fullscreen,
             fullScreenIntent: true,
           );
+          debugPrint(
+            '📳 [NOTIF] Full-screen intent posted — reminderId=$reminderId',
+          );
         } else {
           // Degrade gracefully: high-priority heads-up
           // notification (no full-screen).
@@ -176,9 +179,13 @@ class EscalationController {
 
   /// Releases all resources. Call when this controller is no
   /// longer needed.
+  ///
+  /// FIXED: Do not call [AudioService.dispose] — the same [AudioService] is
+  /// often shared via Riverpod; disposing it breaks the next alarm loop. Stop
+  /// playback only; ringtone keeps looping until [acknowledge] via user action.
   Future<void> dispose() async {
     _fsm.dispose();
-    await _audioService.dispose();
+    await _audioService.stop();
     try {
       await WakelockPlus.disable();
     } on Exception {

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memo_care/core/providers/health_check_providers.dart';
 import 'package:memo_care/core/theme/app_colors.dart';
-import 'package:memo_care/core/theme/app_theme.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 /// Non-dismissable banner shown when notification channels are
@@ -26,63 +25,71 @@ class ChannelDisabledBanner extends ConsumerWidget {
       data: (status) {
         if (status.isHealthy) return const SizedBox.shrink();
 
-        return MaterialBanner(
-          backgroundColor: AppColors.danger,
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 12,
-          ),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                'Medication reminders may not work',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-              const SizedBox(height: 4),
-              for (final issue in status.issues)
-                Padding(
-                  padding: const EdgeInsets.only(top: 2),
-                  child: Text(
-                    '• $issue',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                    ),
+        // Static MaterialBanner has no SafeArea (messenger-shown banners do).
+        // Content can sit under the status bar/cutout; taps may miss the action.
+        return SafeArea(
+          bottom: false,
+          child: MaterialBanner(
+            forceActionsBelow: true,
+            backgroundColor: AppColors.danger,
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Medication reminders may not work',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
                   ),
                 ),
+                const SizedBox(height: 4),
+                for (final issue in status.issues)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Text(
+                      '• $issue',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            leading: const Icon(
+              Icons.warning_amber_rounded,
+              color: Colors.white,
+              size: 32,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () async {
+                  await openAppSettings();
+                },
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: AppColors.danger,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                ),
+                child: const Text(
+                  'FIX NOW',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
             ],
           ),
-          leading: const Icon(
-            Icons.warning_amber_rounded,
-            color: Colors.white,
-            size: 32,
-          ),
-          actions: [
-            TextButton(
-              onPressed: openAppSettings,
-              style: TextButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: AppColors.danger,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-              ),
-              child: const Text(
-                'FIX NOW',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-            ),
-          ],
         );
       },
       loading: () => const SizedBox.shrink(),

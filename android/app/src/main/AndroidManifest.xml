@@ -35,7 +35,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
-        android:label="memo_care"
+        android:label="MemoCare"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

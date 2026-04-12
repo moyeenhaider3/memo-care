@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:memo_care/core/debug/bootstrap_trace.dart';
 import 'package:memo_care/core/theme/app_colors.dart';
 import 'package:memo_care/core/theme/app_typography.dart';
@@ -21,7 +20,6 @@ import 'package:memo_care/features/daily_schedule/presentation/widgets/progress_
 import 'package:memo_care/features/daily_schedule/presentation/widgets/reminder_list_tile.dart';
 import 'package:memo_care/features/daily_schedule/presentation/widgets/timeline_connector.dart';
 import 'package:memo_care/features/daily_schedule/presentation/widgets/user_greeting_header.dart';
-import 'package:memo_care/features/fasting/application/fasting_notifier.dart';
 import 'package:memo_care/features/reminders/domain/models/reminder.dart';
 import 'package:memo_care/features/settings/application/settings_providers.dart';
 
@@ -109,7 +107,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final scheduleAsync = ref.watch(dailyScheduleNotifierProvider);
-    final fastingState = ref.watch(fastingNotifierProvider);
     final hydration = ref.watch(hydrationNotifierProvider);
 
     return Scaffold(
@@ -179,64 +176,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ),
                       ),
 
-                      if (fastingState.isActive)
-                        SliverToBoxAdapter(
-                          child: Container(
-                            margin: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-                            padding: const EdgeInsets.all(14),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFFEF7E8),
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(
-                                color: const Color(0xFFF0A500),
-                              ),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Padding(
-                                      padding: EdgeInsets.only(top: 2),
-                                      child: Icon(
-                                        Icons.nightlight_round,
-                                        color: Color(0xFFF0A500),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: Text(
-                                        // ignore: lines_longer_than_ // workaround
-                                        // ignore: lines_longer_than_80_chars // workaround
-                                        'Fasting mode on. Next: Iftar medicines '
-                                        // ignore: lines_longer_than_ // workaround
-                                        // ignore: lines_longer_than_80_chars // workaround
-                                        'at ${_fmtTime(fastingState.iftarTime)}',
-                                        maxLines: 3,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: AppTypography.bodySmall.copyWith(
-                                          color: AppColors.textPrimary,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 8),
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: TextButton(
-                                    onPressed: () => context.go('/ramadan'),
-                                    child: const Text('Open Ramadan'),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-
-                      if (fastingState.isActive || hydration.glasses > 0)
+                      if (hydration.glasses > 0)
                         const SliverToBoxAdapter(
                           child: HydrationCounter(),
                         ),
@@ -368,14 +308,5 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ],
       ),
     );
-  }
-
-  String _fmtTime(DateTime? time) {
-    if (time == null) return '--:--';
-    final hour = time.hour > 12 ? time.hour - 12 : time.hour;
-    final normalized = hour == 0 ? 12 : hour;
-    final minute = time.minute.toString().padLeft(2, '0');
-    final ampm = time.hour >= 12 ? 'PM' : 'AM';
-    return '$normalized:$minute $ampm';
   }
 }

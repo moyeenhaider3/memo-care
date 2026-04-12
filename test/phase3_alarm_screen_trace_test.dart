@@ -307,7 +307,8 @@ void main() {
         await _pumpAlarmRoute(tester, data);
         await _waitForStartEscalationExit(tester, logs);
 
-        await tester.tap(find.text('Remind me in 5 min'));
+        // Label includes configured fullscreen snooze minutes — avoid hardcoding.
+        await tester.tap(find.textContaining('Remind me in'));
         for (var i = 0; i < 60; i++) {
           await tester.pump(const Duration(milliseconds: 50));
           final ok = logs.any(

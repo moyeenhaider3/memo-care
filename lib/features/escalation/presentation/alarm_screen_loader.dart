@@ -19,8 +19,13 @@ import 'package:memo_care/features/escalation/domain/escalation_level.dart';
 import 'package:memo_care/features/escalation/presentation/fullscreen_alarm_screen.dart';
 import 'package:memo_care/features/reminders/application/providers.dart';
 import 'package:memo_care/features/reminders/domain/models/medicine_type.dart';
+import 'package:memo_care/core/router/app_router.dart';
 import 'package:memo_care/features/reminders/domain/models/reminder.dart';
 import 'package:memo_care/features/settings/application/settings_providers.dart';
+
+/// Snooze duration when user taps snooze on the fullscreen alarm (fixed;
+/// does not reschedule other reminders — see [ConfirmationNotifier]).
+const int kAlarmScreenSnoozeMinutes = 12;
 
 /// Stream provider for a single reminder by ID.
 /// Used by [AlarmScreenLoader] to reactively watch reminder data.
@@ -104,7 +109,23 @@ class _AlarmScreenLoaderState extends ConsumerState<AlarmScreenLoader> {
           caregiverPhone: settings.caregiverPhone,
         ),
       );
+
+      // FIXED: FSM waits minutes before audible tier — start loop immediately
+      // so the user hears alarm while this screen is visible.
+      await ref.read(audioServiceProvider).startLoop();
+      debugPrint('🔔 [AUDIO] Alarm loop started (fullscreen route)');
     });
+  }
+
+  /// FIXED: Alarm route is often opened with GoRouter.go (no stack entry);
+  /// context.pop does nothing — use go home when cannot pop.
+  void _leaveAlarmRoute() {
+    if (!mounted) return;
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.go(AppRoutes.home);
+    }
   }
 
   Future<void> _acknowledge() async {
@@ -122,67 +143,94 @@ class _AlarmScreenLoaderState extends ConsumerState<AlarmScreenLoader> {
 
   Future<void> _handleDone() async {
     await traceAsync('ui', 'AlarmScreen.done', () async {
-      await _acknowledge();
-      final reminder = await _loadReminder();
-      if (reminder == null) {
-        if (mounted) context.pop();
-        return;
+      try {
+        await _acknowledge();
+        final reminder = await _loadReminder();
+        if (reminder == null) {
+          if (mounted) _leaveAlarmRoute();
+          return;
+        }
+        final undo = await ref
+            .read(confirmationNotifierProvider.notifier)
+            .confirm(
+              reminderId: widget.reminderId,
+              chainId: reminder.chainId,
+              confirmState: ConfirmationState.done,
+              medicineName: reminder.medicineName,
+            );
+        debugPrint(
+          '💾 [DB] Reminder ${widget.reminderId} done — '
+          'undo=${undo != null}',
+        );
+        if (mounted) _leaveAlarmRoute();
+      } on Object catch (e, st) {
+        debugPrint('❌ confirmDone error: $e\n$st');
       }
-      await ref
-          .read(confirmationNotifierProvider.notifier)
-          .confirm(
-            reminderId: widget.reminderId,
-            chainId: reminder.chainId,
-            confirmState: ConfirmationState.done,
-            medicineName: reminder.medicineName,
-          );
-      if (mounted) context.pop();
     });
   }
 
   Future<void> _handleSnooze() async {
     await traceAsync('ui', 'AlarmScreen.snooze', () async {
-      await _acknowledge();
-      final reminder = await _loadReminder();
-      if (reminder == null) {
-        if (mounted) context.pop();
-        return;
-      }
-      final settings = ref.read(settingsRepositoryProvider).current;
-      final snoozeUntil = DateTime.now().toUtc().add(
-        Duration(minutes: settings.snoozeDurationMinutes),
-      );
+      try {
+        await _acknowledge();
+        final reminder = await _loadReminder();
+        if (reminder == null) {
+          if (mounted) _leaveAlarmRoute();
+          return;
+        }
+        final snoozeUntil = DateTime.now().toUtc().add(
+          const Duration(minutes: kAlarmScreenSnoozeMinutes),
+        );
+        debugPrint(
+          '⏰ [ALARM] Snooze until $snoozeUntil — reminder '
+          '${widget.reminderId} only',
+        );
 
-      await ref
-          .read(confirmationNotifierProvider.notifier)
-          .confirm(
-            reminderId: widget.reminderId,
-            chainId: reminder.chainId,
-            confirmState: ConfirmationState.snoozed,
-            medicineName: reminder.medicineName,
-            snoozeUntil: snoozeUntil,
-          );
-      if (mounted) context.pop();
+        final undo = await ref
+            .read(confirmationNotifierProvider.notifier)
+            .confirm(
+              reminderId: widget.reminderId,
+              chainId: reminder.chainId,
+              confirmState: ConfirmationState.snoozed,
+              medicineName: reminder.medicineName,
+              snoozeUntil: snoozeUntil,
+            );
+        debugPrint(
+          '💾 [DB] Reminder ${widget.reminderId} snoozed — '
+          'undo=${undo != null}',
+        );
+        if (mounted) _leaveAlarmRoute();
+      } on Object catch (e, st) {
+        debugPrint('❌ snooze error: $e\n$st');
+      }
     });
   }
 
   Future<void> _handleSkip() async {
     await traceAsync('ui', 'AlarmScreen.skip', () async {
-      await _acknowledge();
-      final reminder = await _loadReminder();
-      if (reminder == null) {
-        if (mounted) context.pop();
-        return;
+      try {
+        await _acknowledge();
+        final reminder = await _loadReminder();
+        if (reminder == null) {
+          if (mounted) _leaveAlarmRoute();
+          return;
+        }
+        final undo = await ref
+            .read(confirmationNotifierProvider.notifier)
+            .confirm(
+              reminderId: widget.reminderId,
+              chainId: reminder.chainId,
+              confirmState: ConfirmationState.skipped,
+              medicineName: reminder.medicineName,
+            );
+        debugPrint(
+          '💾 [DB] Reminder ${widget.reminderId} skipped — '
+          'undo=${undo != null}',
+        );
+        if (mounted) _leaveAlarmRoute();
+      } on Object catch (e, st) {
+        debugPrint('❌ skip error: $e\n$st');
       }
-      await ref
-          .read(confirmationNotifierProvider.notifier)
-          .confirm(
-            reminderId: widget.reminderId,
-            chainId: reminder.chainId,
-            confirmState: ConfirmationState.skipped,
-            medicineName: reminder.medicineName,
-          );
-      if (mounted) context.pop();
     });
   }
 
@@ -217,9 +265,9 @@ class _AlarmScreenLoaderState extends ConsumerState<AlarmScreenLoader> {
       ),
       data: (reminder) {
         if (reminder == null) {
-          // Reminder deleted — pop back.
+          // Reminder deleted — leave route.
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) context.pop();
+            if (mounted) _leaveAlarmRoute();
           });
           return const Scaffold(
             backgroundColor: Colors.black,
@@ -265,7 +313,7 @@ class _AlarmScreenLoaderState extends ConsumerState<AlarmScreenLoader> {
           showCaregiverWarning: showCaregiverWarning,
           caregiverMinutesRemaining: escalateMinutes,
           snoozeButtonLabel:
-              'Remind me in ${settings.snoozeDurationMinutes} min',
+              'Remind me in $kAlarmScreenSnoozeMinutes min',
           onDone: _handleDone,
           onSnooze: _handleSnooze,
           onSkip: _handleSkip,

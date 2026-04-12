@@ -98,241 +98,260 @@ class _MissedRemindersSheetState extends ConsumerState<MissedRemindersSheet> {
         .toList();
     final theme = Theme.of(context);
     final timeFormat = DateFormat.jm();
+    final media = MediaQuery.of(context);
+    // FIXED: Column(mainAxisSize: min) + Flexible(ListView) got unbounded /
+    // zero-width constraints — text rendered one character per line and
+    // actions overlapped the FAB. Use a bounded height and Expanded list.
+    final maxSheetHeight = media.size.height * 0.92;
+    final bottomGap = media.padding.bottom + 72;
 
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Drag handle
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.outline.withValues(alpha: 0.4),
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ),
-
-            // Header
-            Row(
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: maxSheetHeight),
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(16, 12, 16, bottomGap),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const ExcludeSemantics(
-                  child: Icon(
-                    Icons.warning_amber_rounded,
-                    size: 32,
-                    color: AppColors.warning,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Semantics(
-                    header: true,
-                    child: Text(
-                      'You have ${unresolved.length} missed '
-                      'reminder${unresolved.length == 1 ? "" : "s"}',
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 16),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.outline.withValues(alpha: 0.4),
+                      borderRadius: BorderRadius.circular(2),
                     ),
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 16),
 
-            // Missed items list
-            Flexible(
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: unresolved.length,
-                itemBuilder: (context, index) {
-                  final reminder = unresolved[index];
-                  final timeText = reminder.scheduledAt != null
-                      ? timeFormat.format(
-                          reminder.scheduledAt!.toLocal(),
-                        )
-                      : '--:--';
-
-                  return Semantics(
-                    label:
-                        'Missed: ${reminder.medicineName}, '
-                        '${reminder.dosage ?? ""}, '
-                        'was due at $timeText',
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 8,
+                Row(
+                  children: [
+                    const ExcludeSemantics(
+                      child: Icon(
+                        Icons.warning_amber_rounded,
+                        size: 32,
+                        color: AppColors.warning,
                       ),
-                      child: Row(
-                        children: [
-                          // Name + time
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  reminder.medicineName,
-                                  style: theme.textTheme.bodyLarge?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                Text(
-                                  '$timeText'
-                                  '${reminder.dosage != null ? " · "
-                                            "${reminder.dosage}" : ""}',
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                            ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Semantics(
+                        header: true,
+                        child: Text(
+                          'You have ${unresolved.length} missed '
+                          'reminder${unresolved.length == 1 ? "" : "s"}',
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
                           ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
 
-                          // Done button
-                          Semantics(
-                            label:
-                                'Mark '
-                                '${reminder.medicineName} '
-                                'as done',
-                            button: true,
-                            child: SizedBox(
-                              height: 56,
-                              child: FilledButton(
-                                onPressed: () => _markDone(reminder),
-                                style: FilledButton.styleFrom(
-                                  backgroundColor: AppColors.success,
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
+                Expanded(
+                  child: ListView.separated(
+                    padding: EdgeInsets.zero,
+                    itemCount: unresolved.length,
+                    separatorBuilder: (_, __) => Divider(
+                      height: 1,
+                      color: theme.colorScheme.outline.withValues(alpha: 0.3),
+                    ),
+                    itemBuilder: (context, index) {
+                      final reminder = unresolved[index];
+                      final timeText = reminder.scheduledAt != null
+                          ? timeFormat.format(
+                              reminder.scheduledAt!.toLocal(),
+                            )
+                          : '--:--';
+
+                      return Semantics(
+                        label:
+                            'Missed: ${reminder.medicineName}, '
+                            '${reminder.dosage ?? ""}, '
+                            'was due at $timeText',
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: LayoutBuilder(
+                            builder: (context, rowConstraints) {
+                              final narrow = rowConstraints.maxWidth < 360;
+                              final textBlock = Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    reminder.medicineName,
+                                    style: theme.textTheme.bodyLarge?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
-                                ),
-                                child: const Text(
-                                  'Done',
-                                  style: TextStyle(
-                                    fontSize: 16,
+                                  Text(
+                                    '$timeText'
+                                    '${reminder.dosage != null ? " · ${reminder.dosage}" : ""}',
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
                                   ),
-                                ),
+                                ],
+                              );
+                              final actions = Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Semantics(
+                                    label:
+                                        'Mark ${reminder.medicineName} as done',
+                                    button: true,
+                                    child: SizedBox(
+                                      height: 56,
+                                      child: FilledButton(
+                                        onPressed: () => _markDone(reminder),
+                                        style: FilledButton.styleFrom(
+                                          backgroundColor: AppColors.success,
+                                          foregroundColor: Colors.white,
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                          ),
+                                        ),
+                                        child: const Text(
+                                          'Done',
+                                          style: TextStyle(fontSize: 16),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Semantics(
+                                    label: 'Skip ${reminder.medicineName}',
+                                    button: true,
+                                    child: SizedBox(
+                                      height: 56,
+                                      child: OutlinedButton(
+                                        onPressed: () => _markSkip(reminder),
+                                        style: OutlinedButton.styleFrom(
+                                          foregroundColor: AppColors.danger,
+                                          side: const BorderSide(
+                                            color: AppColors.danger,
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 16,
+                                          ),
+                                        ),
+                                        child: const Text(
+                                          'Skip',
+                                          style: TextStyle(fontSize: 16),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+
+                              if (narrow) {
+                                return Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    textBlock,
+                                    const SizedBox(height: 8),
+                                    actions,
+                                  ],
+                                );
+                              }
+
+                              return Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(child: textBlock),
+                                  actions,
+                                ],
+                              );
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        height: 56,
+                        child: Semantics(
+                          label: 'Mark all missed reminders as done',
+                          button: true,
+                          child: FilledButton.icon(
+                            onPressed: unresolved.isNotEmpty
+                                ? () => _markAllDone(unresolved)
+                                : null,
+                            icon: const Icon(
+                              Icons.check_circle,
+                              size: 24,
+                            ),
+                            label: const Text(
+                              'Mark All Done',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            style: FilledButton.styleFrom(
+                              backgroundColor: AppColors.success,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
                             ),
                           ),
-                          const SizedBox(width: 8),
-
-                          // Skip button
-                          Semantics(
-                            label:
-                                'Skip '
-                                '${reminder.medicineName}',
-                            button: true,
-                            child: SizedBox(
-                              height: 56,
-                              child: OutlinedButton(
-                                onPressed: () => _markSkip(reminder),
-                                style: OutlinedButton.styleFrom(
-                                  foregroundColor: AppColors.danger,
-                                  side: const BorderSide(
-                                    color: AppColors.danger,
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                  ),
-                                ),
-                                child: const Text(
-                                  'Skip',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                  ),
-                                ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: SizedBox(
+                        height: 56,
+                        child: Semantics(
+                          label: 'Skip all missed reminders',
+                          button: true,
+                          child: OutlinedButton.icon(
+                            onPressed: unresolved.isNotEmpty
+                                ? () => _skipAll(unresolved)
+                                : null,
+                            icon: const Icon(
+                              Icons.skip_next,
+                              size: 24,
+                            ),
+                            label: const Text(
+                              'Skip All',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: AppColors.danger,
+                              side: const BorderSide(
+                                color: AppColors.danger,
+                                width: 2,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Bulk action buttons
-            Row(
-              children: [
-                Expanded(
-                  child: SizedBox(
-                    height: 56,
-                    child: Semantics(
-                      label: 'Mark all missed reminders as done',
-                      button: true,
-                      child: FilledButton.icon(
-                        onPressed: unresolved.isNotEmpty
-                            ? () => _markAllDone(unresolved)
-                            : null,
-                        icon: const Icon(
-                          Icons.check_circle,
-                          size: 24,
-                        ),
-                        label: const Text(
-                          'Mark All Done',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        style: FilledButton.styleFrom(
-                          backgroundColor: AppColors.success,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: SizedBox(
-                    height: 56,
-                    child: Semantics(
-                      label: 'Skip all missed reminders',
-                      button: true,
-                      child: OutlinedButton.icon(
-                        onPressed: unresolved.isNotEmpty
-                            ? () => _skipAll(unresolved)
-                            : null,
-                        icon: const Icon(
-                          Icons.skip_next,
-                          size: 24,
-                        ),
-                        label: const Text(
-                          'Skip All',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.danger,
-                          side: const BorderSide(
-                            color: AppColors.danger,
-                            width: 2,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                  ],
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );

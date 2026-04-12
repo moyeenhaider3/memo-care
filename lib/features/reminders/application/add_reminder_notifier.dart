@@ -4,10 +4,8 @@ import 'package:memo_care/core/platform/alarm_callback.dart';
 import 'package:memo_care/core/platform/permission_service.dart';
 import 'package:memo_care/core/providers/alarm_providers.dart';
 import 'package:memo_care/features/chain_engine/application/providers.dart';
-import 'package:memo_care/features/fasting/application/fasting_notifier.dart';
 import 'package:memo_care/features/reminders/application/add_reminder_state.dart';
 import 'package:memo_care/features/reminders/application/providers.dart';
-import 'package:memo_care/features/reminders/domain/models/medicine_type.dart';
 import 'package:memo_care/features/reminders/presentation/widgets/reminder_type_grid.dart';
 
 /// Manages the Add Reminder form state and persistence.
@@ -60,35 +58,22 @@ class AddReminderNotifier extends Notifier<AddReminderState> {
 
     try {
       final repo = ref.read(reminderRepositoryProvider);
-      final fastingState = ref.read(fastingNotifierProvider);
-      final fastingNotifier = ref.read(fastingNotifierProvider.notifier);
 
       // Compute scheduled time from form state.
-      var suppressedDueToFasting = false;
-      var scheduledAt = _computeInitialScheduledAt();
+      final scheduledAt = _computeInitialScheduledAt();
 
       if (scheduledAt != null) {
-        final shouldSuppress = fastingNotifier.isSuppressedDuringFast(
-          scheduledAt: scheduledAt,
-          isMealLinked: _isMealLinked(state.medicineType),
+        final hasCriticalPermissions = await _ensureCriticalPermissions(
+          context: context,
         );
-        if (fastingState.isActive && shouldSuppress) {
-          // Keep the reminder but do not arm a daytime fasting alarm.
-          scheduledAt = null;
-          suppressedDueToFasting = true;
-        } else {
-          final hasCriticalPermissions = await _ensureCriticalPermissions(
-            context: context,
+        if (!hasCriticalPermissions) {
+          state = state.copyWith(
+            isSaving: false,
+            errorMessage:
+                'Notification and Exact Alarm permissions are required '
+                'to ring reminders on time.',
           );
-          if (!hasCriticalPermissions) {
-            state = state.copyWith(
-              isSaving: false,
-              errorMessage:
-                  'Notification and Exact Alarm permissions are required '
-                  'to ring reminders on time.',
-            );
-            return false;
-          }
+          return false;
         }
       }
 
@@ -124,12 +109,7 @@ class AddReminderNotifier extends Notifier<AddReminderState> {
         }
       }
 
-      state = state.copyWith(
-        isSaving: false,
-        errorMessage: suppressedDueToFasting
-            ? 'Saved without a daytime alarm due to fasting mode.'
-            : null,
-      );
+      state = state.copyWith(isSaving: false);
       return true;
       // ignore: avoid_catches_without_on_clauses // workaround
     } catch (e) {
@@ -218,12 +198,6 @@ class AddReminderNotifier extends Notifier<AddReminderState> {
 
   /// Reset form to initial state.
   void reset() => state = const AddReminderState();
-
-  bool _isMealLinked(MedicineType type) {
-    return type == MedicineType.beforeMeal ||
-        type == MedicineType.afterMeal ||
-        type == MedicineType.emptyStomach;
-  }
 }
 
 /// Provider for the Add Reminder form notifier.

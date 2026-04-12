@@ -48,7 +48,7 @@ class AlarmActionButtons extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Semantics(
-            label: 'Skip $name',
+            label: 'Snooze $name',
             button: true,
             sortKey: const OrdinalSortKey(4),
             child: SizedBox(
@@ -118,23 +118,22 @@ class _BounceButtonState extends State<_BounceButton>
     await _controller.forward();
   }
 
-  Future<void> _onTapUp(TapUpDetails _) async {
-    await _controller.reverse();
-    widget.onPressed?.call();
-  }
-
-  Future<void> _onTapCancel() async {
-    await _controller.reverse();
-  }
-
   @override
   Widget build(BuildContext context) {
     final isDisabled = widget.onPressed == null;
 
+    // FIXED: ScrollView parents (removed from alarm) and tap-up-only handlers
+    // missed taps; use onTap + opaque hit target so actions always fire.
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTapDown: isDisabled ? null : _onTapDown,
-      onTapUp: isDisabled ? null : _onTapUp,
-      onTapCancel: isDisabled ? null : _onTapCancel,
+      onTap: isDisabled
+          ? null
+          : () async {
+              await _controller.forward();
+              await _controller.reverse();
+              widget.onPressed?.call();
+            },
       child: AnimatedBuilder(
         animation: _scale,
         builder: (context, child) {
@@ -164,11 +163,16 @@ class _BounceButtonState extends State<_BounceButton>
                 size: 32,
               ),
               const SizedBox(width: 12),
-              Text(
-                widget.label,
-                style: AppTypography.displayMedium.copyWith(
-                  color: widget.foregroundColor,
-                  fontWeight: FontWeight.bold,
+              Flexible(
+                child: Text(
+                  widget.label,
+                  style: AppTypography.displayMedium.copyWith(
+                    color: widget.foregroundColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
                 ),
               ),
             ],

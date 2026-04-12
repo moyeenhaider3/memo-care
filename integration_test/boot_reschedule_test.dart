@@ -26,7 +26,7 @@ void main() {
         //
         //   adb shell am broadcast \
         //     -a android.intent.action.BOOT_COMPLETED
-        //     -n com.example.memo_care/
+        //     -n io.github.moyeenhaider3.memocare/
         //       .BootCompletedReceiver
         //
         // Patrol cannot send ADB broadcasts directly.
@@ -57,7 +57,7 @@ void main() {
         //   adb shell am broadcast \
         //     -a android.intent.action
         //       .MY_PACKAGE_REPLACED \
-        //     -n com.example.memo_care/
+        //     -n io.github.moyeenhaider3.memocare/
         //       .PackageUpdateReceiver
         //
         // After package update, all pending alarms

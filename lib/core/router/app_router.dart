@@ -6,7 +6,6 @@ import 'package:memo_care/features/daily_schedule/presentation/chain_context_scr
 import 'package:memo_care/features/daily_schedule/presentation/home_screen.dart';
 import 'package:memo_care/features/daily_schedule/presentation/todays_full_schedule_screen.dart';
 import 'package:memo_care/features/escalation/presentation/alarm_screen_loader.dart';
-import 'package:memo_care/features/fasting/presentation/ramadan_screen.dart';
 import 'package:memo_care/features/history/presentation/history_screen.dart';
 import 'package:memo_care/features/kids_mode/presentation/kids_dashboard_screen.dart';
 import 'package:memo_care/features/kids_mode/presentation/kids_reward_screen.dart';
@@ -44,9 +43,6 @@ abstract final class AppRoutes {
   static const kids = '/kids';
   static const kidsReward = '/kids/reward';
   static const kidsRewardSound = '/kids/reward-sound';
-
-  /// Ramadan / Fasting Mode route.
-  static const ramadan = '/ramadan';
 
   /// Fullscreen alarm screen — launched by notification tap or
   /// full-screen intent. Bypasses all redirect guards.
@@ -200,13 +196,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.kidsRewardSound,
         name: 'kidsRewardSound',
         builder: (context, state) => const KidsRewardSoundScreen(),
-      ),
-
-      // --- Ramadan/Fasting Mode (standalone, no main bottom nav) ---
-      GoRoute(
-        path: AppRoutes.ramadan,
-        name: 'ramadan',
-        builder: (context, state) => const RamadanScreen(),
       ),
 
       // --- Fullscreen Alarm Screen ---

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:memo_care/features/escalation/presentation/widgets/alarm_action_buttons.dart';
 import 'package:memo_care/features/escalation/presentation/widgets/alarm_content_card.dart';
@@ -16,7 +17,10 @@ import 'package:memo_care/features/escalation/presentation/widgets/pulsing_gradi
 /// - White content card with chain step indicator
 /// - 88px DONE/SNOOZE/SKIP buttons with spring bounce
 /// - Caregiver escalation warning
-class FullScreenAlarmScreen extends StatelessWidget {
+///
+/// FIXED: Removed [SingleChildScrollView] — it absorbed gestures so bounce
+/// buttons only received incomplete tap gestures; layout is non-scrollable.
+class FullScreenAlarmScreen extends StatefulWidget {
   const FullScreenAlarmScreen({
     required this.reminderId,
     required this.medicineName,
@@ -61,77 +65,148 @@ class FullScreenAlarmScreen extends StatelessWidget {
   final String snoozeButtonLabel;
 
   @override
-  Widget build(BuildContext context) {
+  State<FullScreenAlarmScreen> createState() => _FullScreenAlarmScreenState();
+}
+
+class _FullScreenAlarmScreenState extends State<FullScreenAlarmScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(
+        SystemChrome.setEnabledSystemUIMode(
+          SystemUiMode.immersiveSticky,
+        ),
+      );
+    });
+  }
+
+  @override
+  void dispose() {
     unawaited(
       SystemChrome.setEnabledSystemUIMode(
-        SystemUiMode.immersiveSticky,
+        SystemUiMode.edgeToEdge,
       ),
     );
+    super.dispose();
+  }
 
+  void _restoreSystemUI() {
+    unawaited(
+      SystemChrome.setEnabledSystemUIMode(
+        SystemUiMode.edgeToEdge,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          // Pulsing background
           const Positioned.fill(
             child: PulsingGradientBackground(),
           ),
-          // Content
           SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) {
-                return SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(vertical: 32),
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight: constraints.maxHeight,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
+                return SizedBox(
+                  height: constraints.maxHeight,
+                  width: constraints.maxWidth,
+                  child: Column(
+                    children: [
+                      // FIXED: FittedBox + bounded constraints — 200% text scale fits
+                      // without page scroll (scaleDown only when needed).
+                      Expanded(
+                        flex: 2,
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            return FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.center,
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  maxWidth: constraints.maxWidth,
+                                ),
+                                child: AlarmTimeHero(
+                                  time: widget.scheduledTime,
+                                  medicineName: widget.medicineName,
+                                  dateText: widget.dateText,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      Expanded(
+                        flex: 3,
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            return FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.center,
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  maxWidth: constraints.maxWidth,
+                                  maxHeight: constraints.maxHeight,
+                                ),
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 4),
+                                  child: AlarmContentCard(
+                                    medicineName: widget.medicineName,
+                                    dosage: widget.dosage,
+                                    instructions: widget.instructionText,
+                                    warningText: widget.warningText,
+                                    chainStep: widget.chainStep,
+                                    chainTotal: widget.chainTotal,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      if (widget.showCaregiverWarning) ...[
+                        CaregiverWarning(
+                          minutesRemaining: widget.caregiverMinutesRemaining,
+                        ),
                         const SizedBox(height: 8),
-                        // Time hero
-                        AlarmTimeHero(
-                          time: scheduledTime,
-                          medicineName: medicineName,
-                          dateText: dateText,
-                        ),
-                        const SizedBox(height: 24),
-                        // Content card
-                        AlarmContentCard(
-                          medicineName: medicineName,
-                          dosage: dosage,
-                          instructions: instructionText,
-                          warningText: warningText,
-                          chainStep: chainStep,
-                          chainTotal: chainTotal,
-                        ),
-                        const SizedBox(height: 24),
-                        // Caregiver warning
-                        if (showCaregiverWarning) ...[
-                          CaregiverWarning(
-                            minutesRemaining: caregiverMinutesRemaining,
-                          ),
-                          const SizedBox(height: 16),
-                        ],
-                        // Action buttons (DONE + SNOOZE)
-                        AlarmActionButtons(
-                          medicineName: medicineName,
-                          doneLabel: doneButtonLabel,
-                          snoozeLabel: snoozeButtonLabel,
-                          onDone: () {
-                            _restoreSystemUI();
-                            onDone();
-                          },
-                          onSnooze: () {
-                            _restoreSystemUI();
-                            onSnooze();
-                          },
-                        ),
-                        // Skip text button below main actions
-                        TextButton(
+                      ],
+                      AlarmActionButtons(
+                        medicineName: widget.medicineName,
+                        doneLabel: widget.doneButtonLabel,
+                        snoozeLabel: widget.snoozeButtonLabel,
+                        onDone: () {
+                          _restoreSystemUI();
+                          debugPrint(
+                            "🟢 [ALARM] I've Done It — reminderId: "
+                            '${widget.reminderId}',
+                          );
+                          widget.onDone();
+                        },
+                        onSnooze: () {
+                          _restoreSystemUI();
+                          debugPrint(
+                            '🟡 [ALARM] Snooze — reminderId: '
+                            '${widget.reminderId}',
+                          );
+                          widget.onSnooze();
+                        },
+                      ),
+                      // FIXED: Plain TextButton had no Semantics label — a11y test + TalkBack
+                      Semantics(
+                        label: 'Skip ${widget.medicineName}',
+                        button: true,
+                        sortKey: const OrdinalSortKey(5),
+                        child: TextButton(
                           onPressed: () {
                             _restoreSystemUI();
-                            onSkip();
+                            debugPrint(
+                              '🔴 [ALARM] Skip — reminderId: '
+                              '${widget.reminderId}',
+                            );
+                            widget.onSkip();
                           },
                           child: Text(
                             'Skip this reminder',
@@ -141,23 +216,15 @@ class FullScreenAlarmScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 16),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
                   ),
                 );
               },
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  void _restoreSystemUI() {
-    unawaited(
-      SystemChrome.setEnabledSystemUIMode(
-        SystemUiMode.edgeToEdge,
       ),
     );
   }
