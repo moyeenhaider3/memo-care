@@ -1,0 +1,267 @@
+/* MemoCare — GitHub Pages (moyeenhaider3.github.io/memo-care/) */
+
+:root {
+  --mc-navy: #1a365d;
+  --mc-blue: #2c5282;
+  --mc-accent: #2b6cb0;
+  --mc-bg: #f7fafc;
+  --mc-card: #ffffff;
+  --mc-text: #2d3748;
+  --mc-muted: #718096;
+  --mc-border: #e2e8f0;
+  --mc-success: #276749;
+  --mc-warning: #c05621;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.65;
+  color: var(--mc-text);
+  background: var(--mc-bg);
+}
+
+/* ——— Top bar ——— */
+.site-header {
+  background: var(--mc-navy);
+  color: #fff;
+  padding: 0.75rem 1.25rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.site-header-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.site-logo {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: #fff;
+  text-decoration: none;
+  letter-spacing: -0.02em;
+}
+
+.site-logo:hover {
+  color: #bee3f8;
+}
+
+.site-nav-top a {
+  color: #e2e8f0;
+  text-decoration: none;
+  margin-left: 1.25rem;
+  font-size: 0.9375rem;
+}
+
+.site-nav-top a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* ——— Main content ——— */
+main,
+.article-wrap {
+  flex: 1;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 2rem;
+}
+
+/* Legal pages */
+.article-wrap h1 {
+  color: var(--mc-navy);
+  font-size: 1.75rem;
+  margin-top: 0;
+}
+
+.article-wrap h2 {
+  color: var(--mc-blue);
+  font-size: 1.15rem;
+  margin-top: 2rem;
+}
+
+.article-wrap .date {
+  color: var(--mc-muted);
+  font-style: italic;
+  font-size: 0.9375rem;
+}
+
+/* ——— Landing page ——— */
+.hero {
+  text-align: center;
+  padding: 2.5rem 0 2rem;
+}
+
+.hero h1 {
+  color: var(--mc-navy);
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  margin: 0 0 0.75rem;
+  line-height: 1.2;
+}
+
+.hero .tagline {
+  font-size: 1.125rem;
+  color: var(--mc-muted);
+  max-width: 36rem;
+  margin: 0 auto 1.5rem;
+}
+
+.hero-cta {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.65rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.9375rem;
+}
+
+.btn-primary {
+  background: var(--mc-accent);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #2c5282;
+  color: #fff;
+}
+
+.btn-outline {
+  border: 2px solid var(--mc-blue);
+  color: var(--mc-blue);
+  background: transparent;
+}
+
+.btn-outline:hover {
+  background: var(--mc-blue);
+  color: #fff;
+}
+
+.section-title {
+  color: var(--mc-navy);
+  font-size: 1.35rem;
+  margin: 2.5rem 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--mc-border);
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+.feature-card {
+  background: var(--mc-card);
+  border: 1px solid var(--mc-border);
+  border-radius: 12px;
+  padding: 1.25rem 1.35rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.feature-card h3 {
+  color: var(--mc-blue);
+  font-size: 1.05rem;
+  margin: 0 0 0.5rem;
+}
+
+.feature-card p {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--mc-text);
+}
+
+.disclaimer {
+  background: #fffaf0;
+  border: 1px solid #fbd38d;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: #744210;
+}
+
+.disclaimer strong {
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+/* ——— Bottom bar (footer) ——— */
+.site-footer {
+  margin-top: auto;
+  background: var(--mc-navy);
+  color: #cbd5e0;
+  padding: 1.25rem 1rem 1.5rem;
+  text-align: center;
+}
+
+.site-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.site-footer a {
+  color: #e2e8f0;
+  text-decoration: none;
+  font-size: 0.9375rem;
+}
+
+.site-footer a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.site-footer .sep {
+  color: #4a5568;
+  user-select: none;
+}
+
+.footer-meta {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #a0aec0;
+}
+
+@media (max-width: 520px) {
+  .site-nav-top {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .site-nav-top a {
+    margin-left: 0;
+    margin-right: 1rem;
+  }
+}

@@ -1,7 +1,13 @@
 # MemoCare — Pre-Publish Checklist
 
 **Repo:** [https://github.com/moyeenhaider3/memo-care](https://github.com/moyeenhaider3/memo-care)  
-**GitHub Pages (policies):** `https://moyeenhaider3.github.io/memo-care/`  
+**GitHub Pages site:** `https://moyeenhaider3.github.io/memo-care/` (landing + shared styles in `docs/`)
+
+| Page | URL |
+|------|-----|
+| Home | `https://moyeenhaider3.github.io/memo-care/` |
+| Privacy | `https://moyeenhaider3.github.io/memo-care/privacy.html` |
+| Terms | `https://moyeenhaider3.github.io/memo-care/terms.html` |
 
 This app **does not** use verified App Links or Digital Asset Links for shared HTTPS URLs. **No `.well-known/assetlinks.json` (or iOS AASA) setup is required** for launch unless you later add shareable web links.
 
@@ -23,16 +29,17 @@ This app **does not** use verified App Links or Digital Asset Links for shared H
 
 ---
 
-## 2. GitHub Pages — privacy & terms (no `.well-known`)
+## 2. GitHub Pages — marketing site + privacy & terms (no `.well-known`)
 
-- [ ] In repo **`moyeenhaider3/memo-care`**, add `docs/privacy.html` and `docs/terms.html` (or `/privacy.html` at site root per your Pages config)
-- [ ] Enable **GitHub Pages** (e.g. branch `main`, folder `/docs` or root)
-- [ ] Confirm URLs load:
+Static site files live under **`docs/`**: `index.html` (landing), `site.css`, `privacy.html`, `terms.html`. Header + bottom bar on every page link **Home**, **Privacy**, **Terms**, and **GitHub**.
 
+- [ ] Push to **`moyeenhaider3/memo-care`**
+- [ ] Repo **Settings → Pages**: Source **Deploy from a branch**, branch **`main`**, folder **`/docs`**, Save
+- [ ] After build (~1 min), confirm:
+
+  - `https://moyeenhaider3.github.io/memo-care/`
   - `https://moyeenhaider3.github.io/memo-care/privacy.html`
   - `https://moyeenhaider3.github.io/memo-care/terms.html`
-
-_(Adjust path if your Pages site uses project site at repo root — match `PLAY_STORE_LISTING.md`.)_
 
 - [ ] If the app shows legal links in Settings, point them to the same URLs (add constants in Dart when you wire UI)
 
