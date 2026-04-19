@@ -28,6 +28,8 @@ Future<void> rescheduleAlarmsOnBoot() async {
   Object? traceErr;
   final db = AppDatabase();
   try {
+    await AlarmScheduler.initialize();
+
     final allReminders = await (db.select(
       db.reminders,
     )..where((r) => r.isActive.equals(true))).get();

@@ -160,8 +160,11 @@ Future<void> main() async {
         final launchResponse = launchDetails?.notificationResponse;
         if (launchResponse != null) {
           if (launchResponse.actionId?.isNotEmpty ?? false) {
-            // Action button launched the app — execute action first.
             await onNotificationAction(launchResponse);
+            if (launchResponse.actionId == kActionSnooze) {
+              final mins = prefs.getInt('settings_snooze_duration_minutes') ?? 5;
+              await prefs.setInt('pending_snooze_toast_minutes', mins);
+            }
           } else {
             id = _extractReminderIdFromPayload(
               launchResponse.payload,

@@ -31,6 +31,7 @@ class SettingsRepository {
   static const _kLargeText = 'settings_large_text';
   static const _kHighContrast = 'settings_high_contrast';
   static const _kDarkMode = 'settings_dark_mode';
+  static const _kProfileName = 'settings_profile_name';
   static const _kCaregiverPhone = 'settings_caregiver_phone';
   static const _kCaregiverAlertedMissedIds =
       'settings_caregiver_alerted_missed_ids';
@@ -127,6 +128,18 @@ class SettingsRepository {
     });
   }
 
+  /// Persists profile display name.
+  Future<void> setProfileName(String name) async {
+    await traceAsync('settings', 'setProfileName', () async {
+      final trimmed = name.trim();
+      await _prefs.setString(
+        _kProfileName,
+        trimmed.isEmpty ? 'User' : trimmed,
+      );
+      _notify();
+    });
+  }
+
   /// Sets the caregiver phone number.
   Future<void> setCaregiverPhone(String phone) async {
     await traceAsync('settings', 'setCaregiverPhone', () async {
@@ -203,6 +216,7 @@ class SettingsRepository {
       await _prefs.setBool(_kHighContrast, settings.highContrast);
       await _prefs.setBool(_kDarkMode, settings.darkMode);
       await _prefs.setString(_kCaregiverPhone, settings.caregiverPhone);
+      await _prefs.setString(_kProfileName, settings.profileName);
       _notify();
     });
   }
@@ -219,6 +233,7 @@ class SettingsRepository {
       highContrast: _prefs.getBool(_kHighContrast) ?? false,
       darkMode: _prefs.getBool(_kDarkMode) ?? false,
       caregiverPhone: _prefs.getString(_kCaregiverPhone) ?? '',
+      profileName: _prefs.getString(_kProfileName) ?? 'User',
     );
   }
 

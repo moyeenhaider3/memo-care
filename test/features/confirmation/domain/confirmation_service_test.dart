@@ -7,6 +7,7 @@ import 'package:memo_care/features/confirmation/data/confirmation_repository.dar
 import 'package:memo_care/features/confirmation/domain/confirmation_service.dart';
 import 'package:memo_care/features/confirmation/domain/models/confirmation_state.dart';
 import 'package:memo_care/features/confirmation/domain/snooze_limiter.dart';
+import 'package:memo_care/features/reminders/data/reminder_repository.dart';
 import 'package:memo_care/features/reminders/domain/models/medicine_type.dart';
 import 'package:memo_care/features/reminders/domain/models/reminder.dart';
 import 'package:mocktail/mocktail.dart';
@@ -16,6 +17,8 @@ class MockConfirmationRepository extends Mock
     implements ConfirmationRepository {}
 
 class MockChainRepository extends Mock implements ChainRepository {}
+
+class MockReminderRepository extends Mock implements ReminderRepository {}
 
 // Test helpers
 Reminder _reminder(int id, {int chainId = 1}) => Reminder(
@@ -36,6 +39,7 @@ void main() {
   late ConfirmationService service;
   late MockConfirmationRepository mockConfirmationRepo;
   late MockChainRepository mockChainRepo;
+  late MockReminderRepository mockReminderRepo;
 
   setUpAll(() {
     registerFallbackValue(ConfirmationState.done);
@@ -45,12 +49,19 @@ void main() {
   setUp(() {
     mockConfirmationRepo = MockConfirmationRepository();
     mockChainRepo = MockChainRepository();
+    mockReminderRepo = MockReminderRepository();
+
+    when(() => mockReminderRepo.getById(any())).thenAnswer((inv) async {
+      final id = inv.positionalArguments[0] as int;
+      return _reminder(id);
+    });
 
     service = ConfirmationService(
       chainEngine: const ChainEngine(),
       snoozeLimiter: const SnoozeLimiter(),
       confirmationRepository: mockConfirmationRepo,
       chainRepository: mockChainRepo,
+      reminderRepository: mockReminderRepo,
     );
 
     // Default stub for createConfirmation.
@@ -62,6 +73,10 @@ void main() {
         snoozeUntil: any(named: 'snoozeUntil'),
       ),
     ).thenAnswer((_) async => 1);
+
+    when(
+      () => mockConfirmationRepo.countSnoozesSince(any(), any()),
+    ).thenAnswer((_) async => 0);
   });
 
   group('DONE confirmation', () {
@@ -147,7 +162,7 @@ void main() {
       'allowed snooze returns RescheduleSnooze',
       () async {
         when(
-          () => mockConfirmationRepo.countSnoozes(1),
+          () => mockConfirmationRepo.countSnoozesSince(1, any()),
         ).thenAnswer((_) async => 0);
         when(() => mockChainRepo.getReminders(1)).thenAnswer(
           (_) async => [_reminder(1), _reminder(2)],
@@ -174,7 +189,7 @@ void main() {
       '4th snooze attempt auto-transitions to SKIPPED',
       () async {
         when(
-          () => mockConfirmationRepo.countSnoozes(1),
+          () => mockConfirmationRepo.countSnoozesSince(1, any()),
         ).thenAnswer((_) async => 3);
         when(() => mockChainRepo.getReminders(1)).thenAnswer(
           (_) async => [

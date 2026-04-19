@@ -17,6 +17,7 @@ class AddReminderState {
     this.selectedDays = const {0, 1, 2, 3, 4, 5, 6},
     this.notes = '',
     this.chainLink = false,
+    this.dirty = false,
     this.isSaving = false,
     this.errorMessage,
   });
@@ -34,6 +35,7 @@ class AddReminderState {
   final Set<int> selectedDays;
   final String notes;
   final bool chainLink;
+  final bool dirty;
   final bool isSaving;
   final String? errorMessage;
 
@@ -69,6 +71,7 @@ class AddReminderState {
     Set<int>? selectedDays,
     String? notes,
     bool? chainLink,
+    bool? dirty,
     bool? isSaving,
     String? errorMessage,
   }) {
@@ -84,6 +87,7 @@ class AddReminderState {
       selectedDays: selectedDays ?? this.selectedDays,
       notes: notes ?? this.notes,
       chainLink: chainLink ?? this.chainLink,
+      dirty: dirty ?? this.dirty,
       isSaving: isSaving ?? this.isSaving,
       errorMessage: errorMessage,
     );

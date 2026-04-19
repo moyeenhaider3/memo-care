@@ -46,6 +46,7 @@ class AlarmScheduler {
       exact: true,
       allowWhileIdle: true,
       wakeup: true,
+      rescheduleOnReboot: true,
     );
   }
 

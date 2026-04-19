@@ -4,6 +4,7 @@ import 'package:memo_care/features/chain_engine/domain/models/chain_error.dart';
 import 'package:memo_care/features/confirmation/data/confirmation_repository.dart';
 import 'package:memo_care/features/confirmation/domain/models/confirmation_state.dart';
 import 'package:memo_care/features/confirmation/domain/snooze_limiter.dart';
+import 'package:memo_care/features/reminders/data/reminder_repository.dart';
 import 'package:memo_care/features/reminders/domain/models/reminder.dart';
 
 /// Outcome of a confirmation action — describes what the
@@ -103,6 +104,7 @@ class ConfirmationService {
     required this.snoozeLimiter,
     required this.confirmationRepository,
     required this.chainRepository,
+    required this.reminderRepository,
   });
 
   /// The chain engine for DAG evaluation.
@@ -116,6 +118,9 @@ class ConfirmationService {
 
   /// Repository for reading chain data.
   final ChainRepository chainRepository;
+
+  /// Used to resolve per–alarm-cycle snooze counts.
+  final ReminderRepository reminderRepository;
 
   /// Processes a user confirmation for [reminderId]
   /// belonging to chain [chainId].
@@ -138,7 +143,9 @@ class ConfirmationService {
     var snoozeRemaining = 0;
 
     if (state == ConfirmationState.snoozed) {
-      final snoozeCount = await confirmationRepository.countSnoozes(reminderId);
+      final snoozeCount = await _snoozeCountForLimit(
+        reminderId: reminderId,
+      );
       final decision = snoozeLimiter.evaluate(snoozeCount);
 
       switch (decision) {
@@ -204,5 +211,13 @@ class ConfirmationService {
       confirmationId: confirmationId,
       outcome: outcome,
     );
+  }
+
+  Future<int> _snoozeCountForLimit({required int reminderId}) async {
+    final row = await reminderRepository.getById(reminderId);
+    final since = row?.lastAlarmCycleStartUtc ??
+        row?.scheduledAt ??
+        DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
+    return confirmationRepository.countSnoozesSince(reminderId, since);
   }
 }

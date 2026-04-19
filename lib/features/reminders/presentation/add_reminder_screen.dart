@@ -10,7 +10,6 @@ import 'package:memo_care/features/reminders/application/add_reminder_state.dart
 import 'package:memo_care/features/reminders/presentation/widgets/day_of_week_pills.dart';
 import 'package:memo_care/features/reminders/presentation/widgets/dose_unit_fields.dart';
 import 'package:memo_care/features/reminders/presentation/widgets/notes_textarea.dart';
-import 'package:memo_care/features/reminders/presentation/widgets/reminder_mode_toggle.dart';
 import 'package:memo_care/features/reminders/presentation/widgets/reminder_type_grid.dart';
 import 'package:memo_care/features/reminders/presentation/widgets/time_mode_toggle.dart';
 
@@ -23,7 +22,36 @@ class AddReminderScreen extends ConsumerWidget {
     final state = ref.watch(addReminderNotifierProvider);
     final notifier = ref.read(addReminderNotifierProvider.notifier);
 
-    return Scaffold(
+    return PopScope(
+      canPop: !state.dirty,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        if (!state.dirty) {
+          if (context.mounted) context.pop();
+          return;
+        }
+        final discard = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Discard changes?'),
+            content: const Text(
+              'You have unsaved changes. Leave without saving?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(false),
+                child: const Text('Keep editing'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.of(ctx).pop(true),
+                child: const Text('Discard'),
+              ),
+            ],
+          ),
+        );
+        if (discard == true && context.mounted) context.pop();
+      },
+      child: Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
@@ -36,7 +64,7 @@ class AddReminderScreen extends ConsumerWidget {
         ),
         leading: IconButton(
           icon: const Icon(Icons.close, color: AppColors.textPrimary),
-          onPressed: () => context.pop(),
+          onPressed: () => Navigator.of(context).maybePop(),
         ),
       ),
       body: Column(
@@ -48,21 +76,6 @@ class AddReminderScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: AppSpacing.cardGap),
-
-                  // Mode toggle — Say It / Build It
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.screenHorizontal,
-                    ),
-                    child: ReminderModeToggle(
-                      isBuildIt: true, // Default to Build It
-                      onChanged: (_) {
-                        // Voice input feature — future phase
-                      },
-                    ),
-                  ),
-
-                  const SizedBox(height: AppSpacing.sectionGap),
 
                   // Section: Type
                   const _SectionLabel('Type'),
@@ -180,31 +193,6 @@ class AddReminderScreen extends ConsumerWidget {
 
                   const SizedBox(height: AppSpacing.sectionGap),
 
-                  // Chain link toggle
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.screenHorizontal,
-                    ),
-                    child: SwitchListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: Text(
-                        'Add to Chain',
-                        style: AppTypography.titleMedium.copyWith(
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                      subtitle: Text(
-                        'Link this reminder to another for sequential dosing',
-                        style: AppTypography.bodySmall.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                      value: state.chainLink,
-                      onChanged: (_) => notifier.toggleChainLink(),
-                      activeThumbColor: AppColors.accent,
-                    ),
-                  ),
-
                   // Error message
                   if (state.errorMessage != null) ...[
                     const SizedBox(height: 12),
@@ -289,6 +277,7 @@ class AddReminderScreen extends ConsumerWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

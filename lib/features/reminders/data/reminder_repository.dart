@@ -49,6 +49,7 @@ class ReminderRepository {
     DateTime? scheduledAt,
     bool isActive = false,
     int? gapHours,
+    String? recurrenceDays,
   }) {
     return _dao.insertReminder(
       RemindersCompanion.insert(
@@ -59,6 +60,7 @@ class ReminderRepository {
         scheduledAt: Value(scheduledAt),
         isActive: Value(isActive),
         gapHours: Value(gapHours),
+        recurrenceDays: Value(recurrenceDays),
       ),
     );
   }
@@ -75,6 +77,8 @@ class ReminderRepository {
         scheduledAt: Value(reminder.scheduledAt),
         isActive: Value(reminder.isActive),
         gapHours: Value(reminder.gapHours),
+        recurrenceDays: Value(reminder.recurrenceDays),
+        lastAlarmCycleStartUtc: Value(reminder.lastAlarmCycleStartUtc),
       ),
     );
   }
@@ -153,5 +157,7 @@ class ReminderRepository {
     scheduledAt: row.scheduledAt,
     isActive: row.isActive,
     gapHours: row.gapHours,
+    recurrenceDays: row.recurrenceDays,
+    lastAlarmCycleStartUtc: row.lastAlarmCycleStartUtc,
   );
 }

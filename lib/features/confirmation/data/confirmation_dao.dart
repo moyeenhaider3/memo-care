@@ -43,6 +43,19 @@ class ConfirmationDao extends DatabaseAccessor<AppDatabase>
     return result.read(countExp) ?? 0;
   }
 
+  /// Snoozes with [confirmedAt] &gt;= [sinceUtc] (same reminder, state snoozed).
+  Future<int> countSnoozesSince(int reminderId, DateTime sinceUtc) async {
+    final sinceMs = sinceUtc.millisecondsSinceEpoch;
+    final countExp = confirmations.id.count();
+    final query = selectOnly(confirmations)
+      ..addColumns([countExp])
+      ..where(confirmations.reminderId.equals(reminderId))
+      ..where(confirmations.state.equals('snoozed'))
+      ..where(confirmations.confirmedAt.isBiggerOrEqualValue(sinceMs));
+    final result = await query.getSingle();
+    return result.read(countExp) ?? 0;
+  }
+
   /// Delete a single confirmation by [id].
   ///
   /// Returns the number of deleted rows (0 or 1).

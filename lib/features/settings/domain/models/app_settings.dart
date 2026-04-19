@@ -44,6 +44,9 @@ abstract class AppSettings with _$AppSettings {
 
     /// Linked caregiver phone number (empty if none).
     @Default('') String caregiverPhone,
+
+    /// Display name for greeting and PDF export.
+    @Default('User') String profileName,
   }) = _AppSettings;
 
   /// Deserialises from JSON.

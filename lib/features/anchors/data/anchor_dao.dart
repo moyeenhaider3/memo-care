@@ -21,6 +21,13 @@ class AnchorDao extends DatabaseAccessor<AppDatabase> with _$AnchorDaoMixin {
     )..where((a) => a.mealType.equals(mealType))).watchSingleOrNull();
   }
 
+  /// One-shot fetch by meal type (e.g. `breakfast`, `lunch`).
+  Future<MealAnchorRow?> getAnchorByMealType(String mealType) {
+    return (select(
+      mealAnchors,
+    )..where((a) => a.mealType.equals(mealType))).getSingleOrNull();
+  }
+
   /// Insert a new meal anchor.
   Future<int> insertAnchor(MealAnchorsCompanion companion) {
     return into(mealAnchors).insert(companion);

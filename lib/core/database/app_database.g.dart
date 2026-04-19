@@ -403,6 +403,26 @@ class $RemindersTable extends Reminders
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _recurrenceDaysMeta = const VerificationMeta(
+    'recurrenceDays',
+  );
+  @override
+  late final GeneratedColumn<String> recurrenceDays = GeneratedColumn<String>(
+    'recurrence_days',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<DateTime?, int>
+  lastAlarmCycleStartUtc = GeneratedColumn<int>(
+    'last_alarm_cycle_start_utc',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  ).withConverter<DateTime?>($RemindersTable.$converterlastAlarmCycleStartUtcn);
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -413,6 +433,8 @@ class $RemindersTable extends Reminders
     scheduledAt,
     isActive,
     gapHours,
+    recurrenceDays,
+    lastAlarmCycleStartUtc,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -477,6 +499,15 @@ class $RemindersTable extends Reminders
         gapHours.isAcceptableOrUnknown(data['gap_hours']!, _gapHoursMeta),
       );
     }
+    if (data.containsKey('recurrence_days')) {
+      context.handle(
+        _recurrenceDaysMeta,
+        recurrenceDays.isAcceptableOrUnknown(
+          data['recurrence_days']!,
+          _recurrenceDaysMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -520,6 +551,17 @@ class $RemindersTable extends Reminders
         DriftSqlType.int,
         data['${effectivePrefix}gap_hours'],
       ),
+      recurrenceDays: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recurrence_days'],
+      ),
+      lastAlarmCycleStartUtc: $RemindersTable.$converterlastAlarmCycleStartUtcn
+          .fromSql(
+            attachedDatabase.typeMapping.read(
+              DriftSqlType.int,
+              data['${effectivePrefix}last_alarm_cycle_start_utc'],
+            ),
+          ),
     );
   }
 
@@ -532,6 +574,10 @@ class $RemindersTable extends Reminders
       const DateTimeConverter();
   static TypeConverter<DateTime?, int?> $converterscheduledAtn =
       NullAwareTypeConverter.wrap($converterscheduledAt);
+  static TypeConverter<DateTime, int> $converterlastAlarmCycleStartUtc =
+      const DateTimeConverter();
+  static TypeConverter<DateTime?, int?> $converterlastAlarmCycleStartUtcn =
+      NullAwareTypeConverter.wrap($converterlastAlarmCycleStartUtc);
 }
 
 class ReminderRow extends DataClass implements Insertable<ReminderRow> {
@@ -543,6 +589,13 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
   final DateTime? scheduledAt;
   final bool isActive;
   final int? gapHours;
+
+  /// Weekly recurrence as CSV of UI day indices `0..6` (Mon..Sun), e.g. `"0,2,4"`.
+  /// Null or empty means every day / non-recurring single shot per product rules.
+  final String? recurrenceDays;
+
+  /// Start of the current alarm/snooze cycle (UTC), for snooze-cap scoping.
+  final DateTime? lastAlarmCycleStartUtc;
   const ReminderRow({
     required this.id,
     required this.chainId,
@@ -552,6 +605,8 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
     this.scheduledAt,
     required this.isActive,
     this.gapHours,
+    this.recurrenceDays,
+    this.lastAlarmCycleStartUtc,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -572,6 +627,16 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
     if (!nullToAbsent || gapHours != null) {
       map['gap_hours'] = Variable<int>(gapHours);
     }
+    if (!nullToAbsent || recurrenceDays != null) {
+      map['recurrence_days'] = Variable<String>(recurrenceDays);
+    }
+    if (!nullToAbsent || lastAlarmCycleStartUtc != null) {
+      map['last_alarm_cycle_start_utc'] = Variable<int>(
+        $RemindersTable.$converterlastAlarmCycleStartUtcn.toSql(
+          lastAlarmCycleStartUtc,
+        ),
+      );
+    }
     return map;
   }
 
@@ -591,6 +656,12 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
       gapHours: gapHours == null && nullToAbsent
           ? const Value.absent()
           : Value(gapHours),
+      recurrenceDays: recurrenceDays == null && nullToAbsent
+          ? const Value.absent()
+          : Value(recurrenceDays),
+      lastAlarmCycleStartUtc: lastAlarmCycleStartUtc == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastAlarmCycleStartUtc),
     );
   }
 
@@ -608,6 +679,10 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
       scheduledAt: serializer.fromJson<DateTime?>(json['scheduledAt']),
       isActive: serializer.fromJson<bool>(json['isActive']),
       gapHours: serializer.fromJson<int?>(json['gapHours']),
+      recurrenceDays: serializer.fromJson<String?>(json['recurrenceDays']),
+      lastAlarmCycleStartUtc: serializer.fromJson<DateTime?>(
+        json['lastAlarmCycleStartUtc'],
+      ),
     );
   }
   @override
@@ -622,6 +697,10 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
       'scheduledAt': serializer.toJson<DateTime?>(scheduledAt),
       'isActive': serializer.toJson<bool>(isActive),
       'gapHours': serializer.toJson<int?>(gapHours),
+      'recurrenceDays': serializer.toJson<String?>(recurrenceDays),
+      'lastAlarmCycleStartUtc': serializer.toJson<DateTime?>(
+        lastAlarmCycleStartUtc,
+      ),
     };
   }
 
@@ -634,6 +713,8 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
     Value<DateTime?> scheduledAt = const Value.absent(),
     bool? isActive,
     Value<int?> gapHours = const Value.absent(),
+    Value<String?> recurrenceDays = const Value.absent(),
+    Value<DateTime?> lastAlarmCycleStartUtc = const Value.absent(),
   }) => ReminderRow(
     id: id ?? this.id,
     chainId: chainId ?? this.chainId,
@@ -643,6 +724,12 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
     scheduledAt: scheduledAt.present ? scheduledAt.value : this.scheduledAt,
     isActive: isActive ?? this.isActive,
     gapHours: gapHours.present ? gapHours.value : this.gapHours,
+    recurrenceDays: recurrenceDays.present
+        ? recurrenceDays.value
+        : this.recurrenceDays,
+    lastAlarmCycleStartUtc: lastAlarmCycleStartUtc.present
+        ? lastAlarmCycleStartUtc.value
+        : this.lastAlarmCycleStartUtc,
   );
   ReminderRow copyWithCompanion(RemindersCompanion data) {
     return ReminderRow(
@@ -660,6 +747,12 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
           : this.scheduledAt,
       isActive: data.isActive.present ? data.isActive.value : this.isActive,
       gapHours: data.gapHours.present ? data.gapHours.value : this.gapHours,
+      recurrenceDays: data.recurrenceDays.present
+          ? data.recurrenceDays.value
+          : this.recurrenceDays,
+      lastAlarmCycleStartUtc: data.lastAlarmCycleStartUtc.present
+          ? data.lastAlarmCycleStartUtc.value
+          : this.lastAlarmCycleStartUtc,
     );
   }
 
@@ -673,7 +766,9 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
           ..write('dosage: $dosage, ')
           ..write('scheduledAt: $scheduledAt, ')
           ..write('isActive: $isActive, ')
-          ..write('gapHours: $gapHours')
+          ..write('gapHours: $gapHours, ')
+          ..write('recurrenceDays: $recurrenceDays, ')
+          ..write('lastAlarmCycleStartUtc: $lastAlarmCycleStartUtc')
           ..write(')'))
         .toString();
   }
@@ -688,6 +783,8 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
     scheduledAt,
     isActive,
     gapHours,
+    recurrenceDays,
+    lastAlarmCycleStartUtc,
   );
   @override
   bool operator ==(Object other) =>
@@ -700,7 +797,9 @@ class ReminderRow extends DataClass implements Insertable<ReminderRow> {
           other.dosage == this.dosage &&
           other.scheduledAt == this.scheduledAt &&
           other.isActive == this.isActive &&
-          other.gapHours == this.gapHours);
+          other.gapHours == this.gapHours &&
+          other.recurrenceDays == this.recurrenceDays &&
+          other.lastAlarmCycleStartUtc == this.lastAlarmCycleStartUtc);
 }
 
 class RemindersCompanion extends UpdateCompanion<ReminderRow> {
@@ -712,6 +811,8 @@ class RemindersCompanion extends UpdateCompanion<ReminderRow> {
   final Value<DateTime?> scheduledAt;
   final Value<bool> isActive;
   final Value<int?> gapHours;
+  final Value<String?> recurrenceDays;
+  final Value<DateTime?> lastAlarmCycleStartUtc;
   const RemindersCompanion({
     this.id = const Value.absent(),
     this.chainId = const Value.absent(),
@@ -721,6 +822,8 @@ class RemindersCompanion extends UpdateCompanion<ReminderRow> {
     this.scheduledAt = const Value.absent(),
     this.isActive = const Value.absent(),
     this.gapHours = const Value.absent(),
+    this.recurrenceDays = const Value.absent(),
+    this.lastAlarmCycleStartUtc = const Value.absent(),
   });
   RemindersCompanion.insert({
     this.id = const Value.absent(),
@@ -731,6 +834,8 @@ class RemindersCompanion extends UpdateCompanion<ReminderRow> {
     this.scheduledAt = const Value.absent(),
     this.isActive = const Value.absent(),
     this.gapHours = const Value.absent(),
+    this.recurrenceDays = const Value.absent(),
+    this.lastAlarmCycleStartUtc = const Value.absent(),
   }) : chainId = Value(chainId),
        medicineName = Value(medicineName),
        medicineType = Value(medicineType);
@@ -743,6 +848,8 @@ class RemindersCompanion extends UpdateCompanion<ReminderRow> {
     Expression<int>? scheduledAt,
     Expression<bool>? isActive,
     Expression<int>? gapHours,
+    Expression<String>? recurrenceDays,
+    Expression<int>? lastAlarmCycleStartUtc,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -753,6 +860,9 @@ class RemindersCompanion extends UpdateCompanion<ReminderRow> {
       if (scheduledAt != null) 'scheduled_at': scheduledAt,
       if (isActive != null) 'is_active': isActive,
       if (gapHours != null) 'gap_hours': gapHours,
+      if (recurrenceDays != null) 'recurrence_days': recurrenceDays,
+      if (lastAlarmCycleStartUtc != null)
+        'last_alarm_cycle_start_utc': lastAlarmCycleStartUtc,
     });
   }
 
@@ -765,6 +875,8 @@ class RemindersCompanion extends UpdateCompanion<ReminderRow> {
     Value<DateTime?>? scheduledAt,
     Value<bool>? isActive,
     Value<int?>? gapHours,
+    Value<String?>? recurrenceDays,
+    Value<DateTime?>? lastAlarmCycleStartUtc,
   }) {
     return RemindersCompanion(
       id: id ?? this.id,
@@ -775,6 +887,9 @@ class RemindersCompanion extends UpdateCompanion<ReminderRow> {
       scheduledAt: scheduledAt ?? this.scheduledAt,
       isActive: isActive ?? this.isActive,
       gapHours: gapHours ?? this.gapHours,
+      recurrenceDays: recurrenceDays ?? this.recurrenceDays,
+      lastAlarmCycleStartUtc:
+          lastAlarmCycleStartUtc ?? this.lastAlarmCycleStartUtc,
     );
   }
 
@@ -807,6 +922,16 @@ class RemindersCompanion extends UpdateCompanion<ReminderRow> {
     if (gapHours.present) {
       map['gap_hours'] = Variable<int>(gapHours.value);
     }
+    if (recurrenceDays.present) {
+      map['recurrence_days'] = Variable<String>(recurrenceDays.value);
+    }
+    if (lastAlarmCycleStartUtc.present) {
+      map['last_alarm_cycle_start_utc'] = Variable<int>(
+        $RemindersTable.$converterlastAlarmCycleStartUtcn.toSql(
+          lastAlarmCycleStartUtc.value,
+        ),
+      );
+    }
     return map;
   }
 
@@ -820,7 +945,9 @@ class RemindersCompanion extends UpdateCompanion<ReminderRow> {
           ..write('dosage: $dosage, ')
           ..write('scheduledAt: $scheduledAt, ')
           ..write('isActive: $isActive, ')
-          ..write('gapHours: $gapHours')
+          ..write('gapHours: $gapHours, ')
+          ..write('recurrenceDays: $recurrenceDays, ')
+          ..write('lastAlarmCycleStartUtc: $lastAlarmCycleStartUtc')
           ..write(')'))
         .toString();
   }
@@ -2238,6 +2365,8 @@ typedef $$RemindersTableCreateCompanionBuilder =
       Value<DateTime?> scheduledAt,
       Value<bool> isActive,
       Value<int?> gapHours,
+      Value<String?> recurrenceDays,
+      Value<DateTime?> lastAlarmCycleStartUtc,
     });
 typedef $$RemindersTableUpdateCompanionBuilder =
     RemindersCompanion Function({
@@ -2249,6 +2378,8 @@ typedef $$RemindersTableUpdateCompanionBuilder =
       Value<DateTime?> scheduledAt,
       Value<bool> isActive,
       Value<int?> gapHours,
+      Value<String?> recurrenceDays,
+      Value<DateTime?> lastAlarmCycleStartUtc,
     });
 
 final class $$RemindersTableReferences
@@ -2375,6 +2506,17 @@ class $$RemindersTableFilterComposer
   ColumnFilters<int> get gapHours => $composableBuilder(
     column: $table.gapHours,
     builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recurrenceDays => $composableBuilder(
+    column: $table.recurrenceDays,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<DateTime?, DateTime, int>
+  get lastAlarmCycleStartUtc => $composableBuilder(
+    column: $table.lastAlarmCycleStartUtc,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 
   $$ReminderChainsTableFilterComposer get chainId {
@@ -2520,6 +2662,16 @@ class $$RemindersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get recurrenceDays => $composableBuilder(
+    column: $table.recurrenceDays,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get lastAlarmCycleStartUtc => $composableBuilder(
+    column: $table.lastAlarmCycleStartUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$ReminderChainsTableOrderingComposer get chainId {
     final $$ReminderChainsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -2580,6 +2732,17 @@ class $$RemindersTableAnnotationComposer
 
   GeneratedColumn<int> get gapHours =>
       $composableBuilder(column: $table.gapHours, builder: (column) => column);
+
+  GeneratedColumn<String> get recurrenceDays => $composableBuilder(
+    column: $table.recurrenceDays,
+    builder: (column) => column,
+  );
+
+  GeneratedColumnWithTypeConverter<DateTime?, int> get lastAlarmCycleStartUtc =>
+      $composableBuilder(
+        column: $table.lastAlarmCycleStartUtc,
+        builder: (column) => column,
+      );
 
   $$ReminderChainsTableAnnotationComposer get chainId {
     final $$ReminderChainsTableAnnotationComposer composer = $composerBuilder(
@@ -2721,6 +2884,8 @@ class $$RemindersTableTableManager
                 Value<DateTime?> scheduledAt = const Value.absent(),
                 Value<bool> isActive = const Value.absent(),
                 Value<int?> gapHours = const Value.absent(),
+                Value<String?> recurrenceDays = const Value.absent(),
+                Value<DateTime?> lastAlarmCycleStartUtc = const Value.absent(),
               }) => RemindersCompanion(
                 id: id,
                 chainId: chainId,
@@ -2730,6 +2895,8 @@ class $$RemindersTableTableManager
                 scheduledAt: scheduledAt,
                 isActive: isActive,
                 gapHours: gapHours,
+                recurrenceDays: recurrenceDays,
+                lastAlarmCycleStartUtc: lastAlarmCycleStartUtc,
               ),
           createCompanionCallback:
               ({
@@ -2741,6 +2908,8 @@ class $$RemindersTableTableManager
                 Value<DateTime?> scheduledAt = const Value.absent(),
                 Value<bool> isActive = const Value.absent(),
                 Value<int?> gapHours = const Value.absent(),
+                Value<String?> recurrenceDays = const Value.absent(),
+                Value<DateTime?> lastAlarmCycleStartUtc = const Value.absent(),
               }) => RemindersCompanion.insert(
                 id: id,
                 chainId: chainId,
@@ -2750,6 +2919,8 @@ class $$RemindersTableTableManager
                 scheduledAt: scheduledAt,
                 isActive: isActive,
                 gapHours: gapHours,
+                recurrenceDays: recurrenceDays,
+                lastAlarmCycleStartUtc: lastAlarmCycleStartUtc,
               ),
           withReferenceMapper: (p0) => p0
               .map(

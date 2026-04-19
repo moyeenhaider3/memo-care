@@ -15,7 +15,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Reminder {
 
- int get id; int get chainId; String get medicineName; MedicineType get medicineType; String? get dosage; DateTime? get scheduledAt; bool get isActive; int? get gapHours;
+ int get id; int get chainId; String get medicineName; MedicineType get medicineType; String? get dosage; DateTime? get scheduledAt; bool get isActive; int? get gapHours;/// CSV of UI weekday indices `0..6` (Mon..Sun), e.g. `"0,2,4"`.
+ String? get recurrenceDays; DateTime? get lastAlarmCycleStartUtc;
 /// Create a copy of Reminder
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +29,16 @@ $ReminderCopyWith<Reminder> get copyWith => _$ReminderCopyWithImpl<Reminder>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Reminder&&(identical(other.id, id) || other.id == id)&&(identical(other.chainId, chainId) || other.chainId == chainId)&&(identical(other.medicineName, medicineName) || other.medicineName == medicineName)&&(identical(other.medicineType, medicineType) || other.medicineType == medicineType)&&(identical(other.dosage, dosage) || other.dosage == dosage)&&(identical(other.scheduledAt, scheduledAt) || other.scheduledAt == scheduledAt)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.gapHours, gapHours) || other.gapHours == gapHours));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Reminder&&(identical(other.id, id) || other.id == id)&&(identical(other.chainId, chainId) || other.chainId == chainId)&&(identical(other.medicineName, medicineName) || other.medicineName == medicineName)&&(identical(other.medicineType, medicineType) || other.medicineType == medicineType)&&(identical(other.dosage, dosage) || other.dosage == dosage)&&(identical(other.scheduledAt, scheduledAt) || other.scheduledAt == scheduledAt)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.gapHours, gapHours) || other.gapHours == gapHours)&&(identical(other.recurrenceDays, recurrenceDays) || other.recurrenceDays == recurrenceDays)&&(identical(other.lastAlarmCycleStartUtc, lastAlarmCycleStartUtc) || other.lastAlarmCycleStartUtc == lastAlarmCycleStartUtc));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,chainId,medicineName,medicineType,dosage,scheduledAt,isActive,gapHours);
+int get hashCode => Object.hash(runtimeType,id,chainId,medicineName,medicineType,dosage,scheduledAt,isActive,gapHours,recurrenceDays,lastAlarmCycleStartUtc);
 
 @override
 String toString() {
-  return 'Reminder(id: $id, chainId: $chainId, medicineName: $medicineName, medicineType: $medicineType, dosage: $dosage, scheduledAt: $scheduledAt, isActive: $isActive, gapHours: $gapHours)';
+  return 'Reminder(id: $id, chainId: $chainId, medicineName: $medicineName, medicineType: $medicineType, dosage: $dosage, scheduledAt: $scheduledAt, isActive: $isActive, gapHours: $gapHours, recurrenceDays: $recurrenceDays, lastAlarmCycleStartUtc: $lastAlarmCycleStartUtc)';
 }
 
 
@@ -48,7 +49,7 @@ abstract mixin class $ReminderCopyWith<$Res>  {
   factory $ReminderCopyWith(Reminder value, $Res Function(Reminder) _then) = _$ReminderCopyWithImpl;
 @useResult
 $Res call({
- int id, int chainId, String medicineName, MedicineType medicineType, String? dosage, DateTime? scheduledAt, bool isActive, int? gapHours
+ int id, int chainId, String medicineName, MedicineType medicineType, String? dosage, DateTime? scheduledAt, bool isActive, int? gapHours, String? recurrenceDays, DateTime? lastAlarmCycleStartUtc
 });
 
 
@@ -65,7 +66,7 @@ class _$ReminderCopyWithImpl<$Res>
 
 /// Create a copy of Reminder
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? chainId = null,Object? medicineName = null,Object? medicineType = null,Object? dosage = freezed,Object? scheduledAt = freezed,Object? isActive = null,Object? gapHours = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? chainId = null,Object? medicineName = null,Object? medicineType = null,Object? dosage = freezed,Object? scheduledAt = freezed,Object? isActive = null,Object? gapHours = freezed,Object? recurrenceDays = freezed,Object? lastAlarmCycleStartUtc = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,chainId: null == chainId ? _self.chainId : chainId // ignore: cast_nullable_to_non_nullable
@@ -75,7 +76,9 @@ as MedicineType,dosage: freezed == dosage ? _self.dosage : dosage // ignore: cas
 as String?,scheduledAt: freezed == scheduledAt ? _self.scheduledAt : scheduledAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,isActive: null == isActive ? _self.isActive : isActive // ignore: cast_nullable_to_non_nullable
 as bool,gapHours: freezed == gapHours ? _self.gapHours : gapHours // ignore: cast_nullable_to_non_nullable
-as int?,
+as int?,recurrenceDays: freezed == recurrenceDays ? _self.recurrenceDays : recurrenceDays // ignore: cast_nullable_to_non_nullable
+as String?,lastAlarmCycleStartUtc: freezed == lastAlarmCycleStartUtc ? _self.lastAlarmCycleStartUtc : lastAlarmCycleStartUtc // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 
@@ -160,10 +163,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int chainId,  String medicineName,  MedicineType medicineType,  String? dosage,  DateTime? scheduledAt,  bool isActive,  int? gapHours)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int chainId,  String medicineName,  MedicineType medicineType,  String? dosage,  DateTime? scheduledAt,  bool isActive,  int? gapHours,  String? recurrenceDays,  DateTime? lastAlarmCycleStartUtc)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Reminder() when $default != null:
-return $default(_that.id,_that.chainId,_that.medicineName,_that.medicineType,_that.dosage,_that.scheduledAt,_that.isActive,_that.gapHours);case _:
+return $default(_that.id,_that.chainId,_that.medicineName,_that.medicineType,_that.dosage,_that.scheduledAt,_that.isActive,_that.gapHours,_that.recurrenceDays,_that.lastAlarmCycleStartUtc);case _:
   return orElse();
 
 }
@@ -181,10 +184,10 @@ return $default(_that.id,_that.chainId,_that.medicineName,_that.medicineType,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int chainId,  String medicineName,  MedicineType medicineType,  String? dosage,  DateTime? scheduledAt,  bool isActive,  int? gapHours)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int chainId,  String medicineName,  MedicineType medicineType,  String? dosage,  DateTime? scheduledAt,  bool isActive,  int? gapHours,  String? recurrenceDays,  DateTime? lastAlarmCycleStartUtc)  $default,) {final _that = this;
 switch (_that) {
 case _Reminder():
-return $default(_that.id,_that.chainId,_that.medicineName,_that.medicineType,_that.dosage,_that.scheduledAt,_that.isActive,_that.gapHours);case _:
+return $default(_that.id,_that.chainId,_that.medicineName,_that.medicineType,_that.dosage,_that.scheduledAt,_that.isActive,_that.gapHours,_that.recurrenceDays,_that.lastAlarmCycleStartUtc);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -201,10 +204,10 @@ return $default(_that.id,_that.chainId,_that.medicineName,_that.medicineType,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int chainId,  String medicineName,  MedicineType medicineType,  String? dosage,  DateTime? scheduledAt,  bool isActive,  int? gapHours)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int chainId,  String medicineName,  MedicineType medicineType,  String? dosage,  DateTime? scheduledAt,  bool isActive,  int? gapHours,  String? recurrenceDays,  DateTime? lastAlarmCycleStartUtc)?  $default,) {final _that = this;
 switch (_that) {
 case _Reminder() when $default != null:
-return $default(_that.id,_that.chainId,_that.medicineName,_that.medicineType,_that.dosage,_that.scheduledAt,_that.isActive,_that.gapHours);case _:
+return $default(_that.id,_that.chainId,_that.medicineName,_that.medicineType,_that.dosage,_that.scheduledAt,_that.isActive,_that.gapHours,_that.recurrenceDays,_that.lastAlarmCycleStartUtc);case _:
   return null;
 
 }
@@ -216,7 +219,7 @@ return $default(_that.id,_that.chainId,_that.medicineName,_that.medicineType,_th
 @JsonSerializable()
 
 class _Reminder implements Reminder {
-  const _Reminder({required this.id, required this.chainId, required this.medicineName, required this.medicineType, this.dosage, this.scheduledAt, this.isActive = false, this.gapHours});
+  const _Reminder({required this.id, required this.chainId, required this.medicineName, required this.medicineType, this.dosage, this.scheduledAt, this.isActive = false, this.gapHours, this.recurrenceDays, this.lastAlarmCycleStartUtc});
   factory _Reminder.fromJson(Map<String, dynamic> json) => _$ReminderFromJson(json);
 
 @override final  int id;
@@ -227,6 +230,9 @@ class _Reminder implements Reminder {
 @override final  DateTime? scheduledAt;
 @override@JsonKey() final  bool isActive;
 @override final  int? gapHours;
+/// CSV of UI weekday indices `0..6` (Mon..Sun), e.g. `"0,2,4"`.
+@override final  String? recurrenceDays;
+@override final  DateTime? lastAlarmCycleStartUtc;
 
 /// Create a copy of Reminder
 /// with the given fields replaced by the non-null parameter values.
@@ -241,16 +247,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Reminder&&(identical(other.id, id) || other.id == id)&&(identical(other.chainId, chainId) || other.chainId == chainId)&&(identical(other.medicineName, medicineName) || other.medicineName == medicineName)&&(identical(other.medicineType, medicineType) || other.medicineType == medicineType)&&(identical(other.dosage, dosage) || other.dosage == dosage)&&(identical(other.scheduledAt, scheduledAt) || other.scheduledAt == scheduledAt)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.gapHours, gapHours) || other.gapHours == gapHours));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Reminder&&(identical(other.id, id) || other.id == id)&&(identical(other.chainId, chainId) || other.chainId == chainId)&&(identical(other.medicineName, medicineName) || other.medicineName == medicineName)&&(identical(other.medicineType, medicineType) || other.medicineType == medicineType)&&(identical(other.dosage, dosage) || other.dosage == dosage)&&(identical(other.scheduledAt, scheduledAt) || other.scheduledAt == scheduledAt)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.gapHours, gapHours) || other.gapHours == gapHours)&&(identical(other.recurrenceDays, recurrenceDays) || other.recurrenceDays == recurrenceDays)&&(identical(other.lastAlarmCycleStartUtc, lastAlarmCycleStartUtc) || other.lastAlarmCycleStartUtc == lastAlarmCycleStartUtc));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,chainId,medicineName,medicineType,dosage,scheduledAt,isActive,gapHours);
+int get hashCode => Object.hash(runtimeType,id,chainId,medicineName,medicineType,dosage,scheduledAt,isActive,gapHours,recurrenceDays,lastAlarmCycleStartUtc);
 
 @override
 String toString() {
-  return 'Reminder(id: $id, chainId: $chainId, medicineName: $medicineName, medicineType: $medicineType, dosage: $dosage, scheduledAt: $scheduledAt, isActive: $isActive, gapHours: $gapHours)';
+  return 'Reminder(id: $id, chainId: $chainId, medicineName: $medicineName, medicineType: $medicineType, dosage: $dosage, scheduledAt: $scheduledAt, isActive: $isActive, gapHours: $gapHours, recurrenceDays: $recurrenceDays, lastAlarmCycleStartUtc: $lastAlarmCycleStartUtc)';
 }
 
 
@@ -261,7 +267,7 @@ abstract mixin class _$ReminderCopyWith<$Res> implements $ReminderCopyWith<$Res>
   factory _$ReminderCopyWith(_Reminder value, $Res Function(_Reminder) _then) = __$ReminderCopyWithImpl;
 @override @useResult
 $Res call({
- int id, int chainId, String medicineName, MedicineType medicineType, String? dosage, DateTime? scheduledAt, bool isActive, int? gapHours
+ int id, int chainId, String medicineName, MedicineType medicineType, String? dosage, DateTime? scheduledAt, bool isActive, int? gapHours, String? recurrenceDays, DateTime? lastAlarmCycleStartUtc
 });
 
 
@@ -278,7 +284,7 @@ class __$ReminderCopyWithImpl<$Res>
 
 /// Create a copy of Reminder
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? chainId = null,Object? medicineName = null,Object? medicineType = null,Object? dosage = freezed,Object? scheduledAt = freezed,Object? isActive = null,Object? gapHours = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? chainId = null,Object? medicineName = null,Object? medicineType = null,Object? dosage = freezed,Object? scheduledAt = freezed,Object? isActive = null,Object? gapHours = freezed,Object? recurrenceDays = freezed,Object? lastAlarmCycleStartUtc = freezed,}) {
   return _then(_Reminder(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,chainId: null == chainId ? _self.chainId : chainId // ignore: cast_nullable_to_non_nullable
@@ -288,7 +294,9 @@ as MedicineType,dosage: freezed == dosage ? _self.dosage : dosage // ignore: cas
 as String?,scheduledAt: freezed == scheduledAt ? _self.scheduledAt : scheduledAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,isActive: null == isActive ? _self.isActive : isActive // ignore: cast_nullable_to_non_nullable
 as bool,gapHours: freezed == gapHours ? _self.gapHours : gapHours // ignore: cast_nullable_to_non_nullable
-as int?,
+as int?,recurrenceDays: freezed == recurrenceDays ? _self.recurrenceDays : recurrenceDays // ignore: cast_nullable_to_non_nullable
+as String?,lastAlarmCycleStartUtc: freezed == lastAlarmCycleStartUtc ? _self.lastAlarmCycleStartUtc : lastAlarmCycleStartUtc // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 

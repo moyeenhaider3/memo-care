@@ -1,10 +1,13 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:intl/intl.dart';
 import 'package:memo_care/features/history/domain/models/history_entry.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:share_plus/share_plus.dart';
 
 /// Builds and shares medication history PDF reports.
 class HistoryExportService {
@@ -35,6 +38,43 @@ class HistoryExportService {
       bytes: bytes,
       filename: 'memocare_history_$suffix.pdf',
     );
+  }
+
+  /// Exports history rows as CSV and opens the system share sheet.
+  static Future<void> exportCsv({
+    required List<HistoryEntry> entries,
+  }) async {
+    final buf = StringBuffer()
+      ..writeln(
+        'medicine_name,dosage,scheduled_at_utc,status,confirmed_at_utc',
+      );
+    for (final e in entries) {
+      buf.writeln(
+        [
+          _csvField(e.medicineName),
+          _csvField(e.dosage ?? ''),
+          e.scheduledAt.toUtc().toIso8601String(),
+          _csvField(e.statusLabel),
+          e.confirmedAt?.toUtc().toIso8601String() ?? '',
+        ].join(','),
+      );
+    }
+    final dir = await getTemporaryDirectory();
+    final name =
+        'memocare_history_${DateFormat('yyyyMMdd_HHmm').format(DateTime.now())}.csv';
+    final file = File('${dir.path}/$name');
+    await file.writeAsString(buf.toString());
+    await Share.shareXFiles(
+      [XFile(file.path, mimeType: 'text/csv')],
+      subject: 'MemoCare history',
+    );
+  }
+
+  static String _csvField(String raw) {
+    if (raw.contains(',') || raw.contains('"') || raw.contains('\n')) {
+      return '"${raw.replaceAll('"', '""')}"';
+    }
+    return raw;
   }
 
   /// Builds PDF report bytes for sharing/export.

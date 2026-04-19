@@ -17,6 +17,7 @@ _AppSettings _$AppSettingsFromJson(Map<String, dynamic> json) => _AppSettings(
   highContrast: json['highContrast'] as bool? ?? false,
   darkMode: json['darkMode'] as bool? ?? false,
   caregiverPhone: json['caregiverPhone'] as String? ?? '',
+  profileName: json['profileName'] as String? ?? 'User',
 );
 
 Map<String, dynamic> _$AppSettingsToJson(_AppSettings instance) =>
@@ -31,4 +32,5 @@ Map<String, dynamic> _$AppSettingsToJson(_AppSettings instance) =>
       'highContrast': instance.highContrast,
       'darkMode': instance.darkMode,
       'caregiverPhone': instance.caregiverPhone,
+      'profileName': instance.profileName,
     };

@@ -16,6 +16,9 @@ abstract class Reminder with _$Reminder {
     DateTime? scheduledAt,
     @Default(false) bool isActive,
     int? gapHours,
+    /// CSV of UI weekday indices `0..6` (Mon..Sun), e.g. `"0,2,4"`.
+    String? recurrenceDays,
+    DateTime? lastAlarmCycleStartUtc,
   }) = _Reminder;
 
   factory Reminder.fromJson(Map<String, dynamic> json) =>

@@ -7,6 +7,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   flutter_tts
   permission_handler_windows
   printing
+  share_plus
   sqlite3_flutter_libs
   url_launcher_windows
   volume_controller

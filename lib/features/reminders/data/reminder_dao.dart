@@ -48,6 +48,20 @@ class ReminderDao extends DatabaseAccessor<AppDatabase>
     return update(reminders).replace(companion);
   }
 
+  /// Marks the start of the current alarm/snooze cycle (snooze cap scope).
+  Future<void> updateLastAlarmCycleStart(int reminderId, DateTime utc) async {
+    await (update(reminders)..where((r) => r.id.equals(reminderId))).write(
+      RemindersCompanion(lastAlarmCycleStartUtc: Value(utc)),
+    );
+  }
+
+  /// Updates only the next scheduled fire time (recurrence after DONE).
+  Future<void> updateScheduledAt(int reminderId, DateTime? scheduledUtc) async {
+    await (update(reminders)..where((r) => r.id.equals(reminderId))).write(
+      RemindersCompanion(scheduledAt: Value(scheduledUtc)),
+    );
+  }
+
   /// Delete a reminder by ID.
   Future<int> deleteReminder(int id) {
     return (delete(reminders)..where((r) => r.id.equals(id))).go();

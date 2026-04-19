@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memo_care/core/theme/app_colors.dart';
 import 'package:memo_care/core/theme/app_typography.dart';
+import 'package:memo_care/features/settings/application/settings_providers.dart';
 
 /// Greeting header with circular avatar and time-based greeting.
 ///
 // ignore: comment_references // workaround
 /// Shows "Good morning/afternoon/evening, [Name]" text with
 /// the current date below it.
-class UserGreetingHeader extends StatelessWidget {
-  const UserGreetingHeader({this.userName, super.key});
-
-  /// User name to display. Defaults to 'there' if null.
-  final String? userName;
+class UserGreetingHeader extends ConsumerWidget {
+  const UserGreetingHeader({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final name = userName ?? 'there';
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settingsAsync = ref.watch(appSettingsProvider);
+    final name = settingsAsync.maybeWhen(
+      data: (s) => s.profileName.trim().isEmpty ? 'there' : s.profileName.trim(),
+      orElse: () => 'there',
+    );
     final greeting = _greeting;
     final initial = name.isNotEmpty ? name[0].toUpperCase() : '?';
 

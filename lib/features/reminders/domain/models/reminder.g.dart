@@ -17,6 +17,10 @@ _Reminder _$ReminderFromJson(Map<String, dynamic> json) => _Reminder(
       : DateTime.parse(json['scheduledAt'] as String),
   isActive: json['isActive'] as bool? ?? false,
   gapHours: (json['gapHours'] as num?)?.toInt(),
+  recurrenceDays: json['recurrenceDays'] as String?,
+  lastAlarmCycleStartUtc: json['lastAlarmCycleStartUtc'] == null
+      ? null
+      : DateTime.parse(json['lastAlarmCycleStartUtc'] as String),
 );
 
 Map<String, dynamic> _$ReminderToJson(_Reminder instance) => <String, dynamic>{
@@ -28,6 +32,8 @@ Map<String, dynamic> _$ReminderToJson(_Reminder instance) => <String, dynamic>{
   'scheduledAt': instance.scheduledAt?.toIso8601String(),
   'isActive': instance.isActive,
   'gapHours': instance.gapHours,
+  'recurrenceDays': instance.recurrenceDays,
+  'lastAlarmCycleStartUtc': instance.lastAlarmCycleStartUtc?.toIso8601String(),
 };
 
 const _$MedicineTypeEnumMap = {

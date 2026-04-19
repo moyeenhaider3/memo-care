@@ -33,52 +33,66 @@ class MissedRemindersSheet extends ConsumerStatefulWidget {
 class _MissedRemindersSheetState extends ConsumerState<MissedRemindersSheet> {
   final Set<int> _resolvedIds = {};
 
-  void _markDone(Reminder reminder) {
-    unawaited(
-      traceAsync('ui', 'MissedSheet.done', () async {
-        await ref
-            .read(confirmationNotifierProvider.notifier)
-            .confirm(
-              reminderId: reminder.id,
-              chainId: reminder.chainId,
-              confirmState: ConfirmationState.done,
-              medicineName: reminder.medicineName,
-            );
-      }),
-    );
-    setState(() => _resolvedIds.add(reminder.id));
-    _checkAllResolved();
+  Future<void> _markDone(Reminder reminder) async {
+    await traceAsync('ui', 'MissedSheet.done', () async {
+      final result = await ref
+          .read(confirmationNotifierProvider.notifier)
+          .confirm(
+            reminderId: reminder.id,
+            chainId: reminder.chainId,
+            confirmState: ConfirmationState.done,
+            medicineName: reminder.medicineName,
+          );
+      if (!mounted) return;
+      if (result == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Couldn't update reminder. Try again."),
+          ),
+        );
+        return;
+      }
+      setState(() => _resolvedIds.add(reminder.id));
+      _checkAllResolved();
+    });
   }
 
-  void _markSkip(Reminder reminder) {
-    unawaited(
-      traceAsync('ui', 'MissedSheet.skip', () async {
-        await ref
-            .read(confirmationNotifierProvider.notifier)
-            .confirm(
-              reminderId: reminder.id,
-              chainId: reminder.chainId,
-              confirmState: ConfirmationState.skipped,
-              medicineName: reminder.medicineName,
-            );
-      }),
-    );
-    setState(() => _resolvedIds.add(reminder.id));
-    _checkAllResolved();
+  Future<void> _markSkip(Reminder reminder) async {
+    await traceAsync('ui', 'MissedSheet.skip', () async {
+      final result = await ref
+          .read(confirmationNotifierProvider.notifier)
+          .confirm(
+            reminderId: reminder.id,
+            chainId: reminder.chainId,
+            confirmState: ConfirmationState.skipped,
+            medicineName: reminder.medicineName,
+          );
+      if (!mounted) return;
+      if (result == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Couldn't update reminder. Try again."),
+          ),
+        );
+        return;
+      }
+      setState(() => _resolvedIds.add(reminder.id));
+      _checkAllResolved();
+    });
   }
 
-  void _markAllDone(List<Reminder> reminders) {
+  Future<void> _markAllDone(List<Reminder> reminders) async {
     for (final r in reminders) {
       if (!_resolvedIds.contains(r.id)) {
-        _markDone(r);
+        await _markDone(r);
       }
     }
   }
 
-  void _skipAll(List<Reminder> reminders) {
+  Future<void> _skipAll(List<Reminder> reminders) async {
     for (final r in reminders) {
       if (!_resolvedIds.contains(r.id)) {
-        _markSkip(r);
+        await _markSkip(r);
       }
     }
   }
@@ -207,7 +221,9 @@ class _MissedRemindersSheetState extends ConsumerState<MissedRemindersSheet> {
                                     child: SizedBox(
                                       height: 56,
                                       child: FilledButton(
-                                        onPressed: () => _markDone(reminder),
+                                        onPressed: () {
+                                          unawaited(_markDone(reminder));
+                                        },
                                         style: FilledButton.styleFrom(
                                           backgroundColor: AppColors.success,
                                           foregroundColor: Colors.white,
@@ -229,7 +245,9 @@ class _MissedRemindersSheetState extends ConsumerState<MissedRemindersSheet> {
                                     child: SizedBox(
                                       height: 56,
                                       child: OutlinedButton(
-                                        onPressed: () => _markSkip(reminder),
+                                        onPressed: () {
+                                          unawaited(_markSkip(reminder));
+                                        },
                                         style: OutlinedButton.styleFrom(
                                           foregroundColor: AppColors.danger,
                                           side: const BorderSide(

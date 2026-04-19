@@ -52,6 +52,11 @@ class ConfirmationRepository {
     return _dao.countSnoozes(reminderId);
   }
 
+  /// Snoozes since [sinceUtc] (for per–alarm-cycle cap).
+  Future<int> countSnoozesSince(int reminderId, DateTime sinceUtc) {
+    return _dao.countSnoozesSince(reminderId, sinceUtc);
+  }
+
   /// Delete a confirmation by [id].
   ///
   /// Used by the undo flow to revert a confirmation action.

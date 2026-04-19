@@ -3,6 +3,7 @@ import 'dart:io' show Platform;
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 /// Result of checking all critical permissions.
@@ -54,6 +55,10 @@ class PermissionService {
   PermissionService({
     DeviceInfoPlugin? deviceInfo,
   }) : _deviceInfo = deviceInfo ?? DeviceInfoPlugin();
+
+  static const MethodChannel _androidPermissions = MethodChannel(
+    'io.github.moyeenhaider3.memocare/permissions',
+  );
 
   final DeviceInfoPlugin _deviceInfo;
   int? _sdkVersion;
@@ -176,21 +181,19 @@ class PermissionService {
   /// Checks if full-screen intents are allowed.
   ///
   /// Returns true on Android < 14 (permission not required).
-  /// On Android 14+, there's no Flutter API to check this directly.
-  /// We return true as a best-effort: the notification will degrade
-  /// to heads-up if the permission was revoked.
-  /// A proper check requires native `NotificationManager
-  /// .canUseFullScreenIntent()` — deferred to Plan 03-08.
+  /// On Android 14+, uses `NotificationManager.canUseFullScreenIntent()`.
   Future<bool> canUseFullScreenIntent() async {
     final sdk = await sdkVersion;
     if (sdk < 34) return true;
-
-    // Android 14+ requires USE_FULL_SCREEN_INTENT special permission.
-    // flutter_local_notifications v21 and permission_handler v12
-    // don't expose a check for this. The notification gracefully
-    // degrades to heads-up if denied.
-    // TODO(memo-care): Add native method channel check in Plan 03-08.
-    return true;
+    if (kIsWeb || !Platform.isAndroid) return true;
+    try {
+      final r = await _androidPermissions.invokeMethod<bool>(
+        'canUseFullScreenIntent',
+      );
+      return r ?? true;
+    } on Object {
+      return true;
+    }
   }
 
   /// Opens system settings for full-screen intent permission.
@@ -213,7 +216,17 @@ class PermissionService {
       if (!agreed) return false;
     }
 
-    await openAppSettings();
+    if (sdk >= 34 && !kIsWeb && Platform.isAndroid) {
+      try {
+        await _androidPermissions.invokeMethod<void>(
+          'openFullScreenIntentSettings',
+        );
+      } on Object {
+        await openAppSettings();
+      }
+    } else {
+      await openAppSettings();
+    }
     return true;
   }
 

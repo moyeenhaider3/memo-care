@@ -27,6 +27,12 @@ class AnchorRepository {
         );
   }
 
+  /// One-shot fetch for scheduling (linked reminders).
+  Future<MealAnchor?> getByMealType(String mealType) async {
+    final row = await _dao.getAnchorByMealType(mealType);
+    return row == null ? null : _fromRow(row);
+  }
+
   /// Create a new meal anchor. Returns the auto-generated ID.
   Future<int> createAnchor({
     required String mealType,

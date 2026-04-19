@@ -2,11 +2,16 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:memo_care/core/debug/bootstrap_trace.dart';
 import 'package:memo_care/core/platform/caregiver_service.dart';
+import 'package:memo_care/core/router/app_router.dart';
 import 'package:memo_care/core/theme/app_colors.dart';
 import 'package:memo_care/core/theme/app_spacing.dart';
 import 'package:memo_care/core/theme/app_typography.dart';
+import 'package:memo_care/features/history/application/history_export_service.dart';
+import 'package:memo_care/features/history/domain/models/history_entry.dart';
+import 'package:memo_care/features/reminders/application/providers.dart';
 import 'package:memo_care/features/settings/application/settings_providers.dart';
 import 'package:memo_care/features/settings/domain/models/app_settings.dart';
 import 'package:memo_care/features/settings/presentation/widgets/caregiver_section.dart';
@@ -132,6 +137,90 @@ class _SettingsBody extends ConsumerWidget {
     );
   }
 
+  Future<void> _showProfileNameDialog(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final repo = ref.read(settingsRepositoryProvider);
+    final controller = TextEditingController(text: settings.profileName);
+
+    final name = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Your name'),
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            textCapitalization: TextCapitalization.words,
+            decoration: const InputDecoration(
+              labelText: 'Display name',
+              hintText: 'User',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () =>
+                  Navigator.of(dialogContext).pop(controller.text.trim()),
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+
+    controller.dispose();
+    if (name == null || !context.mounted) return;
+
+    await repo.setProfileName(name);
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Profile name saved.')),
+    );
+  }
+
+  Future<void> _exportPdf(BuildContext context, WidgetRef ref) async {
+    await traceAsync('ui', 'SettingsScreen.exportPdf', () async {
+      try {
+        final repo = ref.read(reminderRepositoryProvider);
+        final rows = await repo.getHistoryPage(limit: 500, offset: 0);
+        final entries = rows.map(HistoryEntry.fromQueryRow).toList();
+        final weekStart = DateTime.now().subtract(const Duration(days: 30));
+        final patient = ref.read(settingsRepositoryProvider).current.profileName;
+        await HistoryExportService.exportPdf(
+          entries: entries,
+          weekStart: weekStart,
+          patientName: patient,
+        );
+      } on Object catch (e) {
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Export failed: $e')),
+        );
+      }
+    });
+  }
+
+  Future<void> _exportCsv(BuildContext context, WidgetRef ref) async {
+    await traceAsync('ui', 'SettingsScreen.exportCsv', () async {
+      try {
+        final repo = ref.read(reminderRepositoryProvider);
+        final rows = await repo.getHistoryPage(limit: 500, offset: 0);
+        final entries = rows.map(HistoryEntry.fromQueryRow).toList();
+        await HistoryExportService.exportCsv(entries: entries);
+      } on Object catch (e) {
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Export failed: $e')),
+        );
+      }
+    });
+  }
+
   Future<void> _sendTestAlert(BuildContext context) async {
     await traceAsync('ui', 'SettingsScreen.sendTestAlert', () async {
       final phone = settings.caregiverPhone;
@@ -175,12 +264,28 @@ class _SettingsBody extends ConsumerWidget {
       padding: EdgeInsets.zero,
       children: [
         // ─── PROFILE HEADER ───
-        const ProfileHeader(
-          name: 'User',
+        ProfileHeader(
+          name: settings.profileName,
           badge: 'Adult',
+          onEdit: () => unawaited(_showProfileNameDialog(context, ref)),
         ),
 
         const SizedBox(height: AppSpacing.sectionGap),
+
+        ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+          leading: const Icon(Icons.auto_awesome_motion_outlined),
+          title: Text(
+            'Browse template packs',
+            style: AppTypography.titleMedium.copyWith(
+              color: AppColors.textPrimary,
+            ),
+          ),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => context.push(AppRoutes.templates),
+        ),
+
+        const Divider(height: 32, indent: 16, endIndent: 16),
 
         // ─── DISPLAY SETTINGS ───
         DisplaySettingsSection(
@@ -291,12 +396,8 @@ class _SettingsBody extends ConsumerWidget {
 
         // ─── DATA EXPORT ───
         DataExportSection(
-          onExportPdf: () {
-            traceSync('ui', 'SettingsScreen.exportPdf.stub', () {});
-          },
-          onExportCsv: () {
-            traceSync('ui', 'SettingsScreen.exportCsv.stub', () {});
-          },
+          onExportPdf: () => unawaited(_exportPdf(context, ref)),
+          onExportCsv: () => unawaited(_exportCsv(context, ref)),
         ),
 
         const SizedBox(height: 32),

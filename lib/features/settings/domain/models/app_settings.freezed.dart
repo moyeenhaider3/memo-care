@@ -27,7 +27,8 @@ mixin _$AppSettings {
  bool get largeText;/// Whether high contrast mode is enabled.
  bool get highContrast;/// Whether dark mode is enabled.
  bool get darkMode;/// Linked caregiver phone number (empty if none).
- String get caregiverPhone;
+ String get caregiverPhone;/// Display name for greeting and PDF export.
+ String get profileName;
 /// Create a copy of AppSettings
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -40,16 +41,16 @@ $AppSettingsCopyWith<AppSettings> get copyWith => _$AppSettingsCopyWithImpl<AppS
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppSettings&&(identical(other.snoozeDurationMinutes, snoozeDurationMinutes) || other.snoozeDurationMinutes == snoozeDurationMinutes)&&(identical(other.silentTimeoutMinutes, silentTimeoutMinutes) || other.silentTimeoutMinutes == silentTimeoutMinutes)&&(identical(other.audibleTimeoutMinutes, audibleTimeoutMinutes) || other.audibleTimeoutMinutes == audibleTimeoutMinutes)&&(identical(other.notificationsEnabled, notificationsEnabled) || other.notificationsEnabled == notificationsEnabled)&&(identical(other.soundEnabled, soundEnabled) || other.soundEnabled == soundEnabled)&&(identical(other.vibrationEnabled, vibrationEnabled) || other.vibrationEnabled == vibrationEnabled)&&(identical(other.largeText, largeText) || other.largeText == largeText)&&(identical(other.highContrast, highContrast) || other.highContrast == highContrast)&&(identical(other.darkMode, darkMode) || other.darkMode == darkMode)&&(identical(other.caregiverPhone, caregiverPhone) || other.caregiverPhone == caregiverPhone));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppSettings&&(identical(other.snoozeDurationMinutes, snoozeDurationMinutes) || other.snoozeDurationMinutes == snoozeDurationMinutes)&&(identical(other.silentTimeoutMinutes, silentTimeoutMinutes) || other.silentTimeoutMinutes == silentTimeoutMinutes)&&(identical(other.audibleTimeoutMinutes, audibleTimeoutMinutes) || other.audibleTimeoutMinutes == audibleTimeoutMinutes)&&(identical(other.notificationsEnabled, notificationsEnabled) || other.notificationsEnabled == notificationsEnabled)&&(identical(other.soundEnabled, soundEnabled) || other.soundEnabled == soundEnabled)&&(identical(other.vibrationEnabled, vibrationEnabled) || other.vibrationEnabled == vibrationEnabled)&&(identical(other.largeText, largeText) || other.largeText == largeText)&&(identical(other.highContrast, highContrast) || other.highContrast == highContrast)&&(identical(other.darkMode, darkMode) || other.darkMode == darkMode)&&(identical(other.caregiverPhone, caregiverPhone) || other.caregiverPhone == caregiverPhone)&&(identical(other.profileName, profileName) || other.profileName == profileName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,snoozeDurationMinutes,silentTimeoutMinutes,audibleTimeoutMinutes,notificationsEnabled,soundEnabled,vibrationEnabled,largeText,highContrast,darkMode,caregiverPhone);
+int get hashCode => Object.hash(runtimeType,snoozeDurationMinutes,silentTimeoutMinutes,audibleTimeoutMinutes,notificationsEnabled,soundEnabled,vibrationEnabled,largeText,highContrast,darkMode,caregiverPhone,profileName);
 
 @override
 String toString() {
-  return 'AppSettings(snoozeDurationMinutes: $snoozeDurationMinutes, silentTimeoutMinutes: $silentTimeoutMinutes, audibleTimeoutMinutes: $audibleTimeoutMinutes, notificationsEnabled: $notificationsEnabled, soundEnabled: $soundEnabled, vibrationEnabled: $vibrationEnabled, largeText: $largeText, highContrast: $highContrast, darkMode: $darkMode, caregiverPhone: $caregiverPhone)';
+  return 'AppSettings(snoozeDurationMinutes: $snoozeDurationMinutes, silentTimeoutMinutes: $silentTimeoutMinutes, audibleTimeoutMinutes: $audibleTimeoutMinutes, notificationsEnabled: $notificationsEnabled, soundEnabled: $soundEnabled, vibrationEnabled: $vibrationEnabled, largeText: $largeText, highContrast: $highContrast, darkMode: $darkMode, caregiverPhone: $caregiverPhone, profileName: $profileName)';
 }
 
 
@@ -60,7 +61,7 @@ abstract mixin class $AppSettingsCopyWith<$Res>  {
   factory $AppSettingsCopyWith(AppSettings value, $Res Function(AppSettings) _then) = _$AppSettingsCopyWithImpl;
 @useResult
 $Res call({
- int snoozeDurationMinutes, int silentTimeoutMinutes, int audibleTimeoutMinutes, bool notificationsEnabled, bool soundEnabled, bool vibrationEnabled, bool largeText, bool highContrast, bool darkMode, String caregiverPhone
+ int snoozeDurationMinutes, int silentTimeoutMinutes, int audibleTimeoutMinutes, bool notificationsEnabled, bool soundEnabled, bool vibrationEnabled, bool largeText, bool highContrast, bool darkMode, String caregiverPhone, String profileName
 });
 
 
@@ -77,7 +78,7 @@ class _$AppSettingsCopyWithImpl<$Res>
 
 /// Create a copy of AppSettings
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? snoozeDurationMinutes = null,Object? silentTimeoutMinutes = null,Object? audibleTimeoutMinutes = null,Object? notificationsEnabled = null,Object? soundEnabled = null,Object? vibrationEnabled = null,Object? largeText = null,Object? highContrast = null,Object? darkMode = null,Object? caregiverPhone = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? snoozeDurationMinutes = null,Object? silentTimeoutMinutes = null,Object? audibleTimeoutMinutes = null,Object? notificationsEnabled = null,Object? soundEnabled = null,Object? vibrationEnabled = null,Object? largeText = null,Object? highContrast = null,Object? darkMode = null,Object? caregiverPhone = null,Object? profileName = null,}) {
   return _then(_self.copyWith(
 snoozeDurationMinutes: null == snoozeDurationMinutes ? _self.snoozeDurationMinutes : snoozeDurationMinutes // ignore: cast_nullable_to_non_nullable
 as int,silentTimeoutMinutes: null == silentTimeoutMinutes ? _self.silentTimeoutMinutes : silentTimeoutMinutes // ignore: cast_nullable_to_non_nullable
@@ -89,6 +90,7 @@ as bool,largeText: null == largeText ? _self.largeText : largeText // ignore: ca
 as bool,highContrast: null == highContrast ? _self.highContrast : highContrast // ignore: cast_nullable_to_non_nullable
 as bool,darkMode: null == darkMode ? _self.darkMode : darkMode // ignore: cast_nullable_to_non_nullable
 as bool,caregiverPhone: null == caregiverPhone ? _self.caregiverPhone : caregiverPhone // ignore: cast_nullable_to_non_nullable
+as String,profileName: null == profileName ? _self.profileName : profileName // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -174,10 +176,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int snoozeDurationMinutes,  int silentTimeoutMinutes,  int audibleTimeoutMinutes,  bool notificationsEnabled,  bool soundEnabled,  bool vibrationEnabled,  bool largeText,  bool highContrast,  bool darkMode,  String caregiverPhone)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int snoozeDurationMinutes,  int silentTimeoutMinutes,  int audibleTimeoutMinutes,  bool notificationsEnabled,  bool soundEnabled,  bool vibrationEnabled,  bool largeText,  bool highContrast,  bool darkMode,  String caregiverPhone,  String profileName)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AppSettings() when $default != null:
-return $default(_that.snoozeDurationMinutes,_that.silentTimeoutMinutes,_that.audibleTimeoutMinutes,_that.notificationsEnabled,_that.soundEnabled,_that.vibrationEnabled,_that.largeText,_that.highContrast,_that.darkMode,_that.caregiverPhone);case _:
+return $default(_that.snoozeDurationMinutes,_that.silentTimeoutMinutes,_that.audibleTimeoutMinutes,_that.notificationsEnabled,_that.soundEnabled,_that.vibrationEnabled,_that.largeText,_that.highContrast,_that.darkMode,_that.caregiverPhone,_that.profileName);case _:
   return orElse();
 
 }
@@ -195,10 +197,10 @@ return $default(_that.snoozeDurationMinutes,_that.silentTimeoutMinutes,_that.aud
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int snoozeDurationMinutes,  int silentTimeoutMinutes,  int audibleTimeoutMinutes,  bool notificationsEnabled,  bool soundEnabled,  bool vibrationEnabled,  bool largeText,  bool highContrast,  bool darkMode,  String caregiverPhone)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int snoozeDurationMinutes,  int silentTimeoutMinutes,  int audibleTimeoutMinutes,  bool notificationsEnabled,  bool soundEnabled,  bool vibrationEnabled,  bool largeText,  bool highContrast,  bool darkMode,  String caregiverPhone,  String profileName)  $default,) {final _that = this;
 switch (_that) {
 case _AppSettings():
-return $default(_that.snoozeDurationMinutes,_that.silentTimeoutMinutes,_that.audibleTimeoutMinutes,_that.notificationsEnabled,_that.soundEnabled,_that.vibrationEnabled,_that.largeText,_that.highContrast,_that.darkMode,_that.caregiverPhone);case _:
+return $default(_that.snoozeDurationMinutes,_that.silentTimeoutMinutes,_that.audibleTimeoutMinutes,_that.notificationsEnabled,_that.soundEnabled,_that.vibrationEnabled,_that.largeText,_that.highContrast,_that.darkMode,_that.caregiverPhone,_that.profileName);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -215,10 +217,10 @@ return $default(_that.snoozeDurationMinutes,_that.silentTimeoutMinutes,_that.aud
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int snoozeDurationMinutes,  int silentTimeoutMinutes,  int audibleTimeoutMinutes,  bool notificationsEnabled,  bool soundEnabled,  bool vibrationEnabled,  bool largeText,  bool highContrast,  bool darkMode,  String caregiverPhone)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int snoozeDurationMinutes,  int silentTimeoutMinutes,  int audibleTimeoutMinutes,  bool notificationsEnabled,  bool soundEnabled,  bool vibrationEnabled,  bool largeText,  bool highContrast,  bool darkMode,  String caregiverPhone,  String profileName)?  $default,) {final _that = this;
 switch (_that) {
 case _AppSettings() when $default != null:
-return $default(_that.snoozeDurationMinutes,_that.silentTimeoutMinutes,_that.audibleTimeoutMinutes,_that.notificationsEnabled,_that.soundEnabled,_that.vibrationEnabled,_that.largeText,_that.highContrast,_that.darkMode,_that.caregiverPhone);case _:
+return $default(_that.snoozeDurationMinutes,_that.silentTimeoutMinutes,_that.audibleTimeoutMinutes,_that.notificationsEnabled,_that.soundEnabled,_that.vibrationEnabled,_that.largeText,_that.highContrast,_that.darkMode,_that.caregiverPhone,_that.profileName);case _:
   return null;
 
 }
@@ -230,7 +232,7 @@ return $default(_that.snoozeDurationMinutes,_that.silentTimeoutMinutes,_that.aud
 @JsonSerializable()
 
 class _AppSettings implements AppSettings {
-  const _AppSettings({this.snoozeDurationMinutes = 5, this.silentTimeoutMinutes = 2, this.audibleTimeoutMinutes = 3, this.notificationsEnabled = true, this.soundEnabled = true, this.vibrationEnabled = true, this.largeText = false, this.highContrast = false, this.darkMode = false, this.caregiverPhone = ''});
+  const _AppSettings({this.snoozeDurationMinutes = 5, this.silentTimeoutMinutes = 2, this.audibleTimeoutMinutes = 3, this.notificationsEnabled = true, this.soundEnabled = true, this.vibrationEnabled = true, this.largeText = false, this.highContrast = false, this.darkMode = false, this.caregiverPhone = '', this.profileName = 'User'});
   factory _AppSettings.fromJson(Map<String, dynamic> json) => _$AppSettingsFromJson(json);
 
 /// Snooze duration in minutes (VIEW-05, ESCL-02).
@@ -255,6 +257,8 @@ class _AppSettings implements AppSettings {
 @override@JsonKey() final  bool darkMode;
 /// Linked caregiver phone number (empty if none).
 @override@JsonKey() final  String caregiverPhone;
+/// Display name for greeting and PDF export.
+@override@JsonKey() final  String profileName;
 
 /// Create a copy of AppSettings
 /// with the given fields replaced by the non-null parameter values.
@@ -269,16 +273,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppSettings&&(identical(other.snoozeDurationMinutes, snoozeDurationMinutes) || other.snoozeDurationMinutes == snoozeDurationMinutes)&&(identical(other.silentTimeoutMinutes, silentTimeoutMinutes) || other.silentTimeoutMinutes == silentTimeoutMinutes)&&(identical(other.audibleTimeoutMinutes, audibleTimeoutMinutes) || other.audibleTimeoutMinutes == audibleTimeoutMinutes)&&(identical(other.notificationsEnabled, notificationsEnabled) || other.notificationsEnabled == notificationsEnabled)&&(identical(other.soundEnabled, soundEnabled) || other.soundEnabled == soundEnabled)&&(identical(other.vibrationEnabled, vibrationEnabled) || other.vibrationEnabled == vibrationEnabled)&&(identical(other.largeText, largeText) || other.largeText == largeText)&&(identical(other.highContrast, highContrast) || other.highContrast == highContrast)&&(identical(other.darkMode, darkMode) || other.darkMode == darkMode)&&(identical(other.caregiverPhone, caregiverPhone) || other.caregiverPhone == caregiverPhone));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppSettings&&(identical(other.snoozeDurationMinutes, snoozeDurationMinutes) || other.snoozeDurationMinutes == snoozeDurationMinutes)&&(identical(other.silentTimeoutMinutes, silentTimeoutMinutes) || other.silentTimeoutMinutes == silentTimeoutMinutes)&&(identical(other.audibleTimeoutMinutes, audibleTimeoutMinutes) || other.audibleTimeoutMinutes == audibleTimeoutMinutes)&&(identical(other.notificationsEnabled, notificationsEnabled) || other.notificationsEnabled == notificationsEnabled)&&(identical(other.soundEnabled, soundEnabled) || other.soundEnabled == soundEnabled)&&(identical(other.vibrationEnabled, vibrationEnabled) || other.vibrationEnabled == vibrationEnabled)&&(identical(other.largeText, largeText) || other.largeText == largeText)&&(identical(other.highContrast, highContrast) || other.highContrast == highContrast)&&(identical(other.darkMode, darkMode) || other.darkMode == darkMode)&&(identical(other.caregiverPhone, caregiverPhone) || other.caregiverPhone == caregiverPhone)&&(identical(other.profileName, profileName) || other.profileName == profileName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,snoozeDurationMinutes,silentTimeoutMinutes,audibleTimeoutMinutes,notificationsEnabled,soundEnabled,vibrationEnabled,largeText,highContrast,darkMode,caregiverPhone);
+int get hashCode => Object.hash(runtimeType,snoozeDurationMinutes,silentTimeoutMinutes,audibleTimeoutMinutes,notificationsEnabled,soundEnabled,vibrationEnabled,largeText,highContrast,darkMode,caregiverPhone,profileName);
 
 @override
 String toString() {
-  return 'AppSettings(snoozeDurationMinutes: $snoozeDurationMinutes, silentTimeoutMinutes: $silentTimeoutMinutes, audibleTimeoutMinutes: $audibleTimeoutMinutes, notificationsEnabled: $notificationsEnabled, soundEnabled: $soundEnabled, vibrationEnabled: $vibrationEnabled, largeText: $largeText, highContrast: $highContrast, darkMode: $darkMode, caregiverPhone: $caregiverPhone)';
+  return 'AppSettings(snoozeDurationMinutes: $snoozeDurationMinutes, silentTimeoutMinutes: $silentTimeoutMinutes, audibleTimeoutMinutes: $audibleTimeoutMinutes, notificationsEnabled: $notificationsEnabled, soundEnabled: $soundEnabled, vibrationEnabled: $vibrationEnabled, largeText: $largeText, highContrast: $highContrast, darkMode: $darkMode, caregiverPhone: $caregiverPhone, profileName: $profileName)';
 }
 
 
@@ -289,7 +293,7 @@ abstract mixin class _$AppSettingsCopyWith<$Res> implements $AppSettingsCopyWith
   factory _$AppSettingsCopyWith(_AppSettings value, $Res Function(_AppSettings) _then) = __$AppSettingsCopyWithImpl;
 @override @useResult
 $Res call({
- int snoozeDurationMinutes, int silentTimeoutMinutes, int audibleTimeoutMinutes, bool notificationsEnabled, bool soundEnabled, bool vibrationEnabled, bool largeText, bool highContrast, bool darkMode, String caregiverPhone
+ int snoozeDurationMinutes, int silentTimeoutMinutes, int audibleTimeoutMinutes, bool notificationsEnabled, bool soundEnabled, bool vibrationEnabled, bool largeText, bool highContrast, bool darkMode, String caregiverPhone, String profileName
 });
 
 
@@ -306,7 +310,7 @@ class __$AppSettingsCopyWithImpl<$Res>
 
 /// Create a copy of AppSettings
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? snoozeDurationMinutes = null,Object? silentTimeoutMinutes = null,Object? audibleTimeoutMinutes = null,Object? notificationsEnabled = null,Object? soundEnabled = null,Object? vibrationEnabled = null,Object? largeText = null,Object? highContrast = null,Object? darkMode = null,Object? caregiverPhone = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? snoozeDurationMinutes = null,Object? silentTimeoutMinutes = null,Object? audibleTimeoutMinutes = null,Object? notificationsEnabled = null,Object? soundEnabled = null,Object? vibrationEnabled = null,Object? largeText = null,Object? highContrast = null,Object? darkMode = null,Object? caregiverPhone = null,Object? profileName = null,}) {
   return _then(_AppSettings(
 snoozeDurationMinutes: null == snoozeDurationMinutes ? _self.snoozeDurationMinutes : snoozeDurationMinutes // ignore: cast_nullable_to_non_nullable
 as int,silentTimeoutMinutes: null == silentTimeoutMinutes ? _self.silentTimeoutMinutes : silentTimeoutMinutes // ignore: cast_nullable_to_non_nullable
@@ -318,6 +322,7 @@ as bool,largeText: null == largeText ? _self.largeText : largeText // ignore: ca
 as bool,highContrast: null == highContrast ? _self.highContrast : highContrast // ignore: cast_nullable_to_non_nullable
 as bool,darkMode: null == darkMode ? _self.darkMode : darkMode // ignore: cast_nullable_to_non_nullable
 as bool,caregiverPhone: null == caregiverPhone ? _self.caregiverPhone : caregiverPhone // ignore: cast_nullable_to_non_nullable
+as String,profileName: null == profileName ? _self.profileName : profileName // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }

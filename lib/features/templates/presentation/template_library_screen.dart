@@ -5,6 +5,7 @@ import 'package:memo_care/core/debug/bootstrap_trace.dart';
 import 'package:memo_care/core/theme/app_colors.dart';
 import 'package:memo_care/core/theme/app_spacing.dart';
 import 'package:memo_care/core/theme/app_typography.dart';
+import 'package:memo_care/features/anchors/application/providers.dart';
 import 'package:memo_care/features/templates/application/template_providers.dart';
 import 'package:memo_care/features/templates/domain/models/template_packs.dart';
 import 'package:memo_care/features/templates/presentation/widgets/category_filter_chips.dart';
@@ -118,10 +119,21 @@ class _TemplateLibraryScreenState extends ConsumerState<TemplateLibraryScreen> {
                             final service = ref.read(
                               templateServiceProvider,
                             );
+                            final anchors = await ref
+                                .read(anchorRepositoryProvider)
+                                .watchAll()
+                                .first;
+                            final mealAnchorTimes = {
+                              for (final a in anchors)
+                                a.mealType: a.defaultTimeMinutes,
+                            };
                             final result = await traceAsync(
                               'ui',
                               'TemplateLibrary.apply',
-                              () => service.apply(pack: pack),
+                              () => service.apply(
+                                pack: pack,
+                                mealAnchorTimes: mealAnchorTimes,
+                              ),
                             );
                             result.fold(
                               (error) {

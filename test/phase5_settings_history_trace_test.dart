@@ -4,6 +4,7 @@
 // only so tests avoid [Printing.sharePdf] platform channels).
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:memo_care/core/debug/bootstrap_trace.dart';
@@ -13,8 +14,44 @@ import 'package:memo_care/features/history/domain/models/history_entry.dart';
 import 'package:memo_care/features/settings/application/settings_providers.dart';
 import 'package:memo_care/features/settings/data/settings_repository.dart';
 import 'package:memo_care/features/settings/domain/models/app_settings.dart';
+import 'package:memo_care/features/reminders/application/providers.dart';
+import 'package:memo_care/features/reminders/data/reminder_repository.dart';
 import 'package:memo_care/features/settings/presentation/settings_screen.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+const MethodChannel _kPrintingChannel = MethodChannel('net.nfet.printing');
+const MethodChannel _kShareChannel =
+    MethodChannel('dev.fluttercommunity.plus/share');
+
+class _MockReminderRepository extends Mock implements ReminderRepository {}
+
+void _mockPrintingSharePdf() {
+  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+      .setMockMethodCallHandler(_kPrintingChannel, (call) async {
+    if (call.method == 'sharePdf') {
+      return 1;
+    }
+    return null;
+  });
+}
+
+void _mockShareFiles() {
+  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+      .setMockMethodCallHandler(_kShareChannel, (call) async {
+    return 'dev.fluttercommunity.plus/share/success';
+  });
+}
+
+void _clearPrintingMock() {
+  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+      .setMockMethodCallHandler(_kPrintingChannel, null);
+}
+
+void _clearShareMock() {
+  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+      .setMockMethodCallHandler(_kShareChannel, null);
+}
 
 Future<List<String>> _captureLogs(Future<void> Function() body) async {
   final logs = <String>[];
@@ -81,6 +118,7 @@ void main() {
             highContrast: false,
             darkMode: false,
             caregiverPhone: '',
+            profileName: 'User',
           ),
         );
       });
@@ -113,10 +151,30 @@ void main() {
         previousPrint(message, wrapWidth: wrapWidth);
       };
       try {
+        _mockPrintingSharePdf();
+        _mockShareFiles();
+        addTearDown(() {
+          _clearPrintingMock();
+          _clearShareMock();
+        });
+
+        final mockRepo = _MockReminderRepository();
+        when(
+          () => mockRepo.getHistoryPage(
+            limit: any(named: 'limit'),
+            offset: any(named: 'offset'),
+            medicineNameFilter: any(named: 'medicineNameFilter'),
+          ),
+        ).thenAnswer((_) async => []);
+
+        await tester.binding.setSurfaceSize(const Size(800, 2000));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
               sharedPreferencesProvider.overrideWithValue(prefs),
+              reminderRepositoryProvider.overrideWithValue(mockRepo),
             ],
             child: const MaterialApp(
               home: SettingsScreen(),
@@ -132,7 +190,7 @@ void main() {
           scrollable: find.byType(Scrollable),
         );
         await tester.tap(pdfFinder);
-        await tester.pump();
+        await tester.pumpAndSettle();
 
         final csvFinder = find.text('Export CSV');
         await tester.scrollUntilVisible(
@@ -142,9 +200,13 @@ void main() {
         );
         await tester.tap(csvFinder);
         await tester.pump();
+        await tester.pump(const Duration(seconds: 2));
 
-        _expectPairedScopeStep(logs, 'ui', 'SettingsScreen.exportPdf.stub');
-        _expectPairedScopeStep(logs, 'ui', 'SettingsScreen.exportCsv.stub');
+        _expectPairedScopeStep(logs, 'ui', 'SettingsScreen.exportPdf');
+        expect(
+          logs.any((l) => l.contains('enter ui::SettingsScreen.exportCsv')),
+          isTrue,
+        );
       } finally {
         debugPrint = previousPrint;
       }

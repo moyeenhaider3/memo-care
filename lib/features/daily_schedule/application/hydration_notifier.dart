@@ -34,8 +34,20 @@ class HydrationNotifier extends Notifier<HydrationState> {
   static const _kHydrationTarget = 'hydration_glasses_target';
   static const _kHydrationDate = 'hydration_last_date';
 
+  Timer? _midnightCheck;
+
   @override
   HydrationState build() {
+    ref.onDispose(() {
+      _midnightCheck?.cancel();
+      _midnightCheck = null;
+    });
+    if (_midnightCheck == null) {
+      _midnightCheck = Timer.periodic(const Duration(minutes: 5), (_) {
+        unawaited(_rolloverIfDateChanged());
+      });
+    }
+
     final prefs = _readPrefsOrNull();
     final today = DateTime.now();
     final dateToken = '${today.year}-${today.month}-${today.day}';
@@ -59,6 +71,7 @@ class HydrationNotifier extends Notifier<HydrationState> {
 
   Future<void> addGlass() async {
     await traceAsync('ui', 'HydrationNotifier.addGlass', () async {
+      await _rolloverIfDateChanged();
       final prefs = _readPrefsOrNull();
       final updated = (state.glasses + 1).clamp(0, 99);
       state = state.copyWith(
@@ -80,6 +93,23 @@ class HydrationNotifier extends Notifier<HydrationState> {
         await prefs.setInt(_kHydrationTarget, normalized);
       }
     });
+  }
+
+  Future<void> _rolloverIfDateChanged() async {
+    final prefs = _readPrefsOrNull();
+    if (prefs == null) return;
+    final today = DateTime.now();
+    final dateToken = '${today.year}-${today.month}-${today.day}';
+    final lastToken = prefs.getString(_kHydrationDate);
+    if (lastToken == dateToken) return;
+
+    await prefs.setInt(_kHydrationCount, 0);
+    await prefs.setString(_kHydrationDate, dateToken);
+    state = HydrationState(
+      glasses: 0,
+      target: state.target,
+      lastUpdated: today,
+    );
   }
 
   SharedPreferences? _readPrefsOrNull() {

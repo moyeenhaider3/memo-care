@@ -165,7 +165,7 @@ class _FixedTimeInput extends StatelessWidget {
   }
 }
 
-class _LinkedEventInput extends StatelessWidget {
+class _LinkedEventInput extends StatefulWidget {
   const _LinkedEventInput({
     required this.selectedEvent,
     required this.events,
@@ -181,16 +181,44 @@ class _LinkedEventInput extends StatelessWidget {
   final ValueChanged<int> onOffsetChanged;
 
   @override
+  State<_LinkedEventInput> createState() => _LinkedEventInputState();
+}
+
+class _LinkedEventInputState extends State<_LinkedEventInput> {
+  late TextEditingController _offsetController;
+
+  @override
+  void initState() {
+    super.initState();
+    _offsetController = TextEditingController(text: '${widget.offset}');
+  }
+
+  @override
+  void didUpdateWidget(covariant _LinkedEventInput oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.offset != widget.offset &&
+        _offsetController.text != '${widget.offset}') {
+      _offsetController.text = '${widget.offset}';
+    }
+  }
+
+  @override
+  void dispose() {
+    _offsetController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         DropdownButtonFormField<String>(
-          initialValue: selectedEvent,
-          items: events
+          initialValue: widget.selectedEvent,
+          items: widget.events
               .map((e) => DropdownMenuItem(value: e, child: Text(e)))
               .toList(),
           onChanged: (v) {
-            if (v != null) onEventChanged(v);
+            if (v != null) widget.onEventChanged(v);
           },
           decoration: InputDecoration(
             labelText: 'Event',
@@ -213,10 +241,10 @@ class _LinkedEventInput extends StatelessWidget {
               width: 80,
               child: TextField(
                 keyboardType: TextInputType.number,
-                controller: TextEditingController(text: '$offset'),
+                controller: _offsetController,
                 onChanged: (v) {
                   final parsed = int.tryParse(v);
-                  if (parsed != null) onOffsetChanged(parsed);
+                  if (parsed != null) widget.onOffsetChanged(parsed);
                 },
                 decoration: InputDecoration(
                   suffixText: 'min',

@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memo_care/core/platform/alarm_callback.dart';
 import 'package:memo_care/core/platform/permission_service.dart';
 import 'package:memo_care/core/providers/alarm_providers.dart';
+import 'package:memo_care/features/anchors/application/providers.dart';
 import 'package:memo_care/features/chain_engine/application/providers.dart';
 import 'package:memo_care/features/reminders/application/add_reminder_state.dart';
 import 'package:memo_care/features/reminders/application/providers.dart';
+import 'package:memo_care/features/reminders/domain/recurrence_utils.dart';
 import 'package:memo_care/features/reminders/presentation/widgets/reminder_type_grid.dart';
 
 /// Manages the Add Reminder form state and persistence.
@@ -13,23 +15,26 @@ class AddReminderNotifier extends Notifier<AddReminderState> {
   @override
   AddReminderState build() => const AddReminderState();
 
-  void setType(ReminderType type) => state = state.copyWith(reminderType: type);
+  void setType(ReminderType type) =>
+      state = state.copyWith(reminderType: type, dirty: true);
 
-  void setName(String name) => state = state.copyWith(name: name);
+  void setName(String name) => state = state.copyWith(name: name, dirty: true);
 
-  void setDose(String dose) => state = state.copyWith(dose: dose);
+  void setDose(String dose) => state = state.copyWith(dose: dose, dirty: true);
 
-  void setUnit(String unit) => state = state.copyWith(unit: unit);
+  void setUnit(String unit) => state = state.copyWith(unit: unit, dirty: true);
 
-  void setTimeMode(TimeMode mode) => state = state.copyWith(timeMode: mode);
+  void setTimeMode(TimeMode mode) =>
+      state = state.copyWith(timeMode: mode, dirty: true);
 
-  void setFixedTime(TimeOfDay time) => state = state.copyWith(fixedTime: time);
+  void setFixedTime(TimeOfDay time) =>
+      state = state.copyWith(fixedTime: time, dirty: true);
 
   void setLinkedEvent(String event) =>
-      state = state.copyWith(linkedEvent: event);
+      state = state.copyWith(linkedEvent: event, dirty: true);
 
   void setOffsetMinutes(int minutes) =>
-      state = state.copyWith(offsetMinutes: minutes);
+      state = state.copyWith(offsetMinutes: minutes, dirty: true);
 
   void toggleDay(int dayIndex) {
     final days = Set<int>.from(state.selectedDays);
@@ -38,12 +43,16 @@ class AddReminderNotifier extends Notifier<AddReminderState> {
     } else {
       days.add(dayIndex);
     }
-    state = state.copyWith(selectedDays: days);
+    state = state.copyWith(selectedDays: days, dirty: true);
   }
 
-  void setNotes(String notes) => state = state.copyWith(notes: notes);
+  void setNotes(String notes) =>
+      state = state.copyWith(notes: notes, dirty: true);
 
-  void toggleChainLink() => state = state.copyWith(chainLink: !state.chainLink);
+  void toggleChainLink() => state = state.copyWith(
+        chainLink: !state.chainLink,
+        dirty: true,
+      );
 
   /// Persist the reminder. Returns `true` on success.
   Future<bool> save(BuildContext context) async {
@@ -59,8 +68,10 @@ class AddReminderNotifier extends Notifier<AddReminderState> {
     try {
       final repo = ref.read(reminderRepositoryProvider);
 
-      // Compute scheduled time from form state.
-      final scheduledAt = _computeInitialScheduledAt();
+      final scheduledAt = await _computeInitialScheduledAt();
+      final recurrenceCsv = RecurrenceUtils.encodeRecurrenceDays(
+        state.selectedDays,
+      );
 
       if (scheduledAt != null) {
         final hasCriticalPermissions = await _ensureCriticalPermissions(
@@ -77,13 +88,11 @@ class AddReminderNotifier extends Notifier<AddReminderState> {
         }
       }
 
-      // Create a chain record for this reminder.
       final chainRepo = ref.read(chainRepositoryProvider);
       final chainId = await chainRepo.createChain(
         name: state.name.trim(),
       );
 
-      // Create the reminder linked to the new chain.
       final reminderId = await repo.createReminder(
         chainId: chainId,
         medicineName: state.name.trim(),
@@ -91,9 +100,9 @@ class AddReminderNotifier extends Notifier<AddReminderState> {
         dosage: state.dose.isNotEmpty ? '${state.dose} ${state.unit}' : null,
         scheduledAt: scheduledAt,
         isActive: true,
+        recurrenceDays: recurrenceCsv,
       );
 
-      // Schedule the alarm so it actually fires at the right time.
       if (scheduledAt != null) {
         final scheduler = ref.read(alarmSchedulerProvider);
         final scheduled = await scheduler.schedule(
@@ -109,7 +118,7 @@ class AddReminderNotifier extends Notifier<AddReminderState> {
         }
       }
 
-      state = state.copyWith(isSaving: false);
+      state = state.copyWith(isSaving: false, dirty: false);
       return true;
       // ignore: avoid_catches_without_on_clauses // workaround
     } catch (e) {
@@ -121,32 +130,24 @@ class AddReminderNotifier extends Notifier<AddReminderState> {
     }
   }
 
-  DateTime? _computeInitialScheduledAt() {
+  Future<DateTime?> _computeInitialScheduledAt() async {
     final now = DateTime.now();
+    final days = state.selectedDays;
     final today = DateTime(now.year, now.month, now.day);
 
     if (state.timeMode == TimeMode.fixed) {
       final fixed = state.fixedTime;
       if (fixed == null) return null;
-
-      var fireAt = DateTime(
-        today.year,
-        today.month,
-        today.day,
-        fixed.hour,
-        fixed.minute,
+      return RecurrenceUtils.nextOccurrence(
+        hour: fixed.hour,
+        minute: fixed.minute,
+        selectedDaysMon0Sun6: days,
+        now: now,
       );
-
-      // If today's slot already passed, arm the next-day occurrence.
-      if (!fireAt.isAfter(now)) {
-        fireAt = fireAt.add(const Duration(days: 1));
-      }
-
-      return fireAt;
     }
 
     final event = state.linkedEvent.toLowerCase();
-    final anchorMinutes = _anchorMinutesForLinkedEvent(event);
+    final anchorMinutes = await _anchorMinutesForLinkedEvent(event);
     if (anchorMinutes == null) return null;
 
     final offset = Duration(minutes: state.offsetMinutes);
@@ -157,18 +158,30 @@ class AddReminderNotifier extends Notifier<AddReminderState> {
       fireAt = fireAt.add(offset);
     }
 
-    if (!fireAt.isAfter(now)) {
-      fireAt = fireAt.add(const Duration(days: 1));
-    }
-
-    return fireAt;
+    return RecurrenceUtils.nextOccurrence(
+      hour: fireAt.hour,
+      minute: fireAt.minute,
+      selectedDaysMon0Sun6: days,
+      now: now,
+    );
   }
 
-  int? _anchorMinutesForLinkedEvent(String event) {
-    if (event.contains('breakfast')) return 8 * 60;
-    if (event.contains('lunch')) return 13 * 60;
-    if (event.contains('dinner')) return 19 * 60;
-    if (event.contains('bedtime')) return 22 * 60;
+  Future<int?> _anchorMinutesForLinkedEvent(String event) async {
+    final e = event.toLowerCase();
+    final anchors = ref.read(anchorRepositoryProvider);
+    if (e.contains('breakfast')) {
+      final a = await anchors.getByMealType('breakfast');
+      return a?.defaultTimeMinutes ?? 8 * 60;
+    }
+    if (e.contains('lunch')) {
+      final a = await anchors.getByMealType('lunch');
+      return a?.defaultTimeMinutes ?? 13 * 60;
+    }
+    if (e.contains('dinner')) {
+      final a = await anchors.getByMealType('dinner');
+      return a?.defaultTimeMinutes ?? 19 * 60;
+    }
+    if (e.contains('bed')) return 22 * 60;
     return null;
   }
 
@@ -202,7 +215,7 @@ class AddReminderNotifier extends Notifier<AddReminderState> {
 
 /// Provider for the Add Reminder form notifier.
 final NotifierProvider<AddReminderNotifier, AddReminderState>
-addReminderNotifierProvider =
+    addReminderNotifierProvider =
     NotifierProvider.autoDispose<AddReminderNotifier, AddReminderState>(
-      AddReminderNotifier.new,
-    );
+  AddReminderNotifier.new,
+);

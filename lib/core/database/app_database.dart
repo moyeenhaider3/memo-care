@@ -38,6 +38,14 @@ class Reminders extends Table {
       integer().nullable().map(const DateTimeConverter())();
   BoolColumn get isActive => boolean().withDefault(const Constant(false))();
   IntColumn get gapHours => integer().nullable()();
+
+  /// Weekly recurrence as CSV of UI day indices `0..6` (Mon..Sun), e.g. `"0,2,4"`.
+  /// Null or empty means every day / non-recurring single shot per product rules.
+  TextColumn get recurrenceDays => text().nullable()();
+
+  /// Start of the current alarm/snooze cycle (UTC), for snooze-cap scoping.
+  IntColumn get lastAlarmCycleStartUtc =>
+      integer().nullable().map(const DateTimeConverter())();
 }
 
 /// DAG edges connecting source → target reminders within a chain.
@@ -108,7 +116,7 @@ class AppDatabase extends _$AppDatabase {
   /// Schema version. Increment for each migration.
   /// Migration framework from day 1 (P-03).
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -116,11 +124,10 @@ class AppDatabase extends _$AppDatabase {
       await m.createAll();
     },
     onUpgrade: (m, from, to) async {
-      // Future migrations go here.
-      // Example:
-      // if (from < 2) {
-      //   await m.addColumn(reminders, reminders.newColumn);
-      // }
+      if (from < 2) {
+        await m.addColumn(reminders, reminders.recurrenceDays);
+        await m.addColumn(reminders, reminders.lastAlarmCycleStartUtc);
+      }
     },
   );
 }

@@ -15,9 +15,22 @@ import 'package:memo_care/features/chain_engine/domain/chain_engine.dart';
 import 'package:memo_care/features/chain_engine/domain/models/chain_edge.dart';
 import 'package:memo_care/features/confirmation/domain/models/confirmation_state.dart';
 import 'package:memo_care/features/escalation/domain/escalation_level.dart';
+import 'package:memo_care/features/confirmation/domain/snooze_limiter.dart';
 import 'package:memo_care/features/reminders/domain/models/medicine_type.dart';
 import 'package:memo_care/features/reminders/domain/models/reminder.dart';
+import 'package:memo_care/features/reminders/domain/recurrence_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+/// Android alarm id namespace for fullscreen escalation follow-up (see Phase 5.1).
+const int kEscalationAlarmIdOffset = 1000000;
+
+/// Whether [alarmAndroidId] is the escalation upgrade timer for a reminder.
+bool isEscalationFollowUpAlarmId(int alarmAndroidId) =>
+    alarmAndroidId >= kEscalationAlarmIdOffset;
+
+/// Maps a real [reminderId] to the Android alarm id for escalation follow-up.
+int escalationFollowUpAlarmId(int reminderId) =>
+    kEscalationAlarmIdOffset + reminderId;
 
 /// Optional factories for tests (in-memory DB, fake notification / scheduler).
 /// Unset in production — each call site uses defaults below.
@@ -116,33 +129,47 @@ const String kAlarmNavigationPortName = 'memo_care_alarm_navigation_port';
 /// **MUST be a TOP-LEVEL function** — required by
 /// android_alarm_manager_plus because it runs in a separate isolate.
 @pragma('vm:entry-point')
-Future<void> alarmFiredCallback(int reminderId) async {
+Future<void> alarmFiredCallback(int alarmAndroidId) async {
   traceEnter('alarm', 'alarmFiredCallback');
+  await AlarmScheduler.initialize();
+
+  if (isEscalationFollowUpAlarmId(alarmAndroidId)) {
+    await _escalationFullscreenFollowUp(alarmAndroidId);
+    return;
+  }
+
+  final reminderId = alarmAndroidId;
   // Background isolate — must create fresh instances.
   final db = _alarmDb();
   Object? traceErr;
 
   try {
-    // Load reminder from DB.
     final reminder = await db.reminderDao.getReminderById(reminderId);
     if (reminder == null) return;
 
-    // If UI isolate is alive (foreground app), request immediate alarm
-    // screen navigation instead of waiting for user tap.
+    await _runDbWriteWithRetry(
+      () => db.reminderDao.updateLastAlarmCycleStart(
+        reminderId,
+        DateTime.now().toUtc(),
+      ),
+    );
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(
+      alarmAudioDedupePrefsKey(reminderId),
+      DateTime.now().millisecondsSinceEpoch,
+    );
+
     _notifyUiAlarmTriggered(reminderId);
 
-    // Initialize notification service in this isolate.
     final notificationService = _alarmNotificationService();
     await notificationService.initialize(
       onBackgroundResponse: onNotificationAction,
     );
 
-    // Start TTS init in parallel — don't block
-    // notification display (PITFALLS.md §4).
     final tts = TTSService();
     final ttsInitFuture = tts.initialize();
 
-    // Build payload with reminder ID for action handling.
     final payload = jsonEncode({'reminderId': reminderId});
 
     final settings = await SharedPreferences.getInstance();
@@ -152,11 +179,82 @@ Future<void> alarmFiredCallback(int reminderId) async {
       caregiverPhone: caregiverPhone,
     );
 
-    // Post AUDIBLE notification with fullScreenIntent=true.
-    // This fires immediately at IMPORTANCE_HIGH with sound + vibration
-    // and launches the alarm screen over the lock screen.
-    // Background isolate cannot use Riverpod / EscalationFSM —
-    // the in-app EscalationController picks up once the screen launches.
+    final body = reminder.dosage != null
+        ? '${reminder.dosage} — Time to take your medication'
+        : 'Time to take your medication';
+
+    // Tier 1: audible heads-up (no full-screen yet).
+    await notificationService.show(
+      id: reminderId,
+      title: '💊 ${reminder.medicineName}',
+      body: body,
+      level: EscalationLevel.audible,
+      fullScreenIntent: false,
+      actions: actions,
+      payload: payload,
+    );
+
+    final audibleMins = prefs.getInt('settings_audible_timeout_minutes') ?? 3;
+    final scheduler = _alarmScheduler();
+    await scheduler.cancel(escalationFollowUpAlarmId(reminderId));
+    await scheduler.schedule(
+      reminderId: escalationFollowUpAlarmId(reminderId),
+      fireAt: DateTime.now().add(Duration(minutes: audibleMins)),
+      callbackHandle: alarmFiredCallback,
+    );
+
+    try {
+      await ttsInitFuture;
+      final ttsText = buildReminderTtsText(
+        medicineName: reminder.medicineName,
+        dosage: reminder.dosage,
+        contextPhrase: MedicineType.fromDbString(
+          reminder.medicineType,
+        ).ttsContext,
+      );
+      await tts.speak(ttsText);
+    } on Exception catch (e) {
+      debugPrint(
+        'TTS speak failed in alarm callback: '
+        '$e',
+      );
+    }
+  } on Object catch (e, st) {
+    traceErr = e;
+    debugPrint('MemoCare alarmFiredCallback failed: $e');
+    debugPrint('MemoCare alarmFiredCallback stack: $st');
+  } finally {
+    await db.close();
+    traceExit('alarm', 'alarmFiredCallback', traceErr);
+  }
+}
+
+/// Prefs key for Phase 1.5 dedupe — also read by [AlarmScreenLoader].
+String alarmAudioDedupePrefsKey(int reminderId) =>
+    'last_alarm_audio_ms_$reminderId';
+
+/// Second-stage alarm: upgrade notification to full-screen takeover.
+Future<void> _escalationFullscreenFollowUp(int escalationAlarmId) async {
+  traceEnter('alarm', 'escalationFullscreenFollowUp');
+  final reminderId = escalationAlarmId - kEscalationAlarmIdOffset;
+  final db = _alarmDb();
+  Object? traceErr;
+  try {
+    final reminder = await db.reminderDao.getReminderById(reminderId);
+    if (reminder == null) return;
+
+    final notificationService = _alarmNotificationService();
+    await notificationService.initialize(
+      onBackgroundResponse: onNotificationAction,
+    );
+
+    final payload = jsonEncode({'reminderId': reminderId});
+    final settings = await SharedPreferences.getInstance();
+    final caregiverPhone = settings.getString('settings_caregiver_phone') ?? '';
+    final actions = reminderActionsFor(
+      medicineName: reminder.medicineName,
+      caregiverPhone: caregiverPhone,
+    );
     final body = reminder.dosage != null
         ? '${reminder.dosage} — Time to take your medication'
         : 'Time to take your medication';
@@ -170,33 +268,12 @@ Future<void> alarmFiredCallback(int reminderId) async {
       actions: actions,
       payload: payload,
     );
-
-    // Speak reminder aloud (A11Y-06).
-    try {
-      await ttsInitFuture;
-      final ttsText = buildReminderTtsText(
-        medicineName: reminder.medicineName,
-        dosage: reminder.dosage,
-        contextPhrase: MedicineType.fromDbString(
-          reminder.medicineType,
-        ).ttsContext,
-      );
-      await tts.speak(ttsText);
-    } on Exception catch (e) {
-      // TTS failure is non-fatal — notification already
-      // displayed.
-      debugPrint(
-        'TTS speak failed in alarm callback: '
-        '$e',
-      );
-    }
   } on Object catch (e, st) {
     traceErr = e;
-    debugPrint('MemoCare alarmFiredCallback failed: $e');
-    debugPrint('MemoCare alarmFiredCallback stack: $st');
+    debugPrint('MemoCare escalation follow-up failed: $e\n$st');
   } finally {
     await db.close();
-    traceExit('alarm', 'alarmFiredCallback', traceErr);
+    traceExit('alarm', 'escalationFullscreenFollowUp', traceErr);
   }
 }
 
@@ -297,8 +374,13 @@ Future<void> _handleDone(int reminderId) async {
     await notifService.initialize();
     await notifService.cancel(reminderId);
 
+    final scheduler = _alarmScheduler();
+    await scheduler.cancel(escalationFollowUpAlarmId(reminderId));
+
     final db = _alarmDb();
     try {
+      final row = await db.reminderDao.getReminderById(reminderId);
+
       await _runDbWriteWithRetry(() {
         return db.confirmationDao.insertConfirmation(
           ConfirmationsCompanion.insert(
@@ -309,8 +391,28 @@ Future<void> _handleDone(int reminderId) async {
         );
       });
 
-      // Evaluate chain engine to activate downstream reminders.
       await _evaluateChainOnDone(db, reminderId);
+
+      final recurrence = row?.recurrenceDays;
+      if (recurrence != null &&
+          recurrence.isNotEmpty &&
+          row?.scheduledAt != null) {
+        final nextUtc = RecurrenceUtils.nextFireAfterDone(
+          lastScheduledLocal: row!.scheduledAt!.toLocal(),
+          recurrenceCsv: recurrence,
+          nowUtc: DateTime.now().toUtc(),
+        );
+        if (nextUtc != null) {
+          await _runDbWriteWithRetry(
+            () => db.reminderDao.updateScheduledAt(reminderId, nextUtc),
+          );
+          await scheduler.schedule(
+            reminderId: reminderId,
+            fireAt: nextUtc,
+            callbackHandle: alarmFiredCallback,
+          );
+        }
+      }
     } finally {
       if (AlarmCallbackOverrides.closeTrayDatabase) {
         await db.close();
@@ -325,7 +427,9 @@ Future<void> _handleSnooze(int reminderId) async {
     await notifService.initialize();
     await notifService.cancel(reminderId);
 
-    // Read snooze duration from user settings.
+    final scheduler = _alarmScheduler();
+    await scheduler.cancel(escalationFollowUpAlarmId(reminderId));
+
     final prefs = await SharedPreferences.getInstance();
     final snoozeMins = prefs.getInt('settings_snooze_duration_minutes') ?? 5;
     final snoozeUntil = DateTime.now().toUtc().add(
@@ -334,24 +438,37 @@ Future<void> _handleSnooze(int reminderId) async {
 
     final db = _alarmDb();
     try {
-      await _runDbWriteWithRetry(() {
-        return db.confirmationDao.insertConfirmation(
-          ConfirmationsCompanion.insert(
-            reminderId: reminderId,
-            state: 'snoozed',
-            confirmedAt: DateTime.now().toUtc(),
-            snoozeUntil: Value(snoozeUntil),
-          ),
-        );
-      });
+      final row = await db.reminderDao.getReminderById(reminderId);
+      final since = row?.lastAlarmCycleStartUtc ??
+          row?.scheduledAt ??
+          DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
+      final snoozeCount =
+          await db.confirmationDao.countSnoozesSince(reminderId, since);
+      const limiter = SnoozeLimiter();
+      final decision = limiter.evaluate(snoozeCount);
+
+      switch (decision) {
+        case SnoozeExhausted():
+          await _handleSkip(reminderId);
+          return;
+        case SnoozeAllowed():
+          await _runDbWriteWithRetry(() {
+            return db.confirmationDao.insertConfirmation(
+              ConfirmationsCompanion.insert(
+                reminderId: reminderId,
+                state: 'snoozed',
+                confirmedAt: DateTime.now().toUtc(),
+                snoozeUntil: Value(snoozeUntil),
+              ),
+            );
+          });
+      }
     } finally {
       if (AlarmCallbackOverrides.closeTrayDatabase) {
         await db.close();
       }
     }
 
-    // Reschedule alarm to fire after snooze duration.
-    final scheduler = _alarmScheduler();
     await scheduler.schedule(
       reminderId: reminderId,
       fireAt: snoozeUntil,
@@ -365,6 +482,8 @@ Future<void> _handleSkip(int reminderId) async {
     final notifService = _alarmNotificationService();
     await notifService.initialize();
     await notifService.cancel(reminderId);
+
+    await _alarmScheduler().cancel(escalationFollowUpAlarmId(reminderId));
 
     final db = _alarmDb();
     try {
@@ -414,6 +533,8 @@ Future<_ChainData?> _loadChainData(
           scheduledAt: r.scheduledAt,
           isActive: r.isActive,
           gapHours: r.gapHours,
+          recurrenceDays: r.recurrenceDays,
+          lastAlarmCycleStartUtc: r.lastAlarmCycleStartUtc,
         ),
       )
       .toList();
@@ -468,6 +589,8 @@ Future<void> _evaluateChainOnDone(
             scheduledAt: Value(reminder.scheduledAt),
             isActive: const Value(true),
             gapHours: Value(reminder.gapHours),
+            recurrenceDays: Value(reminder.recurrenceDays),
+            lastAlarmCycleStartUtc: Value(reminder.lastAlarmCycleStartUtc),
           ),
         );
       });
@@ -519,6 +642,8 @@ Future<void> _evaluateChainOnSkip(
             scheduledAt: Value(reminder.scheduledAt),
             isActive: const Value(false),
             gapHours: Value(reminder.gapHours),
+            recurrenceDays: Value(reminder.recurrenceDays),
+            lastAlarmCycleStartUtc: Value(reminder.lastAlarmCycleStartUtc),
           ),
         );
       });

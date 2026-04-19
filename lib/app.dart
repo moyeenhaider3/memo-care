@@ -7,6 +7,7 @@ import 'package:memo_care/core/theme/app_colors.dart';
 import 'package:memo_care/core/theme/app_shadows.dart';
 import 'package:memo_care/core/theme/app_spacing.dart';
 import 'package:memo_care/core/theme/app_typography.dart';
+import 'package:memo_care/features/settings/application/settings_providers.dart';
 
 /// Global navigator key — used by the notification tap callback
 // ignore: comment_references // workaround
@@ -65,12 +66,56 @@ class _MemoCareAppState extends ConsumerState<MemoCareApp> {
   @override
   Widget build(BuildContext context) {
     final router = ref.watch(appRouterProvider);
+    final settingsAsync = ref.watch(appSettingsProvider);
 
-    return MaterialApp.router(
-      title: 'MemoCare',
-      debugShowCheckedModeBanner: false,
-      theme: _buildTheme(),
-      routerConfig: router,
+    return settingsAsync.when(
+      loading: () => MaterialApp.router(
+        title: 'MemoCare',
+        debugShowCheckedModeBanner: false,
+        theme: _buildTheme(),
+        routerConfig: router,
+      ),
+      error: (_, __) => MaterialApp.router(
+        title: 'MemoCare',
+        debugShowCheckedModeBanner: false,
+        theme: _buildTheme(),
+        routerConfig: router,
+      ),
+      data: (settings) => MaterialApp.router(
+        title: 'MemoCare',
+        debugShowCheckedModeBanner: false,
+        theme: _buildTheme(),
+        darkTheme: _buildDarkTheme(),
+        themeMode: settings.darkMode ? ThemeMode.dark : ThemeMode.light,
+        builder: (context, child) {
+          final mq = MediaQuery.of(context);
+          final textScaler = settings.largeText
+              ? TextScaler.linear(1.3)
+              : mq.textScaler;
+          Widget subtree = MediaQuery(
+            data: mq.copyWith(textScaler: textScaler),
+            child: child ?? const SizedBox.shrink(),
+          );
+          if (settings.highContrast) {
+            subtree = Theme(
+              data: ThemeData(
+                useMaterial3: true,
+                brightness: settings.darkMode ? Brightness.dark : Brightness.light,
+                colorScheme: ColorScheme.fromSeed(
+                  seedColor: AppColors.primary,
+                  brightness: settings.darkMode ? Brightness.dark : Brightness.light,
+                ),
+                scaffoldBackgroundColor: settings.darkMode
+                    ? Colors.black
+                    : Colors.white,
+              ),
+              child: subtree,
+            );
+          }
+          return subtree;
+        },
+        routerConfig: router,
+      ),
     );
   }
 
@@ -243,6 +288,62 @@ class _MemoCareAppState extends ConsumerState<MemoCareApp> {
         color: AppColors.border,
         thickness: 1,
         space: 0,
+      ),
+    );
+  }
+
+  static ThemeData _buildDarkTheme() {
+    final colorScheme = ColorScheme(
+      brightness: Brightness.dark,
+      primary: AppColors.accent,
+      onPrimary: Colors.white,
+      primaryContainer: AppColors.primaryDark,
+      onPrimaryContainer: Colors.white,
+      secondary: AppColors.accentTeal,
+      onSecondary: Colors.white,
+      secondaryContainer: AppColors.primary.withValues(alpha: 0.35),
+      onSecondaryContainer: Colors.white,
+      tertiary: AppColors.accentGold,
+      onTertiary: Colors.black,
+      error: AppColors.danger,
+      onError: Colors.white,
+      surface: const Color(0xFF1E293B),
+      onSurface: Colors.white,
+      onSurfaceVariant: AppColors.skippedGrey,
+      outline: AppColors.border,
+      outlineVariant: AppColors.border,
+      shadow: Colors.black,
+    );
+
+    final textTheme = AppTypography.textTheme.apply(
+      bodyColor: Colors.white,
+      displayColor: Colors.white,
+    );
+
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      colorScheme: colorScheme,
+      textTheme: textTheme,
+      scaffoldBackgroundColor: const Color(0xFF0F172A),
+      appBarTheme: AppBarTheme(
+        centerTitle: true,
+        backgroundColor: const Color(0xFF1E293B),
+        foregroundColor: Colors.white,
+        elevation: 0,
+        titleTextStyle: AppTypography.titleLarge.copyWith(color: Colors.white),
+      ),
+      cardTheme: CardThemeData(
+        elevation: 0,
+        color: const Color(0xFF1E293B),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.cardRadius),
+        ),
+      ),
+      navigationBarTheme: NavigationBarThemeData(
+        height: AppSpacing.navBarHeight,
+        backgroundColor: const Color(0xFF1E293B),
+        indicatorColor: AppColors.primary.withValues(alpha: 0.4),
       ),
     );
   }

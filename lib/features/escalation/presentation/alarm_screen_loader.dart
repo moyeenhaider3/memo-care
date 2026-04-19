@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:memo_care/core/debug/bootstrap_trace.dart';
 import 'package:memo_care/core/platform/alarm_callback.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:memo_care/core/providers/alarm_providers.dart';
 import 'package:memo_care/core/providers/notification_providers.dart'
     show notificationServiceProvider, permissionServiceProvider;
@@ -110,10 +111,17 @@ class _AlarmScreenLoaderState extends ConsumerState<AlarmScreenLoader> {
         ),
       );
 
-      // FIXED: FSM waits minutes before audible tier — start loop immediately
-      // so the user hears alarm while this screen is visible.
-      await ref.read(audioServiceProvider).startLoop();
-      debugPrint('🔔 [AUDIO] Alarm loop started (fullscreen route)');
+      final prefs = await SharedPreferences.getInstance();
+      final lastMs = prefs.getInt(
+        alarmAudioDedupePrefsKey(widget.reminderId),
+      );
+      final nowMs = DateTime.now().millisecondsSinceEpoch;
+      final skipDuplicateMedia = lastMs != null && (nowMs - lastMs) <= 5000;
+
+      if (!skipDuplicateMedia) {
+        await ref.read(audioServiceProvider).startLoop();
+        debugPrint('🔔 [AUDIO] Alarm loop started (fullscreen route)');
+      }
     });
   }
 

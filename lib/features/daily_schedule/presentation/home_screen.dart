@@ -22,6 +22,7 @@ import 'package:memo_care/features/daily_schedule/presentation/widgets/timeline_
 import 'package:memo_care/features/daily_schedule/presentation/widgets/user_greeting_header.dart';
 import 'package:memo_care/features/reminders/domain/models/reminder.dart';
 import 'package:memo_care/features/settings/application/settings_providers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Home dashboard — greeting + progress ring + navy hero + timeline.
 class HomeScreen extends ConsumerStatefulWidget {
@@ -40,7 +41,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkMissedReminders();
+      unawaited(_showPendingSnoozeToastIfNeeded());
     });
+  }
+
+  Future<void> _showPendingSnoozeToastIfNeeded() async {
+    final prefs = await SharedPreferences.getInstance();
+    final mins = prefs.getInt('pending_snooze_toast_minutes');
+    if (mins == null || !mounted) return;
+    await prefs.remove('pending_snooze_toast_minutes');
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Snoozed for $mins min')),
+    );
   }
 
   void _checkMissedReminders() {
@@ -94,8 +107,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             snoozeUntil: snoozeUntil,
           );
 
-      if (result != null && mounted) {
-        setState(() => _undoable = result);
+      if (!mounted) return;
+      if (result == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Couldn't update reminder. Try again."),
+          ),
+        );
+        return;
+      }
+      setState(() => _undoable = result);
+      if (state == ConfirmationState.snoozed) {
+        final mins =
+            ref.read(settingsRepositoryProvider).current.snoozeDurationMinutes;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Snoozed for $mins min')),
+        );
       }
     });
   }
@@ -136,7 +163,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 child: RefreshIndicator(
                   onRefresh: () async {
                     await traceAsync('ui', 'HomeScreen.refresh', () async {
-                      ref.invalidate(dailyScheduleNotifierProvider);
+                      final _ =
+                          await ref.refresh(dailyScheduleNotifierProvider.future);
                     });
                   },
                   child: CustomScrollView(

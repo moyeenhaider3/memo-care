@@ -41,6 +41,9 @@ final confirmationServiceProvider = Provider<ConfirmationService>((ref) {
     snoozeLimiter: ref.watch(snoozeLimiterProvider),
     confirmationRepository: ref.watch(confirmationRepositoryProvider),
     chainRepository: ref.watch(chainRepositoryProvider),
+    reminderRepository: ref.watch(
+      reminder_providers.reminderRepositoryProvider,
+    ),
   );
 });
 

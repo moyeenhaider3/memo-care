@@ -1584,10 +1584,20 @@ Run all: `flutter test` from the project root.
 
 ### Known limitations (for QA sign-off)
 
-1. **Kids** and **standalone Template library** — routes exist; **documented deep link / QA entry** may be required (no shell navigation found in `lib/` grep).
-2. **Profile name** — static “User” in `SettingsScreen` / `ProfileHeader`; not a live profile edit form.
-3. **Settings PDF/CSV** — **stubs** only; real PDF is **History** export.
-4. **`template_picker_screen.dart`** — not a separate GoRoute; onboarding uses `TemplatePage`.
+1. **Kids** — route exists; deep link / QA entry may be required for some builds.
+2. **`template_picker_screen.dart`** — not a separate GoRoute; onboarding uses `TemplatePage`.
+
+### Bug-fix sweep — extra manual checks (2026-04)
+
+| Check | Steps | Expected |
+|--------|--------|----------|
+| Tray snooze cap | From notification tray, tap **SNOOZE** three times, then again | Fourth action follows SnoozeLimiter (auto-skip / skip behaviour). |
+| Weekly repeat days | Add reminder with specific weekdays only; save | Next scheduled time falls on a selected weekday. |
+| Dark mode | Settings → enable **Dark mode** | `MaterialApp` uses dark theme (not light-only). |
+| Profile name | Settings → edit name (header) | Home greeting uses the saved name; PDF export uses it as patient name. |
+| Settings → Templates | Tap **Browse template packs** | Navigates to `/templates`. |
+| Cold-start snooze toast | Force-stop app; trigger reminder; **SNOOZE** from tray; reopen app | Home shows snackbar: “Snoozed for *N* min”. |
+| Missed sheet confirm | In missed sheet, if confirm fails (e.g. rare DB issue) | Snackbar error; row not marked resolved until success. |
 
 ---
 
@@ -1597,3 +1607,4 @@ Run all: `flutter test` from the project root.
 |---------|------|--------|
 | 1.0 | 2026-04-11 | Initial manual test guide from `lib/` implementation review |
 | 1.1 | 2026-04-12 | Missed-sheet layout constraints; fullscreen snooze vs profile snooze; escalation audio until acknowledge; shared `AudioService` lifecycle; CI note for `phase3` snooze finder (`textContaining`) |
+| 1.2 | 2026-04-19 | Bug-fix sweep: boot alarm init, tray snooze limit, FSI channel, theme/profile/export, home UX, escalation stages, recurrence days, manual checklist |

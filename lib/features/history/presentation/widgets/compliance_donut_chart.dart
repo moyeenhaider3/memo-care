@@ -22,11 +22,11 @@ class ComplianceDonutChart extends StatelessWidget {
   final int skipped;
   final int pending;
 
-  int get _total => done + missed + skipped + pending;
-
+  /// Share of completed doses among terminal outcomes (excludes pending).
   int get _compliancePercent {
-    if (_total == 0) return 0;
-    return ((done / _total) * 100).round();
+    final denom = done + missed + skipped;
+    if (denom == 0) return 0;
+    return ((done / denom) * 100).round();
   }
 
   @override
@@ -54,7 +54,7 @@ class ComplianceDonutChart extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Compliance',
+                    'Done %',
                     style: AppTypography.labelSmall.copyWith(
                       color: AppColors.textSecondary,
                     ),
